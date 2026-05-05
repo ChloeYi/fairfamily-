@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">FairFamily</string>
+    <string name="title_activity_main">FairFamily</string>
+    <string name="package_name">com.fairfamily.app</string>
+    <string name="custom_url_scheme">com.fairfamily.app</string>
+</resources>
