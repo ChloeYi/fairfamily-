@@ -92,7 +92,7 @@ const css = `
 `;
 
 const EMOJIS = ["🌸", "⚡", "🌻", "🦋", "🌈", "⭐", "🎯", "🔥"];
-const COLORS = ["#EC4899", "#7C3AED", "#F59E0B", "#10B981", "#8B5CF6", "#EF4444", "#06B6D4", "#84CC16"];
+const COLORS = ["#EC4899", "#7C3AED", "#EA580C", "#10B981", "#8B5CF6", "#EF4444", "#06B6D4", "#84CC16"];
 
 export default function KidsScreen() {
   const navigate = useNavigate();
