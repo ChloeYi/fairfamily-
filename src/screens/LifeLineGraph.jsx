@@ -1,5 +1,16 @@
 import { useState, useEffect } from "react";
-import { Gift, Sparkle, Trophy, Note } from "@phosphor-icons/react";
+import { Gift, Sparkle, Trophy, Note, Flower, Lightning, Sun, Butterfly, Star, Crosshair, Fire } from "@phosphor-icons/react";
+
+const EMOJI_ICON_MAP = {
+  "🌸": Flower,
+  "⚡": Lightning,
+  "🌻": Sun,
+  "🦋": Butterfly,
+  "🌈": Sparkle,
+  "⭐": Star,
+  "🎯": Crosshair,
+  "🔥": Fire,
+};
 import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 import { auth, db } from "../firebase";
 
@@ -170,17 +181,20 @@ export default function LifeLineGraph() {
           background: "rgba(255,255,255,0.04)",
           borderRadius: 12, padding: 3, marginBottom: 14,
         }}>
-          {children.map(c => (
+          {children.map(c => {
+            const TabIcon = EMOJI_ICON_MAP[c.emoji];
+            return (
             <button key={c.id} className="life-tab"
               onClick={() => { setActiveChild(c.id); setTooltip(null); }}
               style={{
                 background: activeChild === c.id ? `${c.color}18` : "none",
                 border: `1px solid ${activeChild === c.id ? c.color + "44" : "transparent"}`,
                 color: activeChild === c.id ? c.color : "#445566",
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 4,
               }}>
-              {c.emoji} {c.name}
+              {TabIcon ? <TabIcon size={14} weight="fill" /> : c.emoji} {c.name}
             </button>
-          ))}
+          );})}
         </div>
 
         {/* SVG Graph */}

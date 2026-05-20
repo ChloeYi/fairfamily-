@@ -3,7 +3,18 @@ import { useNavigate } from "react-router-dom";
 import { collection, onSnapshot, addDoc, deleteDoc, doc, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { useLanguage } from "../hooks/useLanguage";
-import { Baby, Trash, CaretRight } from "@phosphor-icons/react";
+import { Baby, Trash, CaretRight, Flower, Lightning, Sun, Butterfly, Sparkle, Star, Crosshair, Fire } from "@phosphor-icons/react";
+
+const EMOJI_ICON_MAP = {
+  "🌸": Flower,
+  "⚡": Lightning,
+  "🌻": Sun,
+  "🦋": Butterfly,
+  "🌈": Sparkle,
+  "⭐": Star,
+  "🎯": Crosshair,
+  "🔥": Fire,
+};
 
 const BG = "linear-gradient(160deg, #f8f0ff 0%, #eef2ff 50%, #fdf4ff 100%)";
 
@@ -228,6 +239,7 @@ export default function KidsScreen() {
           const total = c.totalSpent || 0;
           const giftCount = c.giftCount || 0;
           const expCount = c.experienceCount || 0;
+          const AvatarIcon = EMOJI_ICON_MAP[c.emoji];
           return (
             <div key={c.id} className="kid-card"
               style={{ animationDelay: `${i * 0.07}s`, borderColor: `${c.color}30` }}
@@ -237,9 +249,10 @@ export default function KidsScreen() {
                 background: `linear-gradient(135deg, ${c.color}28, ${c.color}12)`,
                 border: `2px solid ${c.color}40`,
                 display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 30,
                 boxShadow: `0 6px 20px ${c.color}22`,
-              }}>{c.emoji}</div>
+              }}>
+                {AvatarIcon ? <AvatarIcon size={32} color={c.color} weight="fill" /> : c.emoji}
+              </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontWeight: 600, fontSize: 20, letterSpacing: -0.2, color: "#1e0f3c" }}>{c.name}</div>
                 <div style={{ fontSize: 13, color: "#9b8ec4", marginTop: 4 }}>
