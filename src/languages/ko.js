@@ -137,8 +137,8 @@ export default {
   photoLog: {
     subtitle: "빠른 입력",
     title: "기록하기",
-    scanPhoto: "📸 사진 스캔",
-    quickLog: "✏️ 직접 입력",
+    scanPhoto: "사진 스캔",
+    quickLog: "직접 입력",
     whoFor: "누구를 위한 기록인가요?",
     tapPhoto: "사진을 찍거나 업로드하세요",
     photoHint: "영수증, 선물 사진, 성적표 — AI가 자동으로 읽어드려요",
@@ -159,6 +159,35 @@ export default {
     noChildren: "먼저 아이들 탭에서 자녀를 추가해 주세요",
     detected: (desc, amount) => `인식됨: ${desc}${amount ? ` · ₩${amount}` : ""}`,
     couldntRead: "사진을 읽을 수 없어요 — 직접 입력해 주세요.",
+  },
+
+  chatOnboarding: {
+    bubble1: "모든 아이는 평등한 사랑을 받을 자격이 있어요",
+    bubble2line1: "Emma에게 7살 때 자전거를 사줬죠,",
+    bubble2line2: "Zoe에게도 같은 걸 해줬나요?",
+    bubble3: "이 앱이 대신 기억해 드릴게요.",
+    skip: "건너뛰기",
+    getStarted: "시작하기 →",
+  },
+
+  emotionalOnboarding: {
+    line1: "Emma가 7살 때, 무엇을 사줬나요?",
+    line2a: "이제 Zoe가 7살이에요 —",
+    line2b: "똑같이 해줬나요?",
+    bubble: "시간 + 경험 + 감정 =\n아이들 사이의 균형을 조언해 드려요",
+    getStarted: "시작하기 →",
+  },
+
+  welcome3: {
+    sectionLabel: "앞으로 보게 될 것",
+    title: "자녀들을 나란히 비교해요",
+    chartLabel: "시간에 따른 지출",
+    chartSub: "기억 / 이벤트 강도",
+    insight1: "Zoe의 학교 공연에 참석했지만, Emma의 3학년 연극은 기록에 없어요. 기록되었나요?",
+    radarLabel: "카테고리별 균형",
+    radarSub: "거미줄 / 레이더 차트",
+    insight2: "Zoe는 7살 때 디즈니랜드를 방문했어요 — Emma는 잊혀져 집에 있었어요. 같은 경험을 했나요?",
+    getStarted: "시작하기 →",
   },
 
   aiAdvice: {

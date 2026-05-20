@@ -1,20 +1,28 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { collection, onSnapshot, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, onSnapshot, addDoc, deleteDoc, doc, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { useLanguage } from "../hooks/useLanguage";
+import { Baby } from "@phosphor-icons/react";
+
+const BG = "linear-gradient(160deg, #f8f0ff 0%, #eef2ff 50%, #fdf4ff 100%)";
 
 const css = `
-  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap');
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
+    from { opacity: 0; transform: translateY(22px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-  @keyframes shimmer {
-    0%   { background-position: -300% center; }
-    100% { background-position: 300% center; }
+  @keyframes titleShake {
+    0%,100% { transform: translateX(0); }
+    15%     { transform: translateX(-7px) rotate(-1deg); }
+    30%     { transform: translateX(7px) rotate(1deg); }
+    45%     { transform: translateX(-5px); }
+    60%     { transform: translateX(5px); }
+    75%     { transform: translateX(-2px); }
+    90%     { transform: translateX(2px); }
   }
   @keyframes popIn {
     0%   { transform: scale(0.85); opacity: 0; }
@@ -26,56 +34,58 @@ const css = `
     to   { transform: rotate(360deg); }
   }
 
-  .shimmer {
-    background: linear-gradient(90deg, #FF6B6B, #FFE66D, #4ECDC4, #FF6B6B);
-    background-size: 300% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: shimmer 4s linear infinite;
+  .title-text {
+    color: #1e0f3c;
+    display: inline-block;
+    text-shadow: 0 4px 18px rgba(30,15,60,0.18), 0 2px 6px rgba(0,0,0,0.10);
+    animation: titleShake 0.45s ease 2;
   }
 
   .kid-card {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 20px;
-    padding: 14px 16px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    transition: all 0.2s;
+    display: flex; align-items: center; gap: 16px;
+    background: rgba(255,255,255,0.72);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.95);
+    border-radius: 24px; padding: 18px 20px; margin-bottom: 12px;
+    cursor: pointer; transition: all 0.25s;
     animation: popIn 0.4s ease both;
+    box-shadow: 0 8px 28px rgba(139,92,246,0.1), inset 0 1px 0 rgba(255,255,255,1);
+    position: relative; z-index: 1;
   }
   .kid-card:hover {
-    background: rgba(255,255,255,0.08);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    background: rgba(255,255,255,0.9);
+    transform: translateY(-3px);
+    box-shadow: 0 16px 40px rgba(139,92,246,0.16);
   }
 
-  .input-field {
+  .glass-input {
     width: 100%;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 12px;
-    padding: 13px 14px;
-    color: #e8f0f8;
-    font-size: 14px;
-    outline: none;
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.95);
+    border-radius: 14px;
+    padding: 15px 16px;
+    color: #1e0f3c;
+    font-size: 16px; outline: none;
     font-family: 'DM Sans', sans-serif;
-    margin-bottom: 10px;
-    box-sizing: border-box;
-    transition: border-color 0.2s;
+    margin-bottom: 12px; box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 12px rgba(139,92,246,0.08);
   }
-  .input-field:focus { border-color: rgba(78,205,196,0.4); }
+  .glass-input:focus {
+    border-color: rgba(124,58,237,0.4);
+    box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
+  }
+  .glass-input::placeholder { color: #c4b8e0; }
 `;
 
 const EMOJIS = ["🌸", "⚡", "🌻", "🦋", "🌈", "⭐", "🎯", "🔥"];
-const COLORS = ["#FF6B6B", "#4ECDC4", "#FFE66D", "#A8E6CF", "#C7B8EA", "#FF9F43", "#45B7D1", "#96CEB4"];
+const COLORS = ["#EC4899", "#7C3AED", "#F59E0B", "#10B981", "#8B5CF6", "#EF4444", "#06B6D4", "#84CC16"];
 
 export default function KidsScreen() {
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, titleFont } = useLanguage();
   const [children, setChildren] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -94,6 +104,11 @@ export default function KidsScreen() {
     });
   }, [uid]);
 
+  const deleteChild = async (childId, childName) => {
+    if (!window.confirm(`Delete ${childName}? This cannot be undone.`)) return;
+    await deleteDoc(doc(db, "users", uid, "children", childId));
+  };
+
   const addChild = async () => {
     if (!form.name.trim() || !form.age || !uid || saving) return;
     setSaving(true);
@@ -104,10 +119,7 @@ export default function KidsScreen() {
         age: parseInt(form.age),
         emoji: EMOJIS[idx % EMOJIS.length],
         color: COLORS[idx % COLORS.length],
-        totalSpent: 0,
-        giftCount: 0,
-        experienceCount: 0,
-        milestoneCount: 0,
+        totalSpent: 0, giftCount: 0, experienceCount: 0, milestoneCount: 0,
         createdAt: serverTimestamp(),
       });
       setForm({ name: "", age: "" });
@@ -121,71 +133,69 @@ export default function KidsScreen() {
 
   return (
     <div style={{
-      minHeight: "100vh",
-      background: "radial-gradient(ellipse at 30% 0%, #0f1e35 0%, #06090f 60%)",
+      minHeight: "100vh", background: BG,
       fontFamily: "'DM Sans', sans-serif",
-      color: "#e8f0f8",
-      paddingBottom: 80,
+      color: "#1e0f3c", paddingBottom: 90, position: "relative", zIndex: 1,
     }}>
       <style>{css}</style>
 
-      <div style={{ padding: "28px 20px 20px", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+      <div style={{ padding: "36px 24px 24px", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
         <div>
-          <div style={{ fontSize: 11, letterSpacing: 3, color: "#334455", textTransform: "uppercase", marginBottom: 4 }}>
+          <div style={{ fontSize: 12, letterSpacing: 3, color: "#6b5a9e", fontWeight: 700, textTransform: "uppercase", marginBottom: 8 }}>
             {t.kids.subtitle}
           </div>
-          <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, fontWeight: 700 }}>
-            <span className="shimmer">{t.kids.title}</span>
+          <h1 style={{ fontFamily: "'Climate Crisis', sans-serif", fontSize: 36, fontWeight: 400, lineHeight: 1.1, letterSpacing: 0 }}>
+            <span className="title-text">{t.kids.title}</span>
           </h1>
         </div>
         <button onClick={() => setShowForm(v => !v)} style={{
-          width: 38, height: 38, borderRadius: 12,
-          background: showForm ? "rgba(78,205,196,0.2)" : "rgba(255,255,255,0.06)",
-          border: `1px solid ${showForm ? "rgba(78,205,196,0.4)" : "rgba(255,255,255,0.1)"}`,
-          color: showForm ? "#4ECDC4" : "#667788",
-          fontSize: 20, cursor: "pointer",
+          width: 46, height: 46, borderRadius: 14,
+          background: showForm ? "rgba(236,72,153,0.12)" : "rgba(255,255,255,0.75)",
+          backdropFilter: "blur(16px)",
+          border: `1px solid ${showForm ? "rgba(236,72,153,0.4)" : "rgba(255,255,255,0.95)"}`,
+          color: showForm ? "#EC4899" : "#7c6faa",
+          fontSize: 22, cursor: "pointer",
           display: "flex", alignItems: "center", justifyContent: "center",
+          boxShadow: "0 4px 16px rgba(139,92,246,0.12)",
           transition: "all 0.2s",
         }}>
           {showForm ? "×" : "+"}
         </button>
       </div>
 
-      <div style={{ padding: "0 16px" }}>
+      <div style={{ padding: "0 20px" }}>
 
         {showForm && (
           <div style={{
-            background: "rgba(78,205,196,0.06)",
-            border: "1px solid rgba(78,205,196,0.2)",
-            borderRadius: 18, padding: 16, marginBottom: 16,
+            background: "rgba(255,255,255,0.75)",
+            backdropFilter: "blur(24px)",
+            WebkitBackdropFilter: "blur(24px)",
+            border: "1px solid rgba(236,72,153,0.2)",
+            borderRadius: 24, padding: 22, marginBottom: 16,
             animation: "fadeUp 0.3s ease both",
+            boxShadow: "0 8px 32px rgba(236,72,153,0.1), inset 0 1px 0 rgba(255,255,255,1)",
+            position: "relative", zIndex: 1,
           }}>
-            <div style={{ fontSize: 10, letterSpacing: 3, color: "#4ECDC4", textTransform: "uppercase", marginBottom: 12 }}>
+            <div style={{ fontSize: 12, letterSpacing: 3, color: "#EC4899", textTransform: "uppercase", marginBottom: 16 }}>
               {t.kids.add}
             </div>
-            <input
-              className="input-field"
-              value={form.name}
+            <input className="glass-input" value={form.name}
               onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
               onKeyDown={e => e.key === "Enter" && addChild()}
-              placeholder={t.kids.namePlaceholder}
-            />
-            <input
-              className="input-field"
-              value={form.age}
+              placeholder={t.kids.namePlaceholder} />
+            <input className="glass-input" value={form.age}
               onChange={e => setForm(p => ({ ...p, age: e.target.value }))}
               onKeyDown={e => e.key === "Enter" && addChild()}
-              placeholder={t.kids.agePlaceholder}
-              type="number"
-              style={{ marginBottom: 12 }}
-            />
+              placeholder={t.kids.agePlaceholder} type="number"
+              style={{ marginBottom: 16 }} />
             <button onClick={addChild} disabled={saving} style={{
-              width: "100%", padding: "12px",
-              borderRadius: 12, border: "none",
-              background: saving ? "rgba(255,255,255,0.1)" : "linear-gradient(135deg, #4ECDC4, #45B7D1)",
-              color: saving ? "#667788" : "#000",
-              fontWeight: 700, fontSize: 14, cursor: saving ? "not-allowed" : "pointer",
+              width: "100%", padding: "15px",
+              borderRadius: 14, border: "none",
+              background: saving ? "rgba(139,92,246,0.08)" : "linear-gradient(135deg, #EC4899, #8B5CF6)",
+              color: saving ? "#a394c8" : "#fff",
+              fontWeight: 700, fontSize: 16, cursor: saving ? "not-allowed" : "pointer",
               fontFamily: "'DM Sans', sans-serif",
+              boxShadow: saving ? "none" : "0 4px 20px rgba(236,72,153,0.35)",
             }}>
               {saving ? t.kids.adding : t.kids.add}
             </button>
@@ -193,22 +203,24 @@ export default function KidsScreen() {
         )}
 
         {loading && (
-          <div style={{ textAlign: "center", padding: "60px 0" }}>
+          <div style={{ textAlign: "center", padding: "80px 0" }}>
             <div style={{
-              width: 28, height: 28, borderRadius: "50%",
-              border: "2px solid rgba(255,255,255,0.1)",
-              borderTopColor: "#4ECDC4",
-              animation: "spin 0.8s linear infinite",
-              margin: "0 auto 12px",
+              width: 32, height: 32, borderRadius: "50%",
+              border: "2px solid rgba(124,58,237,0.15)", borderTopColor: "#7C3AED",
+              animation: "spin 0.8s linear infinite", margin: "0 auto",
             }} />
           </div>
         )}
 
         {!loading && children.length === 0 && (
-          <div style={{ textAlign: "center", padding: "60px 20px", animation: "fadeUp 0.5s ease both" }}>
-            <div style={{ fontSize: 52, marginBottom: 16 }}>👶</div>
-            <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>{t.kids.noChildren}</div>
-            <div style={{ color: "#445566", fontSize: 14 }}>{t.kids.noChildrenHint}</div>
+          <div style={{ textAlign: "center", padding: "80px 20px", animation: "fadeUp 0.5s ease both", position: "relative", zIndex: 1 }}>
+            <div style={{ marginBottom: 20, display: "flex", justifyContent: "center" }}>
+              <Baby size={72} weight="duotone" color="#EC4899" />
+            </div>
+            <div style={{ fontFamily: "'Climate Crisis', sans-serif", fontSize: 28, fontWeight: 400, marginBottom: 12, color: "#1e0f3c" }}>
+              {t.kids.noChildren}
+            </div>
+            <div style={{ color: "#a394c8", fontSize: 16, lineHeight: 1.7 }}>{t.kids.noChildrenHint}</div>
           </div>
         )}
 
@@ -218,33 +230,43 @@ export default function KidsScreen() {
           const expCount = c.experienceCount || 0;
           return (
             <div key={c.id} className="kid-card"
-              style={{ animationDelay: `${i * 0.07}s`, borderColor: `${c.color}22` }}
+              style={{ animationDelay: `${i * 0.07}s`, borderColor: `${c.color}30` }}
               onClick={() => navigate(`/child/${c.id}`)}>
               <div style={{
-                width: 52, height: 52, borderRadius: 16,
-                background: `${c.color}18`, border: `2px solid ${c.color}44`,
+                width: 62, height: 62, borderRadius: 20, flexShrink: 0,
+                background: `linear-gradient(135deg, ${c.color}28, ${c.color}12)`,
+                border: `2px solid ${c.color}40`,
                 display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 26, flexShrink: 0,
+                fontSize: 30,
+                boxShadow: `0 6px 20px ${c.color}22`,
               }}>{c.emoji}</div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 700, fontSize: 16, color: "#e8f0f8" }}>{c.name}</div>
-                <div style={{ fontSize: 11, color: "#445566", marginTop: 3 }}>
+                <div style={{ fontWeight: 600, fontSize: 20, letterSpacing: -0.2, color: "#1e0f3c" }}>{c.name}</div>
+                <div style={{ fontSize: 13, color: "#9b8ec4", marginTop: 4 }}>
                   {t.childRoom.ageAt(c.age)}
                   {giftCount > 0 && ` · ${t.kids.gifts(giftCount)}`}
                   {expCount > 0 && ` · ${t.kids.experiences(expCount)}`}
                 </div>
                 {total > 0 && (
-                  <div style={{ fontSize: 12, color: "#FFE66D", marginTop: 2 }}>
+                  <div style={{ fontSize: 14, color: "#7C3AED", marginTop: 4, fontWeight: 600 }}>
                     {t.kids.spent(total)}
                   </div>
                 )}
               </div>
-              <div style={{
-                width: 32, height: 32, borderRadius: 10,
-                background: `${c.color}15`, border: `1px solid ${c.color}33`,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                color: c.color, fontSize: 14,
-              }}>›</div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <button onClick={e => { e.stopPropagation(); deleteChild(c.id, c.name); }} style={{
+                  width: 36, height: 36, borderRadius: 12,
+                  background: "rgba(236,72,153,0.08)", border: "1px solid rgba(236,72,153,0.2)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  color: "#EC4899", fontSize: 16, cursor: "pointer",
+                }}>🗑</button>
+                <div style={{
+                  width: 36, height: 36, borderRadius: 12,
+                  background: `${c.color}12`, border: `1px solid ${c.color}28`,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  color: c.color, fontSize: 18,
+                }}>›</div>
+              </div>
             </div>
           );
         })}

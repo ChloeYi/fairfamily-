@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
+import { auth, db } from "../firebase";
 
 const css = `
   @keyframes drawLine {
@@ -52,42 +54,7 @@ const css = `
   }
 `;
 
-const LIFE_CHILDREN = [
-  {
-    id: 1, name: "Emma", age: 10, emoji: "🌸", color: "#FF6B6B",
-    events: [
-      { age: 0.5, type: "milestone", icon: "👶", label: "First steps", amount: 0 },
-      { age: 1, type: "milestone", icon: "🎂", label: "1st Birthday", amount: 0 },
-      { age: 3, type: "gift", icon: "🎁", label: "Stuffed bunny", amount: 25 },
-      { age: 5, type: "gift", icon: "🎀", label: "Barbie set", amount: 45 },
-      { age: 5.5, type: "experience", icon: "🦁", label: "Zoo trip", amount: 60 },
-      { age: 6, type: "milestone", icon: "📚", label: "Started school", amount: 0 },
-      { age: 7, type: "gift", icon: "🚲", label: "Bike", amount: 200 },
-      { age: 8, type: "milestone", icon: "🎹", label: "Piano lessons", amount: 0 },
-      { age: 9, type: "gift", icon: "📱", label: "iPad", amount: 400 },
-      { age: 10, type: "experience", icon: "✨", label: "Disneyland", amount: 300 },
-    ],
-  },
-  {
-    id: 2, name: "Liam", age: 7, emoji: "⚡", color: "#4ECDC4",
-    events: [
-      { age: 1, type: "milestone", icon: "🎂", label: "1st Birthday", amount: 0 },
-      { age: 3, type: "milestone", icon: "📚", label: "Preschool", amount: 0 },
-      { age: 5, type: "gift", icon: "🚗", label: "Toy cars", amount: 30 },
-      { age: 6, type: "gift", icon: "🧱", label: "LEGO set", amount: 80 },
-      { age: 7, type: "milestone", icon: "⚽", label: "Soccer team", amount: 0 },
-    ],
-  },
-  {
-    id: 3, name: "Zoe", age: 4, emoji: "🌻", color: "#FFE66D",
-    events: [
-      { age: 1, type: "milestone", icon: "🎂", label: "1st Birthday", amount: 0 },
-      { age: 2, type: "milestone", icon: "🗣️", label: "First words", amount: 0 },
-      { age: 3, type: "gift", icon: "🧸", label: "Stuffed bear", amount: 15 },
-      { age: 4, type: "milestone", icon: "🎒", label: "Preschool", amount: 0 },
-    ],
-  },
-];
+const TYPE_ICONS = { gift: "🎁", experience: "✨", milestone: "⭐", note: "📝" };
 
 const TYPE_COLORS = { gift: "#FF6B6B", experience: "#4ECDC4", milestone: "#FFE66D" };
 
@@ -122,10 +89,51 @@ const buildPath = (events) => {
 };
 
 export default function LifeLineGraph() {
-  const [activeChild, setActiveChild] = useState(1);
+  const [children, setChildren] = useState([]);
+  const [activeChild, setActiveChild] = useState(null);
   const [tooltip, setTooltip] = useState(null);
+  const uid = auth.currentUser?.uid;
 
-  const child = LIFE_CHILDREN.find(c => c.id === activeChild);
+  useEffect(() => {
+    if (!uid) return;
+    return onSnapshot(collection(db, "users", uid, "children"), snap => {
+      const kids = snap.docs.map(d => ({ id: d.id, ...d.data(), events: [] }));
+      kids.sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
+      setChildren(kids);
+      if (kids.length > 0) setActiveChild(prev => prev || kids[0].id);
+
+      kids.forEach(kid => {
+        onSnapshot(
+          query(collection(db, "users", uid, "children", kid.id, "logs"), orderBy("createdAt", "asc")),
+          logSnap => {
+            const events = logSnap.docs.map(d => {
+              const l = d.data();
+              return {
+                age: l.age || kid.age || 1,
+                type: l.type || "note",
+                icon: TYPE_ICONS[l.type] || "📝",
+                label: l.desc || "",
+                amount: l.amount || 0,
+              };
+            });
+            setChildren(prev => prev.map(c => c.id === kid.id ? { ...c, events } : c));
+          }
+        );
+      });
+    });
+  }, [uid]);
+
+  const child = children.find(c => c.id === activeChild);
+
+  if (!child) return (
+    <div style={{
+      background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)",
+      borderRadius: 22, padding: "24px 18px", textAlign: "center",
+      color: "#445566", fontSize: 14, fontFamily: "'DM Sans', sans-serif",
+    }}>
+      Add children to see the Life Graph
+    </div>
+  );
 
   const areaPath = (() => {
     if (child.events.length < 2) return "";
@@ -162,7 +170,7 @@ export default function LifeLineGraph() {
           background: "rgba(255,255,255,0.04)",
           borderRadius: 12, padding: 3, marginBottom: 14,
         }}>
-          {LIFE_CHILDREN.map(c => (
+          {children.map(c => (
             <button key={c.id} className="life-tab"
               onClick={() => { setActiveChild(c.id); setTooltip(null); }}
               style={{

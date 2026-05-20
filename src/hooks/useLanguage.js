@@ -5,10 +5,10 @@ import ko from "../languages/ko";
 const LanguageContext = createContext(null);
 
 export function LanguageProvider({ children }) {
-  const [lang, setLang] = useState(() => localStorage.getItem("fairfamily_lang") || null);
+  const [lang, setLang] = useState(() => localStorage.getItem("fairfamily_lang") || "en");
 
   useEffect(() => {
-    if (lang) return; // already set from localStorage
+    if (localStorage.getItem("fairfamily_lang")) return; // already set, skip fetch
 
     fetch("https://ipapi.co/json/")
       .then(r => r.json())
@@ -17,8 +17,8 @@ export function LanguageProvider({ children }) {
         setLang(detected);
         localStorage.setItem("fairfamily_lang", detected);
       })
-      .catch(() => setLang("en"));
-  }, [lang]);
+      .catch(() => {});
+  }, []);
 
   const toggle = () => {
     const next = (lang || "en") === "ko" ? "en" : "ko";
@@ -26,11 +26,14 @@ export function LanguageProvider({ children }) {
     localStorage.setItem("fairfamily_lang", next);
   };
 
-  const resolved = lang || "en";
-  const t = resolved === "ko" ? ko : en;
+  const t = lang === "ko" ? ko : en;
+
+  const titleFont = lang === "ko"
+    ? "'Nanum Gothic', sans-serif"
+    : "'Climate Crisis', sans-serif";
 
   return (
-    <LanguageContext.Provider value={{ t, lang: resolved, toggle }}>
+    <LanguageContext.Provider value={{ t, lang, toggle, titleFont }}>
       {children}
     </LanguageContext.Provider>
   );

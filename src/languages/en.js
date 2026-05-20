@@ -1,5 +1,5 @@
 export default {
-  lang: { flag: "🇰🇷", code: "EN" },
+  lang: { flag: "🇺🇸", code: "EN" },
 
   nav: {
     dashboard: "Dashboard",
@@ -137,8 +137,8 @@ export default {
   photoLog: {
     subtitle: "Quick Entry",
     title: "Log Something",
-    scanPhoto: "📸 Scan Photo",
-    quickLog: "✏️ Quick Log",
+    scanPhoto: "Scan Photo",
+    quickLog: "Quick Log",
     whoFor: "Who is this for?",
     tapPhoto: "Tap to take or upload photo",
     photoHint: "Receipt, gift photo, report card — AI reads it automatically",
@@ -159,6 +159,35 @@ export default {
     noChildren: "Add children in the Kids tab first",
     detected: (desc, amount) => `Detected: ${desc}${amount ? ` · $${amount}` : ""}`,
     couldntRead: "Couldn't read image — please fill in details manually.",
+  },
+
+  chatOnboarding: {
+    bubble1: "Every child deserves equal love & attention",
+    bubble2line1: "You give Emma a bike at age 7,",
+    bubble2line2: "Did you do the same for Zoe?",
+    bubble3: "This app remembers — so you don't have to.",
+    skip: "Skip",
+    getStarted: "Get Started →",
+  },
+
+  emotionalOnboarding: {
+    line1: "When Emma was 7, what did you buy her?",
+    line2a: "Now Zoe is 7 —",
+    line2b: "did you do the same?",
+    bubble: "Time + Experiences + Emotions =\nWe advice between children",
+    getStarted: "Get Started →",
+  },
+
+  welcome3: {
+    sectionLabel: "What you'll see",
+    title: "Your children, side by side",
+    chartLabel: "Spending over time",
+    chartSub: "Memory / event intensity",
+    insight1: "You attended Zoe's school performance, but Emma's 3rd grade theatre show wasn't in the log. Was this captured?",
+    radarLabel: "Balance across categories",
+    radarSub: "Spider / radar chart",
+    insight2: "Zoe visited Disneyland at age 7 — Emma was forgotten and stayed at home. Did she get the same experience at that age?",
+    getStarted: "Get Started →",
   },
 
   aiAdvice: {
