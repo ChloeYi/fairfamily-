@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
+import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
+import { auth, db } from "../firebase";
 import { Gift, Sparkle, Trophy, Note } from "@phosphor-icons/react";
 
 const emojiUrl = (emoji) => {
   const hex = [...emoji][0].codePointAt(0).toString(16).toUpperCase();
   return `https://cdn.jsdelivr.net/npm/@svgmoji/openmoji@2.0.0/svg/${hex}.svg`;
 };
-import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
-import { auth, db } from "../firebase";
 
 const css = `
   @keyframes drawLine {
