@@ -8,6 +8,20 @@ import { useLanguage } from "../hooks/useLanguage";
 import LifeLineGraph from "./LifeLineGraph";
 import { UsersThree } from "@phosphor-icons/react";
 
+const EMOJI_FLATICON = {
+  "🌸": "fi-sr-child-head",
+  "⚡": "fi-sr-child",
+  "🌻": "fi-sr-baby",
+  "🦋": "fi-sr-user-crown",
+  "🌈": "fi-sr-face-smile-hearts",
+  "⭐": "fi-sr-face-awesome",
+  "🎯": "fi-sr-face-glasses",
+  "🔥": "fi-sr-face-smile-halo",
+};
+const KidIcon = ({ emoji, size = 24, color }) => (
+  <i className={`fi ${EMOJI_FLATICON[emoji] || "fi-sr-child-head"}`} style={{ fontSize: size, color }} />
+);
+
 const BG = "linear-gradient(160deg, #f8f0ff 0%, #eef2ff 50%, #fdf4ff 100%)";
 
 const css = `
@@ -315,9 +329,9 @@ export default function DashboardScreen() {
                     background: `linear-gradient(135deg, ${c.color}35, ${c.color}18)`,
                     border: `2px solid ${c.color}50`,
                     display: "flex", alignItems: "center", justifyContent: "center",
-                    fontSize: 28,
                     boxShadow: `0 4px 16px ${c.color}28`,
-                  }}>{c.emoji}</div>
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}><KidIcon emoji={c.emoji} size={26} color={c.color} /></div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontWeight: 600, fontSize: 18, letterSpacing: -0.2 }}>{c.name}</div>
                     <div style={{ fontSize: 13, color: "#9b8ec4", marginTop: 3 }}>
@@ -385,7 +399,7 @@ export default function DashboardScreen() {
                         </th>
                         {children.map(c => (
                           <th key={c.id} style={{ color: c.color, fontSize: 12, textAlign: "center", padding: "4px 6px", fontWeight: 600 }}>
-                            {c.emoji} {c.name}
+                            <KidIcon emoji={c.emoji} size={12} color={c.color} /> {c.name}
                           </th>
                         ))}
                       </tr>
@@ -440,7 +454,7 @@ export default function DashboardScreen() {
                         borderRadius: 10, padding: "4px 12px",
                         fontSize: 13, color: a.child.color, fontWeight: 600,
                       }}>
-                        {a.child.emoji} {a.child.name}
+                        <KidIcon emoji={a.child.emoji} size={13} color={a.child.color} /> {a.child.name}
                       </div>
                       {a.urgent && (
                         <span style={{

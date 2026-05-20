@@ -8,6 +8,20 @@ import {
 import { useLanguage } from "../hooks/useLanguage";
 import { Camera, Gift, Sparkle, Trophy, Note, PencilSimple } from "@phosphor-icons/react";
 
+const EMOJI_FLATICON = {
+  "🌸": "fi-sr-child-head",
+  "⚡": "fi-sr-child",
+  "🌻": "fi-sr-baby",
+  "🦋": "fi-sr-user-crown",
+  "🌈": "fi-sr-face-smile-hearts",
+  "⭐": "fi-sr-face-awesome",
+  "🎯": "fi-sr-face-glasses",
+  "🔥": "fi-sr-face-smile-halo",
+};
+const KidIcon = ({ emoji, size = 24, color }) => (
+  <i className={`fi ${EMOJI_FLATICON[emoji] || "fi-sr-child-head"}`} style={{ fontSize: size, color }} />
+);
+
 const client = new Anthropic({
   apiKey: process.env.REACT_APP_ANTHROPIC_KEY,
   dangerouslyAllowBrowser: true,
@@ -346,7 +360,7 @@ export default function PhotoLogScreen() {
                     : "0 4px 12px rgba(139,92,246,0.07)",
                   position: "relative", zIndex: 1,
                 }}>
-                <div style={{ fontSize: 28 }}>{c.emoji}</div>
+                <KidIcon emoji={c.emoji} size={28} color={selectedChildId === c.id ? c.color : "#9b8ec4"} />
                 <div style={{ fontSize: 13, color: selectedChildId === c.id ? c.color : "#9b8ec4", marginTop: 6, fontWeight: 600 }}>
                   {c.name}
                 </div>
@@ -482,7 +496,8 @@ export default function PhotoLogScreen() {
                   display: "flex", alignItems: "center", justifyContent: "center",
                   fontSize: 22, flexShrink: 0,
                   boxShadow: `0 4px 14px ${log.child.color}18`,
-                }}>{log.child.emoji}</div>
+                display: "flex", alignItems: "center", justifyContent: "center",
+                }}><KidIcon emoji={log.child.emoji} size={20} color={log.child.color} /></div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 15, color: "#1e0f3c", fontWeight: 500 }}>{log.desc}</div>
                   <div style={{ fontSize: 12, color: "#9b8ec4", marginTop: 3 }}>
