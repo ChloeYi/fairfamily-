@@ -69,7 +69,7 @@ const css = `
 
 const TYPE_PHOSPHOR = { gift: Gift, experience: Sparkle, milestone: Trophy, note: Note };
 
-const TYPE_COLORS = { gift: "#FF6B6B", experience: "#4ECDC4", milestone: "#FFE66D" };
+const TYPE_COLORS = { gift: "#FF6B6B", experience: "#4ECDC4", milestone: "#8B5CF6" };
 
 const MAX_AGE = 12;
 const W = 340;
@@ -284,7 +284,7 @@ export default function LifeLineGraph() {
               </div>
               <div style={{ color: "#8899aa", fontSize: 11 }}>Age {tooltip.event.age}</div>
               {tooltip.event.amount > 0 && (
-                <div style={{ color: "#FFE66D", fontSize: 11, marginTop: 2 }}>💰 ${tooltip.event.amount}</div>
+                <div style={{ color: "#EA580C", fontSize: 11, marginTop: 2 }}>💰 ${tooltip.event.amount}</div>
               )}
               <div style={{ color: "#334455", fontSize: 10, marginTop: 2, textTransform: "capitalize" }}>
                 {tooltip.event.type}
@@ -327,7 +327,7 @@ export default function LifeLineGraph() {
                 </div>
               </div>
               {event.amount > 0 && (
-                <div style={{ fontSize: 12, fontWeight: 600, color: "#FFE66D" }}>${event.amount}</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: "#EA580C" }}>${event.amount}</div>
               )}
             </div>
           );})}

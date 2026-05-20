@@ -205,7 +205,7 @@ export default function ChildRoomScreen() {
         {/* Stats */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
           {[
-            { label: t.childRoom.totalSpent, value: `$${totalSpent.toLocaleString()}`, color: "#D97706" },
+            { label: t.childRoom.totalSpent, value: `$${totalSpent.toLocaleString()}`, color: "#EA580C" },
             { label: t.childRoom.gifts, value: giftCount, color: "#EC4899" },
             { label: t.childRoom.experiences, value: expCount, color: "#7C3AED" },
           ].map((s, i) => (
@@ -369,7 +369,7 @@ export default function ChildRoomScreen() {
                   </div>
                   {log.amount > 0 && (
                     <div style={{
-                      fontSize: 15, fontWeight: 700, color: "#D97706", flexShrink: 0,
+                      fontSize: 15, fontWeight: 700, color: "#EA580C", flexShrink: 0,
                       fontFamily: "'Climate Crisis', sans-serif",
                     }}>
                       ${log.amount}

@@ -343,7 +343,7 @@ export default function DashboardScreen() {
                   <div style={{ textAlign: "right", marginRight: 4 }}>
                     <div style={{
                       fontSize: 20, fontWeight: 700, fontFamily: "'Climate Crisis', sans-serif",
-                      color: avg > 60 ? "#7C3AED" : avg > 40 ? "#D97706" : "#EC4899",
+                      color: avg > 60 ? "#7C3AED" : avg > 40 ? "#EA580C" : "#EC4899",
                     }}>{avg}%</div>
                     <div style={{ fontSize: 10, color: "#445566", letterSpacing: 1 }}>{t.dashboard.score}</div>
                   </div>

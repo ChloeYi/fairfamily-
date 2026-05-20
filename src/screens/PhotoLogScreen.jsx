@@ -120,15 +120,15 @@ const css = `
 
   .scan-line {
     position: absolute; left: 0; right: 0; height: 2px;
-    background: linear-gradient(90deg, transparent, #D97706, transparent);
+    background: linear-gradient(90deg, transparent, #EA580C, transparent);
     animation: scanLine 2s ease-in-out infinite;
-    box-shadow: 0 0 12px #D97706;
+    box-shadow: 0 0 12px #EA580C;
   }
 
   .spinner {
     width: 28px; height: 28px;
     border: 2px solid rgba(217,119,6,0.15);
-    border-top-color: #D97706; border-radius: 50%;
+    border-top-color: #EA580C; border-radius: 50%;
     animation: spin 0.8s linear infinite; margin: 0 auto 10px;
   }
 
@@ -317,7 +317,7 @@ export default function PhotoLogScreen() {
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                 background: active ? "rgba(217,119,6,0.1)" : "none",
                 border: active ? "1px solid rgba(217,119,6,0.3)" : "1px solid transparent",
-                color: active ? "#D97706" : "#a394c8",
+                color: active ? "#EA580C" : "#a394c8",
                 cursor: "pointer", fontSize: 14, fontWeight: 600,
                 fontFamily: "'DM Sans', sans-serif", transition: "all 0.2s",
               }}>
@@ -384,7 +384,7 @@ export default function PhotoLogScreen() {
                   {scanning && (
                     <div>
                       <div className="spinner" />
-                      <div style={{ fontSize: 14, color: "#D97706", animation: "pulse 1s ease infinite" }}>
+                      <div style={{ fontSize: 14, color: "#EA580C", animation: "pulse 1s ease infinite" }}>
                         {t.photoLog.scanning}
                       </div>
                     </div>
@@ -400,9 +400,9 @@ export default function PhotoLogScreen() {
               ) : (
                 <div>
                   <div style={{ marginBottom: 14, display: "flex", justifyContent: "center" }}>
-                    <Camera size={56} weight="duotone" color="#D97706" />
+                    <Camera size={56} weight="duotone" color="#EA580C" />
                   </div>
-                  <div style={{ fontSize: 16, color: "#D97706", fontWeight: 500, marginBottom: 6 }}>
+                  <div style={{ fontSize: 16, color: "#EA580C", fontWeight: 500, marginBottom: 6 }}>
                     {t.photoLog.tapPhoto}
                   </div>
                   <div style={{ fontSize: 14, color: "#b0a0cc" }}>{t.photoLog.photoHint}</div>

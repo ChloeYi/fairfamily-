@@ -195,7 +195,7 @@ function BottomNav() {
   const tabs = [
     { id: "dashboard", path: "/dashboard", label: t.nav.dashboard, activeColor: "#7C3AED" },
     { id: "kids",      path: "/kids",      label: t.nav.kids,      activeColor: "#EC4899" },
-    { id: "log",       path: "/photo-log", label: t.nav.log,       activeColor: "#D97706" },
+    { id: "log",       path: "/photo-log", label: t.nav.log,       activeColor: "#EA580C" },
     { id: "ai",        path: "/ai-advice", label: t.nav.aiTips,    activeColor: "#8B5CF6" },
   ];
 

@@ -137,7 +137,7 @@ const css = `
 `;
 
 const EMOJIS = ["🌸", "⚡", "🌻", "🦋", "🌈", "⭐"];
-const COLORS = ["#FF6B6B", "#4ECDC4", "#FFE66D", "#A8E6CF", "#C7B8EA", "#FF9F43"];
+const COLORS = ["#FF6B6B", "#4ECDC4", "#EA580C", "#A8E6CF", "#C7B8EA", "#FF9F43"];
 
 export default function OnboardingScreen({ onDone }) {
   const { t, titleFont } = useLanguage();
@@ -159,7 +159,7 @@ export default function OnboardingScreen({ onDone }) {
   const primaryBtn = {
     marginTop: 28, padding: "17px 52px",
     borderRadius: 20,
-    background: saving ? "rgba(255,255,255,0.08)" : "linear-gradient(135deg, #FF6B6B, #FFE66D)",
+    background: saving ? "rgba(255,255,255,0.08)" : "linear-gradient(135deg, #FF6B6B, #EA580C)",
     border: "none", cursor: saving ? "not-allowed" : "pointer",
     fontSize: 16, fontWeight: 700,
     color: saving ? "#667788" : "#000",
@@ -178,7 +178,7 @@ export default function OnboardingScreen({ onDone }) {
           width: i === currentStep ? 24 : 7,
           height: 7, borderRadius: 4,
           background: i === currentStep
-            ? "linear-gradient(90deg, #FF6B6B, #FFE66D)"
+            ? "linear-gradient(90deg, #FF6B6B, #EA580C)"
             : "rgba(255,255,255,0.1)",
           transition: "all 0.35s ease",
           boxShadow: i === currentStep ? "0 0 10px rgba(255,107,107,0.5)" : "none",
