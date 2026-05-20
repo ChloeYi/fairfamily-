@@ -272,10 +272,10 @@ Give specific, actionable advice in 3–5 sentences. Use bullet points if helpfu
                       border: "2px solid rgba(139,92,246,0.2)",
                       backdropFilter: "blur(20px)",
                       display: "flex", alignItems: "center", justifyContent: "center",
-                      margin: "0 auto 24px", fontSize: 48,
+                      margin: "0 auto 24px",
                       animation: "glowPulse 2.5s ease infinite, float 4s ease-in-out infinite",
                       boxShadow: "0 8px 32px rgba(139,92,246,0.15)",
-                    }}>🤖</div>
+                    }}><i className="fi fi-sr-robot" style={{ fontSize: 48, color: "#7C3AED" }} /></div>
                     <h2 style={{
                       fontFamily: "'Climate Crisis', sans-serif",
                       fontSize: 34, fontWeight: 700, marginBottom: 12, letterSpacing: -0.3,
@@ -426,8 +426,7 @@ Give specific, actionable advice in 3–5 sentences. Use bullet points if helpfu
                             background: "linear-gradient(135deg, rgba(139,92,246,0.2), rgba(139,92,246,0.08))",
                             border: "1px solid rgba(139,92,246,0.25)",
                             display: "flex", alignItems: "center", justifyContent: "center",
-                            fontSize: 18,
-                          }}>🤖</div>
+                          }}><i className="fi fi-sr-robot" style={{ fontSize: 18, color: "#7C3AED" }} /></div>
                           <span style={{ fontSize: 14, color: "#7C3AED", fontWeight: 600 }}>Claude AI</span>
                         </div>
                         <div style={{ fontSize: 15, color: "#4a3870", lineHeight: 1.9, whiteSpace: "pre-line" }}>
