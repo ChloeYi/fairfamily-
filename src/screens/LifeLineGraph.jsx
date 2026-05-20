@@ -294,10 +294,10 @@ export default function LifeLineGraph() {
         </div>
 
         {/* Legend */}
-        <div style={{ display: "flex", gap: 14, marginTop: 8, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: 20, marginTop: 8, flexWrap: "wrap" }}>
           {Object.entries(TYPE_COLORS).map(([type, color]) => (
-            <div key={type} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 11, color: "#8899aa" }}>
-              <div style={{ width: 7, height: 7, borderRadius: "50%", background: color }} />
+            <div key={type} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 22, color: "#8899aa" }}>
+              <div style={{ width: 14, height: 14, borderRadius: "50%", background: color }} />
               {type.charAt(0).toUpperCase() + type.slice(1)}
             </div>
           ))}
