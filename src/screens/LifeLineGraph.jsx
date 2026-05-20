@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Gift, Sparkle, Trophy, Note } from "@phosphor-icons/react";
 import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 import { auth, db } from "../firebase";
 
@@ -54,7 +55,7 @@ const css = `
   }
 `;
 
-const TYPE_ICONS = { gift: "🎁", experience: "✨", milestone: "⭐", note: "📝" };
+const TYPE_PHOSPHOR = { gift: Gift, experience: Sparkle, milestone: Trophy, note: Note };
 
 const TYPE_COLORS = { gift: "#FF6B6B", experience: "#4ECDC4", milestone: "#FFE66D" };
 
@@ -111,7 +112,6 @@ export default function LifeLineGraph() {
               return {
                 age: l.age || kid.age || 1,
                 type: l.type || "note",
-                icon: TYPE_ICONS[l.type] || "📝",
                 label: l.desc || "",
                 amount: l.amount || 0,
               };
@@ -251,7 +251,6 @@ export default function LifeLineGraph() {
                   )}
                   <circle cx={x} cy={y} r={hovered ? "8" : "6"}
                     fill={TYPE_COLORS[event.type]} stroke="#06090f" strokeWidth="2" />
-                  <text x={x} y={y - 12} textAnchor="middle" fontSize="12">{event.icon}</text>
                   <text x={x} y={y + 18} className="flag-label">{event.age}</text>
                 </g>
               );
@@ -266,8 +265,9 @@ export default function LifeLineGraph() {
               transform: "translateX(-50%)",
               fontFamily: "'DM Sans', sans-serif",
             }}>
-              <div style={{ fontWeight: 600, color: TYPE_COLORS[tooltip.event.type], marginBottom: 4 }}>
-                {tooltip.event.icon} {tooltip.event.label}
+              <div style={{ fontWeight: 600, color: TYPE_COLORS[tooltip.event.type], marginBottom: 4, display: "flex", alignItems: "center", gap: 5 }}>
+                {(() => { const Icon = TYPE_PHOSPHOR[tooltip.event.type] || Note; return <Icon size={13} weight="fill" />; })()}
+                {tooltip.event.label}
               </div>
               <div style={{ color: "#8899aa", fontSize: 11 }}>Age {tooltip.event.age}</div>
               {tooltip.event.amount > 0 && (
@@ -292,7 +292,9 @@ export default function LifeLineGraph() {
 
         {/* Events list */}
         <div style={{ marginTop: 14 }}>
-          {child.events.map((event, i) => (
+          {child.events.map((event, i) => {
+            const Icon = TYPE_PHOSPHOR[event.type] || Note;
+            return (
             <div key={i} style={{
               display: "flex", alignItems: "center", gap: 10,
               padding: "7px 0",
@@ -303,8 +305,8 @@ export default function LifeLineGraph() {
                 background: `${TYPE_COLORS[event.type]}18`,
                 border: `1px solid ${TYPE_COLORS[event.type]}33`,
                 display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 13, flexShrink: 0,
-              }}>{event.icon}</div>
+                flexShrink: 0,
+              }}><Icon size={14} color={TYPE_COLORS[event.type]} weight="fill" /></div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 13, color: "#ddeeff" }}>{event.label}</div>
                 <div style={{ fontSize: 10, color: "#445566", marginTop: 1 }}>
@@ -315,7 +317,7 @@ export default function LifeLineGraph() {
                 <div style={{ fontSize: 12, fontWeight: 600, color: "#FFE66D" }}>${event.amount}</div>
               )}
             </div>
-          ))}
+          );})}
         </div>
       </div>
     </div>

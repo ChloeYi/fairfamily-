@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ChatDots, Robot, X, ArrowLeft, PaperPlaneTilt, EnvelopeSimple } from "@phosphor-icons/react";
 
 const FAQS = [
   {
@@ -99,7 +100,7 @@ export default function FAQBot() {
           transform: open ? "rotate(45deg)" : "rotate(0deg)",
         }}
       >
-        {open ? "×" : "💬"}
+        {open ? <X size={22} color="#7C3AED" weight="bold" /> : <ChatDots size={24} color="#7C3AED" weight="fill" />}
       </button>
 
       {/* Chat panel */}
@@ -133,7 +134,7 @@ export default function FAQBot() {
               boxShadow: "inset 0 1px 0 rgba(255,255,255,0.4), 0 2px 8px rgba(0,0,0,0.1)",
               display: "flex", alignItems: "center", justifyContent: "center",
               fontSize: 18,
-            }}>🤖</div>
+            }}><Robot size={18} color="#fff" weight="fill" /></div>
             <div>
               <div style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>FairFamily Help</div>
               <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11 }}>FAQ Assistant</div>
@@ -176,7 +177,7 @@ export default function FAQBot() {
                       boxShadow: "0 2px 8px rgba(124,58,237,0.06)",
                     }}
                   >
-                    💬 {faq.q}
+                    <ChatDots size={13} style={{ marginRight: 6, flexShrink: 0 }} /> {faq.q}
                   </button>
                 ))}
               </>
@@ -189,9 +190,10 @@ export default function FAQBot() {
                     background: "none", border: "none", color: "#9b8ec4",
                     fontSize: 13, cursor: "pointer", marginBottom: 12,
                     fontFamily: "'DM Sans', sans-serif", padding: 0,
+                    display: "flex", alignItems: "center", gap: 4,
                   }}
                 >
-                  ← Back to questions
+                  <ArrowLeft size={13} /> Back to questions
                 </button>
 
                 {/* User question bubble */}
@@ -220,7 +222,8 @@ export default function FAQBot() {
                     ) : (
                       <>
                         <div style={{ fontSize: 12, color: "#9b8ec4", marginBottom: 10, lineHeight: 1.5 }}>
-                          Send us a message and we'll get back to you 💌
+                          <EnvelopeSimple size={13} style={{ marginRight: 4 }} />
+                          Send us a message and we'll get back to you
                         </div>
                         <input
                           value={contactForm.title}
@@ -264,7 +267,7 @@ export default function FAQBot() {
                             transition: "all 0.2s",
                           }}
                         >
-                          Send Message
+                          <PaperPlaneTilt size={14} style={{ marginRight: 6 }} /> Send Message
                         </button>
                       </>
                     )}

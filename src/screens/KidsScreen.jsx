@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { collection, onSnapshot, addDoc, deleteDoc, doc, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { useLanguage } from "../hooks/useLanguage";
-import { Baby } from "@phosphor-icons/react";
+import { Baby, Trash, CaretRight } from "@phosphor-icons/react";
 
 const BG = "linear-gradient(160deg, #f8f0ff 0%, #eef2ff 50%, #fdf4ff 100%)";
 
@@ -259,13 +259,13 @@ export default function KidsScreen() {
                   background: "rgba(236,72,153,0.08)", border: "1px solid rgba(236,72,153,0.2)",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   color: "#EC4899", fontSize: 16, cursor: "pointer",
-                }}>🗑</button>
+                }}><Trash size={16} weight="bold" /></button>
                 <div style={{
                   width: 36, height: 36, borderRadius: 12,
                   background: `${c.color}12`, border: `1px solid ${c.color}28`,
                   display: "flex", alignItems: "center", justifyContent: "center",
                   color: c.color, fontSize: 18,
-                }}>›</div>
+                }}><CaretRight size={18} weight="bold" /></div>
               </div>
             </div>
           );
