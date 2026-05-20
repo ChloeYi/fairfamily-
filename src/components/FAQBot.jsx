@@ -134,7 +134,7 @@ export default function FAQBot() {
               boxShadow: "inset 0 1px 0 rgba(255,255,255,0.4), 0 2px 8px rgba(0,0,0,0.1)",
               display: "flex", alignItems: "center", justifyContent: "center",
               fontSize: 18,
-            }}><i className="fi fi-sr-robot" style={{ fontSize: 18, color: "#fff" }} /></div>
+            }}><img src="https://cdn.jsdelivr.net/npm/@svgmoji/openmoji@2.0.0/svg/1F916.svg" width={20} height={20} alt="robot" /></div>
             <div>
               <div style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>FairFamily Help</div>
               <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11 }}>FAQ Assistant</div>
