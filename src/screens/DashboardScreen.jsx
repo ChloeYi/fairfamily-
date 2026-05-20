@@ -374,9 +374,9 @@ export default function DashboardScreen() {
               </ResponsiveContainer>
               <div style={{ display: "flex", justifyContent: "center", gap: 18, marginTop: 8 }}>
                 {children.map(c => (
-                  <div key={c.id} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 26, color: "#8899aa" }}>
+                  <div key={c.id} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 17, color: "#8899aa" }}>
                     <div style={{
-                      width: 20, height: 20, borderRadius: 5,
+                      width: 13, height: 13, borderRadius: 4,
                       background: c.color,
                       boxShadow: `0 0 8px ${c.color}66`,
                     }} />
