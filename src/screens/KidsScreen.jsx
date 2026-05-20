@@ -6,14 +6,14 @@ import { useLanguage } from "../hooks/useLanguage";
 import { Baby, Trash, CaretRight } from "@phosphor-icons/react";
 
 const EMOJI_FLATICON = {
-  "🌸": "fi-sr-flower",
-  "⚡": "fi-sr-bolt",
-  "🌻": "fi-sr-flower-tulip",
-  "🦋": "fi-sr-butterfly",
-  "🌈": "fi-sr-rainbow",
-  "⭐": "fi-sr-star",
-  "🎯": "fi-sr-target",
-  "🔥": "fi-sr-flame",
+  "🌸": "fi-sr-child-head",
+  "⚡": "fi-sr-child",
+  "🌻": "fi-sr-baby",
+  "🦋": "fi-sr-user-crown",
+  "🌈": "fi-sr-face-smile-hearts",
+  "⭐": "fi-sr-face-awesome",
+  "🎯": "fi-sr-face-glasses",
+  "🔥": "fi-sr-face-smile-halo",
 };
 
 const BG = "linear-gradient(160deg, #f8f0ff 0%, #eef2ff 50%, #fdf4ff 100%)";

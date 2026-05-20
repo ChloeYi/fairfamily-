@@ -4,14 +4,14 @@ import { auth, db } from "../firebase";
 import { Gift, Sparkle, Trophy, Note } from "@phosphor-icons/react";
 
 const EMOJI_FLATICON = {
-  "🌸": "fi-sr-flower",
-  "⚡": "fi-sr-bolt",
-  "🌻": "fi-sr-flower-tulip",
-  "🦋": "fi-sr-butterfly",
-  "🌈": "fi-sr-rainbow",
-  "⭐": "fi-sr-star",
-  "🎯": "fi-sr-target",
-  "🔥": "fi-sr-flame",
+  "🌸": "fi-sr-child-head",
+  "⚡": "fi-sr-child",
+  "🌻": "fi-sr-baby",
+  "🦋": "fi-sr-user-crown",
+  "🌈": "fi-sr-face-smile-hearts",
+  "⭐": "fi-sr-face-awesome",
+  "🎯": "fi-sr-face-glasses",
+  "🔥": "fi-sr-face-smile-halo",
 };
 
 
