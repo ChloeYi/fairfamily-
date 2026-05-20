@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, collection, getDocs } from "firebase/firestore";
 import { auth, db } from "./firebase";
 import { LanguageProvider, useLanguage } from "./hooks/useLanguage";
 import { seedMarketingData } from "./seedMarketingData";
@@ -247,6 +247,22 @@ export default function App() {
     if (!localStorage.getItem("marketingDataSeeded")) {
       seedMarketingData().then(() => localStorage.setItem("marketingDataSeeded", "true"));
     }
+  }, []);
+
+  useEffect(() => {
+    const migrateYellowColors = async () => {
+      const uid = auth.currentUser?.uid;
+      if (!uid || localStorage.getItem("yellowColorsMigrated")) return;
+      const OLD_YELLOWS = ["#F59E0B", "#FFE66D", "#D97706", "#FF9F43", "#EAB308", "#FCD34D", "#FDE68A"];
+      const snap = await getDocs(collection(db, "users", uid, "children"));
+      snap.docs.forEach(async (d) => {
+        if (OLD_YELLOWS.includes(d.data().color)) {
+          await updateDoc(doc(db, "users", uid, "children", d.id), { color: "#3B82F6" });
+        }
+      });
+      localStorage.setItem("yellowColorsMigrated", "true");
+    };
+    migrateYellowColors();
   }, []);
   const [authLoading, setAuthLoading] = useState(true);
   const [user, setUser] = useState(null);
