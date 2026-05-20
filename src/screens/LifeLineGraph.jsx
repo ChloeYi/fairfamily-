@@ -3,10 +3,17 @@ import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { Gift, Sparkle, Trophy, Note } from "@phosphor-icons/react";
 
-const emojiUrl = (emoji) => {
-  const hex = [...emoji][0].codePointAt(0).toString(16).toUpperCase();
-  return `https://cdn.jsdelivr.net/npm/@svgmoji/openmoji@2.0.0/svg/${hex}.svg`;
+const EMOJI_FLATICON = {
+  "🌸": "fi-sr-flower",
+  "⚡": "fi-sr-bolt",
+  "🌻": "fi-sr-flower-tulip",
+  "🦋": "fi-sr-butterfly",
+  "🌈": "fi-sr-rainbow",
+  "⭐": "fi-sr-star",
+  "🎯": "fi-sr-target",
+  "🔥": "fi-sr-flame",
 };
+
 
 const css = `
   @keyframes drawLine {
@@ -184,7 +191,7 @@ export default function LifeLineGraph() {
                 color: activeChild === c.id ? c.color : "#445566",
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 4,
               }}>
-              <img src={emojiUrl(c.emoji)} width={16} height={16} alt={c.emoji} /> {c.name}
+              <i className={`fi ${EMOJI_FLATICON[c.emoji] || "fi-sr-star"}`} style={{ fontSize: 13, color: "inherit" }} /> {c.name}
             </button>
           ))}
         </div>

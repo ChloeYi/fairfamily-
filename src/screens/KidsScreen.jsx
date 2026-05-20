@@ -5,9 +5,15 @@ import { auth, db } from "../firebase";
 import { useLanguage } from "../hooks/useLanguage";
 import { Baby, Trash, CaretRight } from "@phosphor-icons/react";
 
-const emojiUrl = (emoji) => {
-  const hex = [...emoji][0].codePointAt(0).toString(16).toUpperCase();
-  return `https://cdn.jsdelivr.net/npm/@svgmoji/openmoji@2.0.0/svg/${hex}.svg`;
+const EMOJI_FLATICON = {
+  "🌸": "fi-sr-flower",
+  "⚡": "fi-sr-bolt",
+  "🌻": "fi-sr-flower-tulip",
+  "🦋": "fi-sr-butterfly",
+  "🌈": "fi-sr-rainbow",
+  "⭐": "fi-sr-star",
+  "🎯": "fi-sr-target",
+  "🔥": "fi-sr-flame",
 };
 
 const BG = "linear-gradient(160deg, #f8f0ff 0%, #eef2ff 50%, #fdf4ff 100%)";
@@ -244,7 +250,8 @@ export default function KidsScreen() {
                 display: "flex", alignItems: "center", justifyContent: "center",
                 boxShadow: `0 6px 20px ${c.color}22`,
               }}>
-                <img src={emojiUrl(c.emoji)} width={36} height={36} alt={c.emoji} />
+                <i className={`fi ${EMOJI_FLATICON[c.emoji] || "fi-sr-star"}`}
+                   style={{ fontSize: 28, color: c.color }} />
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontWeight: 600, fontSize: 20, letterSpacing: -0.2, color: "#1e0f3c" }}>{c.name}</div>
