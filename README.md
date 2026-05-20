@@ -1,70 +1,100 @@
-# Getting Started with Create React App
+# FairFamily 👨‍👩‍👧‍👦
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+> Are you being fair to all your children? FairFamily helps parents track spending, gifts, experiences, and milestones across all their kids — and gives AI-powered fairness insights.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## Features
 
-### `npm start`
+- **Dashboard** — Fairness score, spending overview, and Life Graph for each child
+- **Kids** — Add, view, and delete children with emoji & color avatars
+- **Log** — Record gifts, experiences, milestones, and notes; scan photos with AI to auto-fill details
+- **AI Advice** — Claude AI analyzes your family data and gives honest fairness insights
+- **FAQ Bot** — Floating chatbot with help articles and a contact form
+- **Korean / English** — Full bilingual support with automatic language detection
+- **Firebase** — Per-user private data, real-time sync, secure auth
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Tech Stack
 
-### `npm test`
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React 19, React Router 7 |
+| Styling | CSS-in-JS, glassmorphism, DM Sans font |
+| AI | Anthropic Claude (`claude-sonnet-4-6`) |
+| Backend | Firebase Auth + Firestore |
+| Mobile | Capacitor (Android) |
+| i18n | Custom hook (`useLanguage`) with `en.js` / `ko.js` |
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## Getting Started
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 1. Clone the repo
+```bash
+git clone https://github.com/ChloeYi/fairfamily-.git
+cd fairfamily-
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 2. Install dependencies
+```bash
+npm install
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 3. Set up environment variables
+Create a `.env` file in the root:
+```
+REACT_APP_FIREBASE_API_KEY=your_key
+REACT_APP_FIREBASE_AUTH_DOMAIN=your_domain
+REACT_APP_FIREBASE_PROJECT_ID=your_project
+REACT_APP_FIREBASE_STORAGE_BUCKET=your_bucket
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_id
+REACT_APP_FIREBASE_APP_ID=your_app_id
+REACT_APP_ANTHROPIC_KEY=your_anthropic_key
+```
 
-### `npm run eject`
+### 4. Run the app
+```bash
+npm start
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+---
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Project Structure
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```
+src/
+├── components/
+│   └── FAQBot.jsx          # Floating FAQ chatbot
+├── screens/
+│   ├── DashboardScreen.jsx
+│   ├── KidsScreen.jsx
+│   ├── PhotoLogScreen.jsx
+│   ├── AIAdviceScreen.jsx
+│   ├── ChildRoomScreen.jsx
+│   ├── ChatOnboardingScreen.jsx
+│   ├── EmotionalOnboardingScreen.jsx
+│   └── Welcome3Screen.jsx
+├── hooks/
+│   └── useLanguage.js      # i18n hook
+├── languages/
+│   ├── en.js               # English translations
+│   └── ko.js               # Korean translations
+├── firebase.js             # Firebase config (reads from .env)
+├── seedMarketingData.js    # Demo data for marketing (separate from user data)
+└── App.jsx                 # Routes + bottom nav
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+---
 
-## Learn More
+## Environment Variables
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Never commit your `.env` file. It contains API keys and Firebase credentials.
+See `.env.example` for the required variable names.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+---
 
-### Code Splitting
+## Contact
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Questions or feedback? Email: chloe.heydayii@gmail.com
