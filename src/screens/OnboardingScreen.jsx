@@ -137,7 +137,7 @@ const css = `
 `;
 
 const EMOJIS = ["🌸", "⚡", "🌻", "🦋", "🌈", "⭐"];
-const COLORS = ["#FF6B6B", "#4ECDC4", "#EA580C", "#A8E6CF", "#C7B8EA", "#FF9F43"];
+const COLORS = ["#EC4899", "#7C3AED", "#3B82F6", "#10B981", "#8B5CF6", "#EA580C"];
 
 export default function OnboardingScreen({ onDone }) {
   const { t, titleFont } = useLanguage();
