@@ -1,15 +1,9 @@
 import { useState, useEffect } from "react";
-import { Gift, Sparkle, Trophy, Note, Flower, Lightning, Sun, Butterfly, Star, Crosshair, Fire } from "@phosphor-icons/react";
+import { Gift, Sparkle, Trophy, Note } from "@phosphor-icons/react";
 
-const EMOJI_ICON_MAP = {
-  "🌸": Flower,
-  "⚡": Lightning,
-  "🌻": Sun,
-  "🦋": Butterfly,
-  "🌈": Sparkle,
-  "⭐": Star,
-  "🎯": Crosshair,
-  "🔥": Fire,
+const emojiUrl = (emoji) => {
+  const hex = [...emoji][0].codePointAt(0).toString(16).toUpperCase();
+  return `https://cdn.jsdelivr.net/npm/@svgmoji/openmoji@2.0.0/svg/${hex}.svg`;
 };
 import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 import { auth, db } from "../firebase";
@@ -181,9 +175,7 @@ export default function LifeLineGraph() {
           background: "rgba(255,255,255,0.04)",
           borderRadius: 12, padding: 3, marginBottom: 14,
         }}>
-          {children.map(c => {
-            const TabIcon = EMOJI_ICON_MAP[c.emoji];
-            return (
+          {children.map(c => (
             <button key={c.id} className="life-tab"
               onClick={() => { setActiveChild(c.id); setTooltip(null); }}
               style={{
@@ -192,9 +184,9 @@ export default function LifeLineGraph() {
                 color: activeChild === c.id ? c.color : "#445566",
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 4,
               }}>
-              {TabIcon ? <TabIcon size={14} weight="fill" /> : c.emoji} {c.name}
+              <img src={emojiUrl(c.emoji)} width={16} height={16} alt={c.emoji} /> {c.name}
             </button>
-          );})}
+          ))}
         </div>
 
         {/* SVG Graph */}
