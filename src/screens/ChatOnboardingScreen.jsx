@@ -33,7 +33,7 @@ const BUTTON_DELAY = 5200;
 
 export default function ChatOnboardingScreen() {
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, titleFont } = useLanguage();
   const [visible, setVisible] = useState([false, false, false]);
   const [showButton, setShowButton] = useState(false);
 
@@ -78,17 +78,17 @@ export default function ChatOnboardingScreen() {
           <Scales size={24} weight="duotone" color="#7C3AED" />
         </div>
         <div>
-          <div style={{ fontFamily: "'Climate Crisis', sans-serif", fontSize: 22, fontWeight: 400, color: "#1e0f3c" }}>
+          <div style={{ fontFamily: titleFont, fontSize: 22, fontWeight: 400, color: "#1e0f3c" }}>
             FairFamily
           </div>
-          <div style={{ fontSize: 11, color: "#a394c8", letterSpacing: 1.5, textTransform: "uppercase", marginTop: 1 }}>
+          <div style={{ fontSize: 11, color: "#6b5a9e", letterSpacing: 1.5, textTransform: "uppercase", marginTop: 1 }}>
             Fair from the start
           </div>
         </div>
         <button onClick={() => navigate("/welcome2")} style={{
           marginLeft: "auto", background: "none", border: "none",
-          color: "#b0a0cc", fontSize: 14, cursor: "pointer",
-          fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
+          color: "#5b4899", fontSize: 14, cursor: "pointer",
+          fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
         }}>{t.chatOnboarding.skip}</button>
       </div>
 

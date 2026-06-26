@@ -34,31 +34,39 @@ const css = `
 export default function EmotionalOnboardingScreen() {
   const navigate = useNavigate();
   const { t } = useLanguage();
-  const [showLine1, setShowLine1]   = useState(false);
-  const [showLine2a, setShowLine2a] = useState(false);
-  const [showLine2b, setShowLine2b] = useState(false);
-  const [showBubble, setShowBubble] = useState(false);
-  const [showButton, setShowButton] = useState(false);
+  // stage = how many items are revealed (1:line1 … 5:button)
+  const [stage, setStage] = useState(0);
+
+  const showLine1  = stage >= 1;
+  const showLine2a = stage >= 2;
+  const showLine2b = stage >= 3;
+  const showBubble = stage >= 4;
+  const showButton = stage >= 5;
 
   useEffect(() => {
+    const bump = (n) => setStage(s => Math.max(s, n));
     const timers = [
-      setTimeout(() => setShowLine1(true),  2000),   // "When Emma was 7..."
-      setTimeout(() => setShowLine2a(true), 3400),   // "Now Zoe is 7 —"
-      setTimeout(() => setShowLine2b(true), 4600),   // short pause, then "did you do the same?" + shake
-      setTimeout(() => setShowBubble(true), 6000),
-      setTimeout(() => setShowButton(true), 7000),
+      setTimeout(() => bump(1), 2000),   // "When Emma was 7..."
+      setTimeout(() => bump(2), 3400),   // "Now Zoe is 7 —"
+      setTimeout(() => bump(3), 4600),   // short pause, then "did you do the same?" + shake
+      setTimeout(() => bump(4), 6000),
+      setTimeout(() => bump(5), 7000),
     ];
     return () => timers.forEach(clearTimeout);
   }, []);
 
+  // Tap anywhere to reveal the next line right away (skip the wait).
+  const revealNext = () => setStage(s => Math.min(5, s + 1));
+
   return (
-    <div style={{
+    <div onClick={revealNext} style={{
       minHeight: "100vh", background: BG,
       fontFamily: "'DM Sans', sans-serif",
       display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center",
       padding: "60px 36px 140px",
       animation: "pageFadeIn 0.6s ease both",
+      cursor: "pointer",
     }}>
       <style>{css}</style>
 

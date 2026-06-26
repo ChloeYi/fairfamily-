@@ -12,6 +12,8 @@ import DashboardScreen from "./screens/DashboardScreen";
 import KidsScreen from "./screens/KidsScreen";
 import ChildRoomScreen from "./screens/ChildRoomScreen";
 import PhotoLogScreen from "./screens/PhotoLogScreen";
+import LogEditScreen from "./screens/LogEditScreen";
+import SettingsScreen from "./screens/SettingsScreen";
 import AIAdviceScreen from "./screens/AIAdviceScreen";
 import ChatOnboardingScreen from "./screens/ChatOnboardingScreen";
 import EmotionalOnboardingScreen from "./screens/EmotionalOnboardingScreen";
@@ -122,7 +124,7 @@ const css = `
 `;
 
 function NavIcon({ tab, active }) {
-  const color = active ? tab.activeColor : "#8b7fc0";
+  const color = active ? tab.activeColor : "#6b5a9e";
   const size = 26;
 
   if (tab.id === "dashboard") return (
@@ -213,26 +215,29 @@ function BottomNav() {
       {tabs.map(tab => {
         const active = pathname === tab.path;
         return (
-          <button key={tab.path} onClick={() => navigate(tab.path)} style={{
-            flex: 1, padding: "6px 4px 8px",
+          <button key={tab.path} data-tour={`nav-${tab.id}`} onClick={() => navigate(tab.path)} style={{
+            flex: 1, padding: "4px 4px 6px",
             background: "none", border: "none", cursor: "pointer",
             display: "flex", flexDirection: "column", alignItems: "center", gap: 5,
             transition: "all 0.25s",
           }}>
-            <NavIcon tab={tab} active={active} />
+            <div style={{
+              display: "flex", alignItems: "center", justifyContent: "center",
+              height: 36, padding: active ? "0 22px" : "0 12px",
+              borderRadius: 18,
+              background: active ? `${tab.activeColor}24` : "transparent",
+              boxShadow: active ? `0 6px 16px ${tab.activeColor}33` : "none",
+              transform: active ? "translateY(-1px)" : "none",
+              transition: "all 0.28s cubic-bezier(0.34,1.56,0.64,1)",
+            }}>
+              <NavIcon tab={tab} active={active} />
+            </div>
             <span style={{
-              fontSize: 11, fontWeight: active ? 700 : 600, letterSpacing: 0.2,
-              color: active ? tab.activeColor : "#6b5f9e",
+              fontSize: 13, fontWeight: active ? 700 : 600, letterSpacing: 0.2,
+              color: active ? tab.activeColor : "#6b5a9e",
               fontFamily: "'DM Sans', sans-serif",
               transition: "color 0.25s",
             }}>{tab.label}</span>
-            {active && (
-              <div style={{
-                width: 20, height: 2.5, borderRadius: 2,
-                background: `linear-gradient(90deg, ${tab.activeColor}88, ${tab.activeColor})`,
-                marginTop: -2,
-              }} />
-            )}
           </button>
         );
       })}
@@ -242,38 +247,42 @@ function BottomNav() {
 
 export default function App() {
   const [splashDone, setSplashDone] = useState(false);
-
-  useEffect(() => {
-    if (!localStorage.getItem("marketingDataSeeded")) {
-      seedMarketingData().then(() => localStorage.setItem("marketingDataSeeded", "true"));
-    }
-  }, []);
-
-  useEffect(() => {
-    const migrateYellowColors = async () => {
-      const uid = auth.currentUser?.uid;
-      if (!uid || localStorage.getItem("yellowColorsMigrated")) return;
-      const OLD_YELLOWS = ["#F59E0B", "#FFE66D", "#D97706", "#FF9F43", "#EAB308", "#FCD34D", "#FDE68A"];
-      const snap = await getDocs(collection(db, "users", uid, "children"));
-      snap.docs.forEach(async (d) => {
-        if (OLD_YELLOWS.includes(d.data().color)) {
-          await updateDoc(doc(db, "users", uid, "children", d.id), { color: "#3B82F6" });
-        }
-      });
-      localStorage.setItem("yellowColorsMigrated", "true");
-    };
-    migrateYellowColors();
-  }, []);
   const [authLoading, setAuthLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [onboardingDone, setOnboardingDone] = useState(false);
 
   useEffect(() => {
+    localStorage.setItem("marketingDataSeeded", "true");
+  }, []);
+
+  // 🛠️ 파이어베이스 인증 리스너로 통합하여 안전하게 처리하는 부분
+  useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        const snap = await getDoc(doc(db, "users", firebaseUser.uid));
+        const uid = firebaseUser.uid;
+        
+        // 1. 온보딩 상태 확인
+        const snap = await getDoc(doc(db, "users", uid));
         setOnboardingDone(snap.exists() && snap.data().onboardingComplete === true);
         setUser(firebaseUser);
+
+        // 2. 안전한 노란색 컬러 마이그레이션 실행
+        if (!localStorage.getItem("yellowColorsMigrated")) {
+          try {
+            const OLD_YELLOWS = ["#F59E0B", "#FFE66D", "#D97706", "#FF9F43", "#EAB308", "#FCD34D", "#FDE68A"];
+            const childSnap = await getDocs(collection(db, "users", uid, "children"));
+            
+            // 안전한 동기식 처리를 위해 for...of 루프 사용
+            for (const d of childSnap.docs) {
+              if (OLD_YELLOWS.includes(d.data().color)) {
+                await updateDoc(doc(db, "users", uid, "children", d.id), { color: "#3B82F6" });
+              }
+            }
+            localStorage.setItem("yellowColorsMigrated", "true");
+          } catch (migrateError) {
+            console.error("컬러 마이그레이션 실패:", migrateError);
+          }
+        }
       } else {
         setUser(null);
         setOnboardingDone(false);
@@ -373,6 +382,10 @@ export default function App() {
             !user ? <Navigate to="/login" replace />
             : <ChildRoomScreen />
           } />
+          <Route path="/child/:childId/log/:logId" element={
+            !user ? <Navigate to="/login" replace />
+            : <LogEditScreen />
+          } />
           <Route path="/photo-log" element={
             !user ? <Navigate to="/login" replace />
             : <><PhotoLogScreen /><BottomNav /></>
@@ -380,6 +393,10 @@ export default function App() {
           <Route path="/ai-advice" element={
             !user ? <Navigate to="/login" replace />
             : <><AIAdviceScreen /><BottomNav /></>
+          } />
+          <Route path="/settings" element={
+            !user ? <Navigate to="/login" replace />
+            : <SettingsScreen />
           } />
 
           <Route path="*" element={<Navigate to="/" replace />} />

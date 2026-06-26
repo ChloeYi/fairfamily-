@@ -1,45 +1,6 @@
 import { useState } from "react";
 import { ChatDots, X, ArrowLeft, PaperPlaneTilt, EnvelopeSimple } from "@phosphor-icons/react";
-
-const FAQS = [
-  {
-    q: "How do I add a child?",
-    a: "Go to the Kids tab (bottom nav) → tap the + button top right → enter your child's name and age → tap Add Child. They'll appear on your dashboard right away.",
-  },
-  {
-    q: "How do I log an event?",
-    a: "Go to the Log tab → select which child it's for → choose a type (Gift, Experience, Milestone, Note) → fill in the description and amount → tap Save Entry.",
-  },
-  {
-    q: "How does photo scanning work?",
-    a: "In the Log tab, tap 'Scan Photo' → take a photo or upload one (receipt, gift photo, report card). Claude AI reads it automatically and fills in the description and amount for you.",
-  },
-  {
-    q: "How does AI advice work?",
-    a: "Go to the AI Tips tab → tap 'Analyze My Family'. Claude AI reviews all your children's data and gives you honest insights about fairness. You can also ask custom questions in the Ask AI tab.",
-  },
-  {
-    q: "Is my data private?",
-    a: "Yes — all data is stored in Firebase under your unique account. No other user can see your family's data. Each login has completely separate data.",
-  },
-  {
-    q: "How do I delete a child?",
-    a: "Go to the Kids tab → find the child's card → tap the 🗑 trash icon on the right → confirm deletion. This permanently removes them and their data.",
-  },
-  {
-    q: "Can I switch to Korean?",
-    a: "Yes! Tap the 🇺🇸 EN button in the top right corner of any screen to toggle between English and Korean.",
-  },
-  {
-    q: "How is the fairness score calculated?",
-    a: "FairFamily compares spending, gifts, experiences, milestones, and time across all your children and generates a fairness score. The closer to 100, the more balanced things are.",
-  },
-  {
-    q: "Contact us",
-    a: "",
-    isContact: true,
-  },
-];
+import { useLanguage } from "../hooks/useLanguage";
 
 const css = `
   @keyframes faqSlideIn {
@@ -63,6 +24,9 @@ const css = `
 `;
 
 export default function FAQBot() {
+  const { t } = useLanguage();
+  const faq = t.faq;
+  const FAQS = faq.items;
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(null);
   const [contactForm, setContactForm] = useState({ title: "", message: "" });
@@ -136,9 +100,22 @@ export default function FAQBot() {
               fontSize: 18,
             }}><img src="https://cdn.jsdelivr.net/npm/@svgmoji/openmoji@2.0.0/svg/1F916.svg" width={20} height={20} alt="robot" /></div>
             <div>
-              <div style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>FairFamily Help</div>
-              <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11 }}>FAQ Assistant</div>
+              <div style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>{faq.title}</div>
+              <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11 }}>{faq.subtitle}</div>
             </div>
+            <button
+              onClick={() => { setOpen(false); setSelected(null); }}
+              aria-label="close help"
+              style={{
+                marginLeft: "auto", width: 32, height: 32, borderRadius: 10,
+                background: "rgba(255,255,255,0.18)",
+                border: "1px solid rgba(255,255,255,0.4)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                cursor: "pointer", flexShrink: 0,
+              }}
+            >
+              <X size={18} color="#fff" weight="bold" />
+            </button>
           </div>
 
           {/* Body */}
@@ -154,7 +131,7 @@ export default function FAQBot() {
                   padding: "12px 14px", marginBottom: 14,
                   fontSize: 13, color: "#4a3870", lineHeight: 1.6,
                 }}>
-                  Hi! 👋 What would you like to know about FairFamily?
+                  {faq.greeting}
                 </div>
 
                 {/* Question list */}
@@ -187,13 +164,13 @@ export default function FAQBot() {
                 <button
                   onClick={() => setSelected(null)}
                   style={{
-                    background: "none", border: "none", color: "#9b8ec4",
+                    background: "none", border: "none", color: "#6b5a9e",
                     fontSize: 13, cursor: "pointer", marginBottom: 12,
                     fontFamily: "'DM Sans', sans-serif", padding: 0,
                     display: "flex", alignItems: "center", gap: 4,
                   }}
                 >
-                  <ArrowLeft size={13} /> Back to questions
+                  <ArrowLeft size={13} /> {faq.back}
                 </button>
 
                 {/* User question bubble */}
@@ -217,18 +194,18 @@ export default function FAQBot() {
                   }}>
                     {sent ? (
                       <div style={{ textAlign: "center", padding: "12px 0", fontSize: 13, color: "#7C3AED", fontWeight: 600 }}>
-                        ✅ Message sent! We'll get back to you soon.
+                        {faq.sent}
                       </div>
                     ) : (
                       <>
-                        <div style={{ fontSize: 12, color: "#9b8ec4", marginBottom: 10, lineHeight: 1.5 }}>
+                        <div style={{ fontSize: 13, color: "#6b5a9e", marginBottom: 10, lineHeight: 1.5 }}>
                           <EnvelopeSimple size={13} style={{ marginRight: 4 }} />
-                          Send us a message and we'll get back to you
+                          {faq.contactIntro}
                         </div>
                         <input
                           value={contactForm.title}
                           onChange={e => setContactForm(p => ({ ...p, title: e.target.value }))}
-                          placeholder="Title"
+                          placeholder={faq.titlePlaceholder}
                           style={{
                             width: "100%", padding: "9px 12px", marginBottom: 8,
                             borderRadius: 10, border: "1px solid rgba(124,58,237,0.2)",
@@ -241,7 +218,7 @@ export default function FAQBot() {
                         <textarea
                           value={contactForm.message}
                           onChange={e => setContactForm(p => ({ ...p, message: e.target.value }))}
-                          placeholder="Message"
+                          placeholder={faq.messagePlaceholder}
                           rows={4}
                           style={{
                             width: "100%", padding: "9px 12px", marginBottom: 10,
@@ -267,23 +244,38 @@ export default function FAQBot() {
                             transition: "all 0.2s",
                           }}
                         >
-                          <PaperPlaneTilt size={14} style={{ marginRight: 6 }} /> Send Message
+                          <PaperPlaneTilt size={14} style={{ marginRight: 6 }} /> {faq.send}
                         </button>
                       </>
                     )}
                   </div>
-                ) : (
+                ) : (() => {
+                  // Split step-based answers on "→" and render as numbered circles.
+                  const steps = selected.a.split("→").map(s => s.trim()).filter(Boolean);
+                  return (
                   <div style={{
                     background: "linear-gradient(135deg, rgba(124,58,237,0.08), rgba(236,72,153,0.05))",
                     border: "1px solid rgba(124,58,237,0.12)",
                     borderRadius: "16px 16px 16px 4px",
                     padding: "12px 14px",
-                    fontSize: 13, color: "#4a3870", lineHeight: 1.7,
+                    fontSize: 14, color: "#4a3870", lineHeight: 1.7,
                     marginRight: 24,
                   }}>
-                    {selected.a}
+                    {steps.length > 1
+                      ? steps.map((step, i) => (
+                        <div key={i} style={{ display: "flex", gap: 9, marginBottom: i < steps.length - 1 ? 10 : 0, alignItems: "flex-start" }}>
+                          <div style={{
+                            flexShrink: 0, width: 22, height: 22, borderRadius: "50%",
+                            background: "linear-gradient(135deg, #7C3AED, #EC4899)", color: "#fff",
+                            fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center",
+                          }}>{i + 1}</div>
+                          <div style={{ paddingTop: 1 }}>{step}</div>
+                        </div>
+                      ))
+                      : selected.a}
                   </div>
-                )}
+                  );
+                })()}
               </>
             )}
           </div>

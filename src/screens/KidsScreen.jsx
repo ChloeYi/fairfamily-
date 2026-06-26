@@ -88,7 +88,7 @@ const css = `
     border-color: rgba(124,58,237,0.4);
     box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
   }
-  .glass-input::placeholder { color: #c4b8e0; }
+  .glass-input::placeholder { color: #8b7fc0; }
 `;
 
 const EMOJIS = ["🌸", "⚡", "🌻", "🦋", "🌈", "⭐", "🎯", "🔥"];
@@ -100,7 +100,7 @@ export default function KidsScreen() {
   const [children, setChildren] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ name: "", age: "" });
+  const [form, setForm] = useState({ name: "", birthYear: "" });
   const [saving, setSaving] = useState(false);
 
   const uid = auth.currentUser?.uid;
@@ -121,19 +121,22 @@ export default function KidsScreen() {
   };
 
   const addChild = async () => {
-    if (!form.name.trim() || !form.age || !uid || saving) return;
+    if (!form.name.trim() || !form.birthYear || !uid || saving) return;
     setSaving(true);
     try {
       const idx = children.length;
+      const birthYear = parseInt(form.birthYear);
+      const age = Math.max(0, new Date().getFullYear() - birthYear);
       await addDoc(collection(db, "users", uid, "children"), {
         name: form.name.trim(),
-        age: parseInt(form.age),
+        birthYear,
+        age, // derived from birthYear at creation; recomputed live where shown
         emoji: EMOJIS[idx % EMOJIS.length],
         color: COLORS[idx % COLORS.length],
         totalSpent: 0, giftCount: 0, experienceCount: 0, milestoneCount: 0,
         createdAt: serverTimestamp(),
       });
-      setForm({ name: "", age: "" });
+      setForm({ name: "", birthYear: "" });
       setShowForm(false);
     } catch (e) {
       console.error("Add child error:", e);
@@ -150,27 +153,28 @@ export default function KidsScreen() {
     }}>
       <style>{css}</style>
 
-      <div style={{ padding: "36px 24px 24px", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
-        <div>
-          <div style={{ fontSize: 12, letterSpacing: 3, color: "#6b5a9e", fontWeight: 700, textTransform: "uppercase", marginBottom: 8 }}>
+      <div style={{ padding: "36px 24px 20px", display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: 12 }}>
+        <div style={{ minWidth: 0 }}>
+          <div style={{ fontSize: 13, letterSpacing: 3, color: "#6b5a9e", fontWeight: 700, textTransform: "uppercase", marginBottom: 8 }}>
             {t.kids.subtitle}
           </div>
-          <h1 style={{ fontFamily: "'Climate Crisis', sans-serif", fontSize: 36, fontWeight: 400, lineHeight: 1.1, letterSpacing: 0 }}>
+          <h1 style={{ fontFamily: titleFont, fontSize: 36, fontWeight: 400, lineHeight: 1.1, letterSpacing: 0 }}>
             <span className="title-text">{t.kids.title}</span>
           </h1>
+          <div style={{ fontSize: 15, color: "#6b5a9e", marginTop: 10, lineHeight: 1.5 }}>
+            {t.kids.addHint}
+          </div>
         </div>
         <button onClick={() => setShowForm(v => !v)} style={{
-          width: 46, height: 46, borderRadius: 14,
-          background: showForm ? "rgba(236,72,153,0.12)" : "rgba(255,255,255,0.75)",
-          backdropFilter: "blur(16px)",
-          border: `1px solid ${showForm ? "rgba(236,72,153,0.4)" : "rgba(255,255,255,0.95)"}`,
-          color: showForm ? "#EC4899" : "#7c6faa",
-          fontSize: 22, cursor: "pointer",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          boxShadow: "0 4px 16px rgba(139,92,246,0.12)",
+          flexShrink: 0, padding: "12px 16px", borderRadius: 14, cursor: "pointer", border: "none",
+          background: showForm ? "rgba(236,72,153,0.14)" : "linear-gradient(135deg, #7C3AED, #EC4899)",
+          color: showForm ? "#EC4899" : "#fff",
+          fontSize: 15, fontWeight: 700, fontFamily: "'DM Sans', sans-serif",
+          display: "flex", alignItems: "center", gap: 6, whiteSpace: "nowrap",
+          boxShadow: showForm ? "none" : "0 6px 22px rgba(124,58,237,0.34)",
           transition: "all 0.2s",
         }}>
-          {showForm ? "×" : "+"}
+          {showForm ? "✕" : <>＋ {t.kids.addBtn}</>}
         </button>
       </div>
 
@@ -187,18 +191,23 @@ export default function KidsScreen() {
             boxShadow: "0 8px 32px rgba(236,72,153,0.1), inset 0 1px 0 rgba(255,255,255,1)",
             position: "relative", zIndex: 1,
           }}>
-            <div style={{ fontSize: 12, letterSpacing: 3, color: "#EC4899", textTransform: "uppercase", marginBottom: 16 }}>
+            <div style={{ fontSize: 13, letterSpacing: 3, color: "#EC4899", textTransform: "uppercase", marginBottom: 16 }}>
               {t.kids.add}
             </div>
             <input className="glass-input" value={form.name}
               onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
               onKeyDown={e => e.key === "Enter" && addChild()}
               placeholder={t.kids.namePlaceholder} />
-            <input className="glass-input" value={form.age}
-              onChange={e => setForm(p => ({ ...p, age: e.target.value }))}
+            <input className="glass-input" value={form.birthYear}
+              onChange={e => setForm(p => ({ ...p, birthYear: e.target.value }))}
               onKeyDown={e => e.key === "Enter" && addChild()}
-              placeholder={t.kids.agePlaceholder} type="number"
+              placeholder={t.kids.birthYearPlaceholder} type="number"
               style={{ marginBottom: 16 }} />
+            {form.birthYear && Number(form.birthYear) > 1900 && (
+              <div style={{ fontSize: 15, color: "#6b5a9e", margin: "-6px 0 14px 4px" }}>
+                {t.kids.agePreview(Math.max(0, new Date().getFullYear() - Number(form.birthYear)))}
+              </div>
+            )}
             <button onClick={addChild} disabled={saving} style={{
               width: "100%", padding: "15px",
               borderRadius: 14, border: "none",
@@ -228,10 +237,10 @@ export default function KidsScreen() {
             <div style={{ marginBottom: 20, display: "flex", justifyContent: "center" }}>
               <Baby size={72} weight="duotone" color="#EC4899" />
             </div>
-            <div style={{ fontFamily: "'Climate Crisis', sans-serif", fontSize: 28, fontWeight: 400, marginBottom: 12, color: "#1e0f3c" }}>
+            <div style={{ fontFamily: titleFont, fontSize: 28, fontWeight: 400, marginBottom: 12, color: "#1e0f3c" }}>
               {t.kids.noChildren}
             </div>
-            <div style={{ color: "#a394c8", fontSize: 16, lineHeight: 1.7 }}>{t.kids.noChildrenHint}</div>
+            <div style={{ color: "#6b5a9e", fontSize: 16, lineHeight: 1.7 }}>{t.kids.noChildrenHint}</div>
           </div>
         )}
 
@@ -255,7 +264,7 @@ export default function KidsScreen() {
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontWeight: 600, fontSize: 20, letterSpacing: -0.2, color: "#1e0f3c" }}>{c.name}</div>
-                <div style={{ fontSize: 13, color: "#9b8ec4", marginTop: 4 }}>
+                <div style={{ fontSize: 15, color: "#6b5a9e", marginTop: 4 }}>
                   {t.childRoom.ageAt(c.age)}
                   {giftCount > 0 && ` · ${t.kids.gifts(giftCount)}`}
                   {expCount > 0 && ` · ${t.kids.experiences(expCount)}`}

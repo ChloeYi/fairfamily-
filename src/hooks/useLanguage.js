@@ -28,8 +28,9 @@ export function LanguageProvider({ children }) {
 
   const t = lang === "ko" ? ko : en;
 
+  // Korean titles use Bagel Fat One; English keeps the original display font.
   const titleFont = lang === "ko"
-    ? "'Nanum Gothic', sans-serif"
+    ? "'Bagel Fat One', sans-serif"
     : "'Climate Crisis', sans-serif";
 
   return (

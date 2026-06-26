@@ -160,7 +160,7 @@ const glassCard = {
 
 export default function Welcome3Screen() {
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, titleFont } = useLanguage();
   const [show, setShow] = useState(false);
   const [showInsight, setShowInsight] = useState(false);
   const [showInsight2, setShowInsight2] = useState(false);
@@ -188,11 +188,11 @@ export default function Welcome3Screen() {
 
       {/* Header */}
       <div style={{ textAlign: "center", marginBottom: 32, animation: "fadeUp 0.6s ease both" }}>
-        <div style={{ fontSize: 12, letterSpacing: 3, color: "#6b5a9e", fontWeight: 700, textTransform: "uppercase", marginBottom: 10 }}>
+        <div style={{ fontSize: 13, letterSpacing: 3, color: "#6b5a9e", fontWeight: 700, textTransform: "uppercase", marginBottom: 10 }}>
           {t.welcome3.sectionLabel}
         </div>
         <h2 style={{
-          fontFamily: "'Climate Crisis', sans-serif",
+          fontFamily: titleFont,
           fontSize: 28, fontWeight: 400, color: "#1e0f3c", lineHeight: 1.2,
         }}>
           {t.welcome3.title}
@@ -201,10 +201,10 @@ export default function Welcome3Screen() {
 
       {/* Line chart */}
       <div style={{ ...glassCard, marginBottom: 16, animation: show ? "fadeUp 0.6s ease both" : "none" }}>
-        <div style={{ fontSize: 12, letterSpacing: 2.5, color: "#6b5a9e", fontWeight: 700, textTransform: "uppercase", marginBottom: 4 }}>
+        <div style={{ fontSize: 13, letterSpacing: 2.5, color: "#6b5a9e", fontWeight: 700, textTransform: "uppercase", marginBottom: 4 }}>
           {t.welcome3.chartLabel}
         </div>
-        <div style={{ fontSize: 13, color: "#a394c8", marginBottom: 16 }}>{t.welcome3.chartSub}</div>
+        <div style={{ fontSize: 13, color: "#6b5a9e", marginBottom: 16 }}>{t.welcome3.chartSub}</div>
 
         {/* Chart + insight bubble overlay */}
         <div style={{ position: "relative" }}>
@@ -271,7 +271,7 @@ export default function Welcome3Screen() {
             color: "#1e0f3c",
             borderRadius: 14,
             padding: "11px 13px",
-            fontSize: 12,
+            fontSize: 13,
             lineHeight: 1.5,
             fontFamily: "'DM Sans', sans-serif",
             boxShadow: "0 8px 24px rgba(30,15,60,0.1)",
@@ -291,10 +291,10 @@ export default function Welcome3Screen() {
 
       {/* Radar chart */}
       <div style={{ ...glassCard, position: "relative", animation: show ? "fadeUp 0.7s 0.15s ease both" : "none" }}>
-        <div style={{ fontSize: 12, letterSpacing: 2.5, color: "#6b5a9e", fontWeight: 700, textTransform: "uppercase", marginBottom: 4 }}>
+        <div style={{ fontSize: 13, letterSpacing: 2.5, color: "#6b5a9e", fontWeight: 700, textTransform: "uppercase", marginBottom: 4 }}>
           {t.welcome3.radarLabel}
         </div>
-        <div style={{ fontSize: 13, color: "#a394c8", marginBottom: 16 }}>{t.welcome3.radarSub}</div>
+        <div style={{ fontSize: 13, color: "#6b5a9e", marginBottom: 16 }}>{t.welcome3.radarSub}</div>
         <SmoothRadar showDot={showInsight2} />
 
       </div>

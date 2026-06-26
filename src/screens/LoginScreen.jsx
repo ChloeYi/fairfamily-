@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import { signInWithPopup, signInWithCredential, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
+import { Capacitor } from "@capacitor/core";
+import { FirebaseAuthentication } from "@capacitor-firebase/authentication";
 import { auth, db, googleProvider } from "../firebase";
 import { useLanguage } from "../hooks/useLanguage";
 import { Scales } from "@phosphor-icons/react";
@@ -32,10 +34,24 @@ export default function LoginScreen() {
   const handleGoogle = async () => {
     setError(""); setLoading(true);
     try {
-      const result = await signInWithPopup(auth, googleProvider);
+      let result;
+      if (Capacitor.isNativePlatform()) {
+        // Native app (Android/iOS): popups don't work in the WebView, so use the
+        // native Google Sign-In, then sign into the Firebase JS SDK with the credential.
+        const res = await FirebaseAuthentication.signInWithGoogle();
+        const idToken = res.credential?.idToken;
+        if (!idToken) throw new Error("no-id-token");
+        const credential = GoogleAuthProvider.credential(idToken);
+        result = await signInWithCredential(auth, credential);
+      } else {
+        // Web: popup flow.
+        result = await signInWithPopup(auth, googleProvider);
+      }
       await saveUserToFirestore(result.user);
     } catch (e) {
-      if (e.code !== "auth/popup-closed-by-user")
+      const msg = (e?.message || "").toLowerCase();
+      const canceled = e.code === "auth/popup-closed-by-user" || msg.includes("cancel");
+      if (!canceled)
         setError(e.code === "auth/popup-blocked" ? t.login.popupBlocked : t.login.googleFailed);
     } finally { setLoading(false); }
   };
@@ -122,7 +138,7 @@ export default function LoginScreen() {
         </div>
 
         <h1 style={{
-          fontFamily: "'Climate Crisis', sans-serif",
+          fontFamily: titleFont,
           fontSize: 42, fontWeight: 400, lineHeight: 1, letterSpacing: 0,
           marginBottom: 40, color: "#1e0f3c",
           textShadow: "0 4px 18px rgba(30,15,60,0.18), 0 2px 6px rgba(0,0,0,0.10)",
@@ -161,7 +177,7 @@ export default function LoginScreen() {
 
         <div style={{ display: "flex", alignItems: "center", gap: 14, margin: "20px 0" }}>
           <div style={{ flex: 1, height: 1, background: "rgba(139,92,246,0.12)" }} />
-          <span style={{ color: "#c4b8e0", fontSize: 13 }}>or</span>
+          <span style={{ color: "#6b5a9e", fontSize: 13 }}>or</span>
           <div style={{ flex: 1, height: 1, background: "rgba(139,92,246,0.12)" }} />
         </div>
 
@@ -188,12 +204,12 @@ export default function LoginScreen() {
             width: "100%", padding: "17px 20px",
             borderRadius: 18, border: "1px solid rgba(139,92,246,0.15)",
             background: "rgba(255,255,255,0.5)",
-            color: "#9b8ec4", fontSize: 16, fontWeight: 400,
+            color: "#6b5a9e", fontSize: 16, fontWeight: 400,
             cursor: "pointer", fontFamily: "'DM Sans', sans-serif",
             transition: "all 0.2s",
           }}
             onMouseEnter={e => e.currentTarget.style.color = "#6b5b9e"}
-            onMouseLeave={e => e.currentTarget.style.color = "#9b8ec4"}>
+            onMouseLeave={e => e.currentTarget.style.color = "#6b5a9e"}>
             {t.login.email}
           </button>
         )}
@@ -211,8 +227,8 @@ export default function LoginScreen() {
         )}
 
         <p style={{
-          textAlign: "center", color: "#c4b8e0",
-          fontSize: 12, marginTop: 28, lineHeight: 1.7, whiteSpace: "pre-line",
+          textAlign: "center", color: "#6b5a9e",
+          fontSize: 13, marginTop: 28, lineHeight: 1.7, whiteSpace: "pre-line",
         }}>
           {t.login.terms}
         </p>

@@ -109,7 +109,11 @@ const parseJSON = (text) => {
 };
 
 export default function AIAdviceScreen() {
-  const { t, titleFont } = useLanguage();
+  const { t, titleFont, lang } = useLanguage();
+  // Make Claude reply in the user's selected language.
+  const langInstruction = lang === "ko"
+    ? "Write every text value (title, body, action, answer) in natural, warm Korean (한국어)."
+    : "Write everything in English.";
   const [children, setChildren] = useState([]);
   const [childrenLoading, setChildrenLoading] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -157,13 +161,17 @@ Each insight must have:
 - body: 2-3 sentences of specific, caring, actionable advice
 - action: action button text string, or null if not urgent
 
+${langInstruction}
 Return ONLY valid JSON with no markdown, no code fences, no explanation.` }],
       });
       const parsed = parseJSON(message.content[0].text);
       setInsights(parsed.map(ins => ({ ...ins, child: children[ins.childIndex] || children[0] })));
     } catch (e) {
       console.error("AI insights error:", e);
-      setInsights([{ urgent: false, child: children[0], title: "Connection issue", body: "Could not connect to Claude AI. Please check your API key and try again.", action: null }]);
+      setInsights([{ urgent: false, child: children[0],
+        title: lang === "ko" ? "연결 문제" : "Connection issue",
+        body: lang === "ko" ? "Claude AI에 연결할 수 없어요. API 키를 확인하고 다시 시도해 주세요." : "Could not connect to Claude AI. Please check your API key and try again.",
+        action: null }]);
     } finally { setLoading(false); }
   };
 
@@ -178,13 +186,14 @@ ${familySummary}
 
 Question: ${prompt.text}
 
-Give specific, actionable advice in 3–5 sentences. Use bullet points if helpful.` }],
+Give specific, actionable advice in 3–5 sentences. Use bullet points if helpful.
+${langInstruction}` }],
       });
       stream.on("text", text => setResponse(prev => prev + text));
       await stream.finalMessage();
     } catch (e) {
       console.error("Ask AI error:", e);
-      setResponse("Sorry, I couldn't connect to Claude AI right now.");
+      setResponse(lang === "ko" ? "지금 Claude AI에 연결할 수 없어요." : "Sorry, I couldn't connect to Claude AI right now.");
     } finally { setLoading(false); }
   };
 
@@ -198,11 +207,11 @@ Give specific, actionable advice in 3–5 sentences. Use bullet points if helpfu
 
       {/* Header */}
       <div style={{ padding: "36px 24px 24px" }}>
-        <div style={{ fontSize: 12, letterSpacing: 3, color: "#6b5a9e", fontWeight: 700, textTransform: "uppercase", marginBottom: 8 }}>
+        <div style={{ fontSize: 13, letterSpacing: 3, color: "#6b5a9e", fontWeight: 700, textTransform: "uppercase", marginBottom: 8 }}>
           {t.aiAdvice.poweredBy}
         </div>
         <h1 style={{
-          fontFamily: "'Climate Crisis', sans-serif",
+          fontFamily: titleFont,
           fontSize: 36, fontWeight: 400, lineHeight: 1.1, letterSpacing: 0,
         }}>
           <span className="title-text">{t.aiAdvice.title}</span>
@@ -214,7 +223,7 @@ Give specific, actionable advice in 3–5 sentences. Use bullet points if helpfu
         {childrenLoading && (
           <div style={{ textAlign: "center", padding: "60px 0" }}>
             <div className="spinner" style={{ marginBottom: 16 }} />
-            <div style={{ color: "#a394c8", fontSize: 15 }}>{t.aiAdvice.loadingFamily}</div>
+            <div style={{ color: "#6b5a9e", fontSize: 15 }}>{t.aiAdvice.loadingFamily}</div>
           </div>
         )}
 
@@ -231,7 +240,7 @@ Give specific, actionable advice in 3–5 sentences. Use bullet points if helpfu
             <div style={{ marginBottom: 16, display: "flex", justifyContent: "center" }}>
               <UsersThree size={64} weight="duotone" color="#7C3AED" />
             </div>
-            <div style={{ fontFamily: "'Climate Crisis', sans-serif", fontSize: 28, fontWeight: 600, marginBottom: 10, color: "#1e0f3c" }}>
+            <div style={{ fontFamily: titleFont, fontSize: 28, fontWeight: 600, marginBottom: 10, color: "#1e0f3c" }}>
               {t.aiAdvice.noChildren}
             </div>
           </div>
@@ -277,11 +286,11 @@ Give specific, actionable advice in 3–5 sentences. Use bullet points if helpfu
                       boxShadow: "0 8px 32px rgba(139,92,246,0.15)",
                     }}><Robot size={52} color="#7C3AED" weight="duotone" /></div>
                     <h2 style={{
-                      fontFamily: "'Climate Crisis', sans-serif",
+                      fontFamily: titleFont,
                       fontSize: 34, fontWeight: 700, marginBottom: 12, letterSpacing: -0.3,
                       color: "#1e0f3c",
                     }}>{t.aiAdvice.orbTitle}</h2>
-                    <p style={{ color: "#9b8ec4", fontSize: 16, lineHeight: 1.7, maxWidth: 300, margin: "0 auto 28px" }}>
+                    <p style={{ color: "#5b4899", fontSize: 16, lineHeight: 1.7, maxWidth: 300, margin: "0 auto 28px" }}>
                       {t.aiAdvice.orbSub}
                     </p>
                     <button className="ai-btn" onClick={getInsights}
@@ -298,7 +307,7 @@ Give specific, actionable advice in 3–5 sentences. Use bullet points if helpfu
                     <div style={{ color: "#8B5CF6", fontSize: 16, animation: "pulse 1.5s ease infinite" }}>
                       {t.aiAdvice.analyzing}
                     </div>
-                    <div style={{ color: "#a394c8", fontSize: 14, marginTop: 10 }}>{t.aiAdvice.analyzingNote}</div>
+                    <div style={{ color: "#6b5a9e", fontSize: 14, marginTop: 10 }}>{t.aiAdvice.analyzingNote}</div>
                   </div>
                 )}
 
@@ -315,11 +324,11 @@ Give specific, actionable advice in 3–5 sentences. Use bullet points if helpfu
                       <span style={{ fontSize: 22 }}>✅</span>
                       <div>
                         <div style={{ fontSize: 15, color: "#7C3AED", fontWeight: 600 }}>{t.aiAdvice.complete}</div>
-                        <div style={{ fontSize: 13, color: "#9b8ec4" }}>{t.aiAdvice.insightsFound(insights.length)}</div>
+                        <div style={{ fontSize: 13, color: "#6b5a9e" }}>{t.aiAdvice.insightsFound(insights.length)}</div>
                       </div>
                       <button onClick={() => setInsights(null)} style={{
                         marginLeft: "auto", background: "none", border: "none",
-                        color: "#a394c8", cursor: "pointer", fontSize: 13,
+                        color: "#6b5a9e", cursor: "pointer", fontSize: 13,
                         fontFamily: "'DM Sans', sans-serif",
                       }}>{t.aiAdvice.refresh}</button>
                     </div>
@@ -340,12 +349,12 @@ Give specific, actionable advice in 3–5 sentences. Use bullet points if helpfu
                           {ins.urgent && (
                             <span style={{
                               background: "rgba(236,72,153,0.12)", color: "#EC4899",
-                              fontSize: 11, fontWeight: 600, borderRadius: 8, padding: "3px 10px",
+                              fontSize: 13, fontWeight: 600, borderRadius: 8, padding: "3px 10px",
                             }}>{t.aiAdvice.needsAttention}</span>
                           )}
                         </div>
                         <div style={{
-                          fontFamily: "'Climate Crisis', sans-serif",
+                          fontFamily: titleFont,
                           fontSize: 22, fontWeight: 600, color: "#1e0f3c", marginBottom: 10, lineHeight: 1.3,
                         }}>{ins.title}</div>
                         <p style={{ fontSize: 15, color: "#6b5b9e", lineHeight: 1.8, margin: 0 }}>{ins.body}</p>
@@ -370,7 +379,7 @@ Give specific, actionable advice in 3–5 sentences. Use bullet points if helpfu
               <div>
                 {!selectedPrompt && (
                   <div>
-                    <div style={{ fontSize: 12, letterSpacing: 2.5, color: "#6b5a9e", fontWeight: 700, textTransform: "uppercase", marginBottom: 16 }}>
+                    <div style={{ fontSize: 13, letterSpacing: 2.5, color: "#6b5a9e", fontWeight: 700, textTransform: "uppercase", marginBottom: 16 }}>
                       {t.aiAdvice.quickQuestions}
                     </div>
                     {t.aiAdvice.quickPrompts.map((p, i) => (
@@ -379,7 +388,7 @@ Give specific, actionable advice in 3–5 sentences. Use bullet points if helpfu
                         onClick={() => askQuestion(p)}>
                         <span style={{ fontSize: 24, flexShrink: 0 }}>{p.icon}</span>
                         <span style={{ fontSize: 15, color: "#4a3870", lineHeight: 1.6 }}>{p.text}</span>
-                        <span style={{ color: "#c4b8e0", fontSize: 18, flexShrink: 0, marginLeft: "auto" }}>›</span>
+                        <span style={{ color: "#6b5a9e", fontSize: 18, flexShrink: 0, marginLeft: "auto" }}>›</span>
                       </div>
                     ))}
                   </div>
@@ -403,7 +412,7 @@ Give specific, actionable advice in 3–5 sentences. Use bullet points if helpfu
                       borderRadius: 20, padding: "16px 18px", marginBottom: 18,
                       position: "relative", zIndex: 1,
                     }}>
-                      <div style={{ fontSize: 11, color: "#8B5CF6", letterSpacing: 2.5, textTransform: "uppercase", marginBottom: 8 }}>
+                      <div style={{ fontSize: 13, color: "#8B5CF6", letterSpacing: 2.5, textTransform: "uppercase", marginBottom: 8 }}>
                         {t.aiAdvice.yourQuestion}
                       </div>
                       <div style={{ fontSize: 16, color: "#1e0f3c" }}>

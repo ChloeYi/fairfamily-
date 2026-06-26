@@ -125,7 +125,7 @@ const css = `
     border-color: rgba(255,107,107,0.5);
     box-shadow: 0 0 0 3px rgba(255,107,107,0.08);
   }
-  .glass-input-ob::placeholder { color: #c4b8e0; }
+  .glass-input-ob::placeholder { color: #8b7fc0; }
 
   .child-preview-card {
     background: rgba(255,255,255,0.72);
@@ -144,7 +144,7 @@ export default function OnboardingScreen({ onDone }) {
   const [step, setStep] = useState(0);
   const [numKids, setNumKids] = useState(null);
   const [children, setChildren] = useState([]);
-  const [childForm, setChildForm] = useState({ name: "", age: "" });
+  const [childForm, setChildForm] = useState({ name: "", birthYear: "" });
   const [saving, setSaving] = useState(false);
 
   const base = {
@@ -205,7 +205,7 @@ export default function OnboardingScreen({ onDone }) {
         <UsersThree size={54} weight="duotone" color="#7C3AED" />
       </div>
       <h1 className="fade-up" style={{
-        fontFamily: "'Climate Crisis', sans-serif",
+        fontFamily: titleFont,
         fontSize: 52, fontWeight: 700, lineHeight: 1.1,
         marginBottom: 18, letterSpacing: -0.5,
         position: "relative", zIndex: 1,
@@ -242,7 +242,7 @@ export default function OnboardingScreen({ onDone }) {
         position: "relative", zIndex: 1,
       }}>📊</div>
       <h1 className="fade-up" style={{
-        fontFamily: "'Climate Crisis', sans-serif",
+        fontFamily: titleFont,
         fontSize: 48, fontWeight: 700, lineHeight: 1.1,
         marginBottom: 24, letterSpacing: -0.5,
         position: "relative", zIndex: 1,
@@ -282,7 +282,7 @@ export default function OnboardingScreen({ onDone }) {
         position: "relative", zIndex: 1,
       }}>🤔</div>
       <h1 className="fade-up" style={{
-        fontFamily: "'Climate Crisis', sans-serif",
+        fontFamily: titleFont,
         fontSize: 48, fontWeight: 700, lineHeight: 1.1,
         marginBottom: 18, letterSpacing: -0.5,
         position: "relative", zIndex: 1,
@@ -320,7 +320,7 @@ export default function OnboardingScreen({ onDone }) {
         <Baby size={48} weight="duotone" color="#EC4899" />
       </div>
       <h1 className="fade-up" style={{
-        fontFamily: "'Climate Crisis', sans-serif",
+        fontFamily: titleFont,
         fontSize: 48, fontWeight: 700, lineHeight: 1.1,
         marginBottom: 10, letterSpacing: -0.5,
         position: "relative", zIndex: 1,
@@ -347,15 +347,17 @@ export default function OnboardingScreen({ onDone }) {
     const idx = children.length;
     const accentColor = COLORS[idx % COLORS.length];
     const addChild = () => {
-      if (!childForm.name.trim() || !childForm.age) return;
+      if (!childForm.name.trim() || !childForm.birthYear) return;
+      const birthYear = parseInt(childForm.birthYear);
+      const age = Math.max(0, new Date().getFullYear() - birthYear);
       const updated = [...children, {
         id: Date.now(), name: childForm.name.trim(),
-        age: parseInt(childForm.age),
+        birthYear, age,
         emoji: EMOJIS[idx % EMOJIS.length],
         color: accentColor,
       }];
       setChildren(updated);
-      setChildForm({ name: "", age: "" });
+      setChildForm({ name: "", birthYear: "" });
       if (updated.length >= numKids) setStep(5);
     };
     return (
@@ -375,7 +377,7 @@ export default function OnboardingScreen({ onDone }) {
         }}>{EMOJIS[idx % EMOJIS.length]}</div>
 
         <h1 className="fade-up" style={{
-          fontFamily: "'Climate Crisis', sans-serif",
+          fontFamily: titleFont,
           fontSize: 44, fontWeight: 700, marginBottom: 6,
           letterSpacing: -0.5, position: "relative", zIndex: 1,
         }}>{t.onboarding.childN(idx + 1, numKids)}</h1>
@@ -396,10 +398,10 @@ export default function OnboardingScreen({ onDone }) {
             onKeyDown={e => e.key === "Enter" && addChild()}
             placeholder={t.onboarding.namePlaceholder} />
           <input className="glass-input-ob"
-            value={childForm.age}
-            onChange={e => setChildForm(p => ({ ...p, age: e.target.value }))}
+            value={childForm.birthYear}
+            onChange={e => setChildForm(p => ({ ...p, birthYear: e.target.value }))}
             onKeyDown={e => e.key === "Enter" && addChild()}
-            placeholder={t.onboarding.agePlaceholder} type="number"
+            placeholder={t.onboarding.birthYearPlaceholder} type="number"
             style={{ marginBottom: 20 }} />
           <button onClick={addChild} className="pulse-btn" style={{
             ...primaryBtn, marginTop: 0, width: "100%",
@@ -421,7 +423,7 @@ export default function OnboardingScreen({ onDone }) {
       try {
         for (const child of children) {
           await addDoc(collection(db, "users", user.uid, "children"), {
-            name: child.name, age: child.age,
+            name: child.name, age: child.age, birthYear: child.birthYear,
             emoji: child.emoji, color: child.color,
             totalSpent: 0, giftCount: 0,
             experienceCount: 0, milestoneCount: 0,
@@ -452,7 +454,7 @@ export default function OnboardingScreen({ onDone }) {
       }}>🎉</div>
 
       <h1 className="fade-up" style={{
-        fontFamily: "'Climate Crisis', sans-serif",
+        fontFamily: titleFont,
         fontSize: 52, fontWeight: 700, marginBottom: 24,
         letterSpacing: -0.5, position: "relative", zIndex: 1,
       }}>{t.onboarding.ready}</h1>

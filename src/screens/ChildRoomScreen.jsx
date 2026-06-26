@@ -38,7 +38,7 @@ const css = `
     flex: 1; padding: 11px 4px; border-radius: 14px;
     border: 1px solid rgba(255,255,255,0.9);
     background: rgba(255,255,255,0.65);
-    color: #9b8ec4; cursor: pointer; font-size: 12px;
+    color: #9b8ec4; cursor: pointer; font-size: 13px;
     font-family: 'DM Sans', sans-serif;
     transition: all 0.2s; text-align: center;
     backdrop-filter: blur(10px);
@@ -60,15 +60,23 @@ const css = `
     border-color: var(--accent-color, rgba(124,58,237,0.4));
     box-shadow: 0 0 0 3px var(--accent-glow, rgba(124,58,237,0.08));
   }
-  .cr-input::placeholder { color: #c4b8e0; }
+  .cr-input::placeholder { color: #8b7fc0; }
 `;
 
-const TYPE_META = [
-  { type: "gift", icon: "🎁" },
-  { type: "experience", icon: "✨" },
-  { type: "milestone", icon: "🏆" },
-  { type: "note", icon: "📝" },
+// Same 8 categories as the Log screen, so data stays consistent.
+const CATEGORIES = [
+  { key: "time", icon: "⏰" },
+  { key: "money", icon: "💰" },
+  { key: "gifts", icon: "🎁" },
+  { key: "school", icon: "🎓" },
+  { key: "oneOnOne", icon: "👥" },
+  { key: "emotional", icon: "❤️" },
+  { key: "experiences", icon: "✨" },
+  { key: "health", icon: "💪" },
 ];
+// Map old log "type" values onto the new categories (for older logs).
+const LEGACY_TYPE = { gift: "gifts", experience: "experiences", milestone: "experiences", note: "experiences" };
+const catOf = (log) => log.category || LEGACY_TYPE[log.type] || log.type || "experiences";
 
 export default function ChildRoomScreen() {
   const { id } = useParams();
@@ -79,9 +87,13 @@ export default function ChildRoomScreen() {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [logType, setLogType] = useState("gift");
+  const [logType, setLogType] = useState("time");
   const [desc, setDesc] = useState("");
   const [amount, setAmount] = useState("");
+  const [hours, setHours] = useState("");
+  const [logAge, setLogAge] = useState("");
+  const [dateMode, setDateMode] = useState("today");   // "today" | "other"
+  const [customDate, setCustomDate] = useState("");
   const [saving, setSaving] = useState(false);
 
   const uid = auth.currentUser?.uid;
@@ -103,18 +115,26 @@ export default function ChildRoomScreen() {
     if (!desc.trim() || !uid || saving) return;
     setSaving(true);
     try {
-      const amt = parseFloat(amount) || 0;
+      const isTime = logType === "time";
+      const amt = isTime ? 0 : parseFloat(amount) || 0;
+      const ageVal = parseFloat(logAge) || child?.age || null;
+      const when = dateMode === "other" && customDate
+        ? new Date(customDate + "T12:00:00")
+        : serverTimestamp();
       await addDoc(collection(db, "users", uid, "children", id, "logs"), {
-        type: logType, desc: desc.trim(), amount: amt,
-        age: child?.age || null, createdAt: serverTimestamp(),
+        category: logType,
+        desc: desc.trim(),
+        amount: amt,
+        hours: isTime ? parseFloat(hours) || 0 : 0,
+        age: ageVal,
+        createdAt: when,
       });
       await updateDoc(doc(db, "users", uid, "children", id), {
         totalSpent: increment(amt),
-        ...(logType === "gift" && { giftCount: increment(1) }),
-        ...(logType === "experience" && { experienceCount: increment(1) }),
-        ...(logType === "milestone" && { milestoneCount: increment(1) }),
+        ...(logType === "gifts" && { giftCount: increment(1) }),
+        ...(logType === "experiences" && { experienceCount: increment(1) }),
       });
-      setDesc(""); setAmount(""); setShowForm(false);
+      setDesc(""); setAmount(""); setHours(""); setLogAge(""); setDateMode("today"); setCustomDate(""); setShowForm(false);
     } finally {
       setSaving(false);
     }
@@ -132,7 +152,7 @@ export default function ChildRoomScreen() {
         border: "2px solid rgba(124,58,237,0.15)", borderTopColor: "#7C3AED",
         animation: "spin 0.8s linear infinite",
       }} />
-      <div style={{ color: "#9b8ec4", fontSize: 15, fontFamily: "'DM Sans', sans-serif" }}>
+      <div style={{ color: "#6b5a9e", fontSize: 15, fontFamily: "'DM Sans', sans-serif" }}>
         {t.childRoom.loading}
       </div>
     </div>
@@ -192,11 +212,11 @@ export default function ChildRoomScreen() {
           }}>{child.emoji}</div>
           <div>
             <h1 style={{
-              fontFamily: "'Climate Crisis', sans-serif",
+              fontFamily: titleFont,
               fontSize: 34, fontWeight: 400, lineHeight: 1.1, letterSpacing: 0,
               color: accentColor,
             }}>{child.name}</h1>
-            <div style={{ color: "#9b8ec4", fontSize: 15, marginTop: 6 }}>
+            <div style={{ color: "#6b5a9e", fontSize: 15, marginTop: 6 }}>
               {t.childRoom.ageAt(child.age)}
             </div>
           </div>
@@ -219,11 +239,11 @@ export default function ChildRoomScreen() {
               boxShadow: "0 4px 20px rgba(139,92,246,0.08), inset 0 1px 0 rgba(255,255,255,1)",
             }}>
               <div style={{
-                fontFamily: "'Climate Crisis', sans-serif",
+                fontFamily: titleFont,
                 fontSize: 28, fontWeight: 700, color: s.color,
                 lineHeight: 1,
               }}>{s.value}</div>
-              <div style={{ fontSize: 11, color: "#a394c8", marginTop: 6, letterSpacing: 1.5, textTransform: "uppercase" }}>
+              <div style={{ fontSize: 13, color: "#6b5a9e", marginTop: 6, letterSpacing: 1.5, textTransform: "uppercase" }}>
                 {s.label}
               </div>
             </div>
@@ -236,7 +256,7 @@ export default function ChildRoomScreen() {
         {/* Add log button / form */}
         <div style={{ marginBottom: 18 }}>
           {!showForm ? (
-            <button onClick={() => setShowForm(true)} style={{
+            <button onClick={() => { setShowForm(true); setLogAge(String(child.age || "")); }} style={{
               width: "100%", padding: "16px",
               borderRadius: 20, border: `1px solid ${accentColor}35`,
               background: `${accentColor}0c`,
@@ -257,26 +277,27 @@ export default function ChildRoomScreen() {
               borderRadius: 24, padding: 20, animation: "fadeUp 0.3s ease both",
               boxShadow: "0 12px 40px rgba(139,92,246,0.1), inset 0 1px 0 rgba(255,255,255,1)",
             }}>
-              <div style={{ fontSize: 11, letterSpacing: 2.5, color: "#6b5a9e", fontWeight: 700, textTransform: "uppercase", marginBottom: 12 }}>
+              <div style={{ fontSize: 13, letterSpacing: 2.5, color: "#6b5a9e", fontWeight: 700, textTransform: "uppercase", marginBottom: 12 }}>
                 {t.childRoom.typeLabel}
               </div>
-              <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-                {TYPE_META.map(m => (
-                  <button key={m.type} className="cr-type-btn"
-                    onClick={() => setLogType(m.type)}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
+                {CATEGORIES.map(m => (
+                  <button key={m.key} className="cr-type-btn"
+                    onClick={() => setLogType(m.key)}
                     style={{
-                      background: logType === m.type ? `${accentColor}14` : "rgba(255,255,255,0.65)",
-                      borderColor: logType === m.type ? `${accentColor}44` : "rgba(255,255,255,0.95)",
-                      color: logType === m.type ? accentColor : "#9b8ec4",
-                      boxShadow: logType === m.type ? `0 4px 12px ${accentColor}18` : "0 2px 8px rgba(139,92,246,0.05)",
+                      flex: "1 1 21%", minWidth: 64,
+                      background: logType === m.key ? `${accentColor}14` : "rgba(255,255,255,0.65)",
+                      borderColor: logType === m.key ? `${accentColor}44` : "rgba(255,255,255,0.95)",
+                      color: logType === m.key ? accentColor : "#6b5a9e",
+                      boxShadow: logType === m.key ? `0 4px 12px ${accentColor}18` : "0 2px 8px rgba(139,92,246,0.05)",
                     }}>
                     <div style={{ fontSize: 20, marginBottom: 3 }}>{m.icon}</div>
-                    {t.logTypes[m.type]}
+                    {t.categories[m.key]}
                   </button>
                 ))}
               </div>
 
-              <div style={{ fontSize: 11, letterSpacing: 2.5, color: "#6b5a9e", fontWeight: 700, textTransform: "uppercase", marginBottom: 8 }}>
+              <div style={{ fontSize: 13, letterSpacing: 2.5, color: "#6b5a9e", fontWeight: 700, textTransform: "uppercase", marginBottom: 8 }}>
                 {t.childRoom.descLabel}
               </div>
               <textarea className="cr-input"
@@ -285,20 +306,65 @@ export default function ChildRoomScreen() {
                 rows={2} style={{ resize: "none", lineHeight: 1.7, marginBottom: 12 }}
               />
 
-              <div style={{ fontSize: 11, letterSpacing: 2.5, color: "#6b5a9e", fontWeight: 700, textTransform: "uppercase", marginBottom: 8 }}>
-                {t.childRoom.amountLabel}
+              <div style={{ fontSize: 13, letterSpacing: 2.5, color: "#6b5a9e", fontWeight: 700, textTransform: "uppercase", marginBottom: 8 }}>
+                {logType === "time" ? t.photoLog.hoursLabel : t.childRoom.amountLabel}
               </div>
-              <input className="cr-input"
-                value={amount} onChange={e => setAmount(e.target.value)}
-                placeholder={t.childRoom.amountPlaceholder} type="number"
-                style={{ marginBottom: 16 }}
-              />
+              {logType === "time" ? (
+                <input className="cr-input"
+                  value={hours} onChange={e => setHours(e.target.value)}
+                  placeholder={t.photoLog.hoursPlaceholder} type="number" min="0" step="0.5"
+                  style={{ marginBottom: 16 }}
+                />
+              ) : (
+                <input className="cr-input"
+                  value={amount} onChange={e => setAmount(e.target.value)}
+                  placeholder={t.childRoom.amountPlaceholder} type="number"
+                  style={{ marginBottom: 16 }}
+                />
+              )}
+
+              {/* When + Age */}
+              <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 13, letterSpacing: 2.5, color: "#6b5a9e", fontWeight: 700, textTransform: "uppercase", marginBottom: 8 }}>
+                    {t.photoLog.whenLabel}
+                  </div>
+                  <div style={{ display: "flex", gap: 6 }}>
+                    {[["today", t.photoLog.today], ["other", t.photoLog.otherDay]].map(([mode, lbl]) => (
+                      <button key={mode} onClick={() => setDateMode(mode)} style={{
+                        flex: 1, padding: "11px 4px", borderRadius: 12, cursor: "pointer",
+                        border: `1px solid ${dateMode === mode ? accentColor + "55" : "rgba(255,255,255,0.95)"}`,
+                        background: dateMode === mode ? `${accentColor}14` : "rgba(255,255,255,0.7)",
+                        color: dateMode === mode ? accentColor : "#6b5a9e",
+                        fontSize: 14, fontWeight: 600, fontFamily: "'DM Sans', sans-serif",
+                      }}>{lbl}</button>
+                    ))}
+                  </div>
+                </div>
+                <div style={{ width: 92 }}>
+                  <div style={{ fontSize: 13, letterSpacing: 2.5, color: "#6b5a9e", fontWeight: 700, textTransform: "uppercase", marginBottom: 8 }}>
+                    {t.photoLog.ageLabel}
+                  </div>
+                  <input className="cr-input"
+                    value={logAge} onChange={e => setLogAge(e.target.value)}
+                    placeholder={t.photoLog.agePlaceholder} type="number"
+                    style={{ marginBottom: 0 }}
+                  />
+                </div>
+              </div>
+
+              {dateMode === "other" && (
+                <input className="cr-input"
+                  value={customDate} onChange={e => setCustomDate(e.target.value)}
+                  type="date" style={{ marginBottom: 16 }}
+                />
+              )}
 
               <div style={{ display: "flex", gap: 10 }}>
-                <button onClick={() => { setShowForm(false); setDesc(""); setAmount(""); }} style={{
+                <button onClick={() => { setShowForm(false); setDesc(""); setAmount(""); setHours(""); setLogAge(""); setDateMode("today"); setCustomDate(""); }} style={{
                   flex: 1, padding: "13px", borderRadius: 14,
                   background: "rgba(255,255,255,0.7)", border: "1px solid rgba(255,255,255,0.95)",
-                  color: "#9b8ec4", cursor: "pointer", fontSize: 14,
+                  color: "#6b5a9e", cursor: "pointer", fontSize: 14,
                   fontFamily: "'DM Sans', sans-serif",
                   boxShadow: "0 2px 8px rgba(139,92,246,0.06)",
                 }}>✕</button>
@@ -321,7 +387,7 @@ export default function ChildRoomScreen() {
         </div>
 
         {/* Logs list */}
-        <div style={{ fontSize: 12, letterSpacing: 2.5, color: "#6b5a9e", fontWeight: 700, textTransform: "uppercase", marginBottom: 12 }}>
+        <div style={{ fontSize: 13, letterSpacing: 2.5, color: "#6b5a9e", fontWeight: 700, textTransform: "uppercase", marginBottom: 12 }}>
           {t.childRoom.recentLogs}
         </div>
 
@@ -336,7 +402,7 @@ export default function ChildRoomScreen() {
           }}>
             <div style={{ fontSize: 44, marginBottom: 14 }}>✨</div>
             <div style={{ fontSize: 18, color: "#6b5b9e", marginBottom: 8 }}>{t.childRoom.noLogs}</div>
-            <div style={{ fontSize: 14, color: "#a394c8" }}>{t.childRoom.noLogsHint}</div>
+            <div style={{ fontSize: 14, color: "#6b5a9e" }}>{t.childRoom.noLogsHint}</div>
           </div>
         ) : (
           <div style={{
@@ -347,10 +413,12 @@ export default function ChildRoomScreen() {
             borderRadius: 24, padding: "6px 18px",
             boxShadow: "0 8px 32px rgba(139,92,246,0.09), inset 0 1px 0 rgba(255,255,255,1)",
           }}>
-            {logs.map((log, i) => {
-              const meta = TYPE_META.find(m => m.type === log.type) || TYPE_META[3];
+            {logs.slice(0, 2).map((log, i) => {
+              const cat = catOf(log);
+              const meta = CATEGORIES.find(m => m.key === cat) || CATEGORIES[6];
               return (
-                <div key={log.id} className="cr-log-row" style={{ animationDelay: `${i * 0.04}s` }}>
+                <div key={log.id} className="cr-log-row"
+                  style={{ animationDelay: `${i * 0.04}s`, alignItems: "stretch" }}>
                   <div style={{
                     width: 40, height: 40, borderRadius: 13, flexShrink: 0,
                     background: "rgba(139,92,246,0.08)",
@@ -359,22 +427,37 @@ export default function ChildRoomScreen() {
                     fontSize: 18,
                     boxShadow: "0 2px 10px rgba(139,92,246,0.08)",
                   }}>{meta.icon}</div>
-                  <div style={{ flex: 1 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 15, color: "#1e0f3c", fontWeight: 500 }}>{log.desc}</div>
-                    <div style={{ fontSize: 12, color: "#9b8ec4", marginTop: 3 }}>
-                      {t.logTypes[log.type]}
+                    <div style={{ fontSize: 15, color: "#6b5a9e", marginTop: 3 }}>
+                      {t.categories[cat] || t.logTypes[log.type] || ""}
                       {log.age ? ` · ${t.childRoom.ageAt(log.age)}` : ""}
                       {log.createdAt ? ` · ${formatDate(log.createdAt)}` : ""}
                     </div>
                   </div>
-                  {log.amount > 0 && (
-                    <div style={{
-                      fontSize: 15, fontWeight: 700, color: "#EA580C", flexShrink: 0,
-                      fontFamily: "'Climate Crisis', sans-serif",
+                  {/* Right column: amount on top, edit button pinned bottom-right */}
+                  <div style={{
+                    display: "flex", flexDirection: "column", alignItems: "flex-end",
+                    justifyContent: "space-between", gap: 8, flexShrink: 0,
+                  }}>
+                    {log.amount > 0 ? (
+                      <div style={{ fontSize: 15, fontWeight: 700, color: "#EA580C", fontFamily: titleFont }}>
+                        ${log.amount}
+                      </div>
+                    ) : log.hours > 0 ? (
+                      <div style={{ fontSize: 15, fontWeight: 700, color: "#6366F1", fontFamily: titleFont }}>
+                        {t.photoLog.hoursDisplay(log.hours)}
+                      </div>
+                    ) : <div />}
+                    <button onClick={() => navigate(`/child/${id}/log/${log.id}`)} style={{
+                      flexShrink: 0, padding: "7px 12px", borderRadius: 12, whiteSpace: "nowrap",
+                      border: "1px solid rgba(124,58,237,0.25)", background: "rgba(124,58,237,0.07)",
+                      color: "#7C3AED", fontSize: 13, fontWeight: 600, cursor: "pointer",
+                      fontFamily: "'DM Sans', sans-serif",
                     }}>
-                      ${log.amount}
-                    </div>
-                  )}
+                      ✏️ {t.logEdit.edit}
+                    </button>
+                  </div>
                 </div>
               );
             })}

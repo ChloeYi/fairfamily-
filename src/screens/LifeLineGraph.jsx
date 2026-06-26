@@ -1,7 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { Capacitor } from "@capacitor/core";
 import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 import { auth, db } from "../firebase";
-import { Gift, Sparkle, Trophy, Note } from "@phosphor-icons/react";
+import { Clock, CurrencyDollar, Gift, GraduationCap, UsersThree, Heart, Sparkle, Heartbeat } from "@phosphor-icons/react";
+import { useLanguage } from "../hooks/useLanguage";
+
+// "now" label is larger in the native app, normal (readable) on web.
+const NOW_FONT = Capacitor.isNativePlatform() ? 20 : 15;
 
 const EMOJI_FLATICON = {
   "🌸": "fi-sr-child-head",
@@ -40,7 +45,7 @@ const css = `
     border: 1px solid rgba(255,255,255,0.12);
     border-radius: 14px;
     padding: 10px 14px;
-    font-size: 12px;
+    font-size: 13px;
     pointer-events: none;
     z-index: 30;
     min-width: 140px;
@@ -61,51 +66,80 @@ const css = `
   }
 
   .flag-label {
-    font-size: 9px;
-    fill: #8899aa;
+    font-size: 13px;
+    fill: #5b4899;
+    font-weight: 600;
     text-anchor: middle;
   }
 `;
 
-const TYPE_PHOSPHOR = { gift: Gift, experience: Sparkle, milestone: Trophy, note: Note };
-
-const TYPE_COLORS = { gift: "#FF6B6B", experience: "#4ECDC4", milestone: "#8B5CF6" };
+// Same 8 categories as the Log screen and fairness radar.
+const CAT_ICONS = {
+  time: Clock, money: CurrencyDollar, gifts: Gift, school: GraduationCap,
+  oneOnOne: UsersThree, emotional: Heart, experiences: Sparkle, health: Heartbeat,
+};
+const CAT_COLORS = {
+  time: "#6366F1", money: "#EA580C", gifts: "#FF6B6B", school: "#F59E0B",
+  oneOnOne: "#14B8A6", emotional: "#EC4899", experiences: "#4ECDC4", health: "#22C55E",
+};
+const CAT_ORDER = ["time", "money", "gifts", "school", "oneOnOne", "emotional", "experiences", "health"];
+// Map old log "type" values onto the new categories.
+const LEGACY_TYPE = { gift: "gifts", experience: "experiences", milestone: "experiences", note: "experiences" };
+const normCat = (l) => l.category || LEGACY_TYPE[l.type] || l.type || "experiences";
+const catColor = (k) => CAT_COLORS[k] || "#8B5CF6";
+const catIcon = (k) => CAT_ICONS[k] || Sparkle;
 
 const MAX_AGE = 12;
-const W = 340;
-const H = 180;
-const PAD = { top: 40, right: 20, bottom: 30, left: 20 };
-const INNER_W = W - PAD.left - PAD.right;
-const INNER_H = H - PAD.top - PAD.bottom;
+const H = 440;                 // fixed graph height in px (tall — ~2x the old graph)
+const DEFAULT_W = 340;
+const PAD = { top: 48, right: 14, bottom: 44, left: 14 };
 
+// Wider vertical spread so the connecting line has visible length.
 const getY = (event) => {
-  if (event.type === "milestone") return 0.3;
-  if (event.amount > 200) return 0.85;
-  if (event.amount > 50) return 0.65;
-  return 0.45;
-};
-
-const getX = (age) => PAD.left + (age / MAX_AGE) * INNER_W;
-const getYCoord = (y) => PAD.top + (1 - y) * INNER_H;
-
-const buildPath = (events) => {
-  if (events.length < 2) return "";
-  const pts = events.map(e => ({ x: getX(e.age), y: getYCoord(getY(e)) }));
-  let d = `M ${pts[0].x} ${pts[0].y}`;
-  for (let i = 1; i < pts.length; i++) {
-    const prev = pts[i - 1];
-    const curr = pts[i];
-    const cpx = (prev.x + curr.x) / 2;
-    d += ` C ${cpx} ${prev.y}, ${cpx} ${curr.y}, ${curr.x} ${curr.y}`;
-  }
-  return d;
+  if (event.amount > 200) return 0.9;
+  if (event.amount > 50) return 0.58;
+  return 0.26;
 };
 
 export default function LifeLineGraph() {
+  const { t } = useLanguage();
   const [children, setChildren] = useState([]);
   const [activeChild, setActiveChild] = useState(null);
   const [tooltip, setTooltip] = useState(null);
+  // Measure the real pixel width so the SVG viewBox == container px:
+  // the axis fills full width while dots/text keep a fixed px size.
+  const wrapRef = useRef(null);
+  const [vw, setVw] = useState(DEFAULT_W);
   const uid = auth.currentUser?.uid;
+
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const update = () => setVw(el.clientWidth || DEFAULT_W);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  // Re-attach/measure once the graph (with its ref) actually renders.
+  }, [activeChild]);
+
+  const W = vw;
+  const INNER_W = W - PAD.left - PAD.right;
+  const INNER_H = H - PAD.top - PAD.bottom;
+  const getX = (age, maxAge = MAX_AGE) => PAD.left + (age / maxAge) * INNER_W;
+  const getYCoord = (y) => PAD.top + (1 - y) * INNER_H;
+  const buildPath = (events, maxAge = MAX_AGE) => {
+    if (events.length < 2) return "";
+    const pts = events.map(e => ({ x: getX(e.age, maxAge), y: getYCoord(getY(e)) }));
+    let d = `M ${pts[0].x} ${pts[0].y}`;
+    for (let i = 1; i < pts.length; i++) {
+      const prev = pts[i - 1];
+      const curr = pts[i];
+      const cpx = (prev.x + curr.x) / 2;
+      d += ` C ${cpx} ${prev.y}, ${cpx} ${curr.y}, ${curr.x} ${curr.y}`;
+    }
+    return d;
+  };
 
   useEffect(() => {
     if (!uid) return;
@@ -123,7 +157,7 @@ export default function LifeLineGraph() {
               const l = d.data();
               return {
                 age: l.age || kid.age || 1,
-                type: l.type || "note",
+                category: normCat(l),
                 label: l.desc || "",
                 amount: l.amount || 0,
               };
@@ -139,17 +173,22 @@ export default function LifeLineGraph() {
 
   if (!child) return (
     <div style={{
-      background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)",
+      background: "rgba(255,255,255,0.72)", border: "1px solid rgba(255,255,255,0.95)",
       borderRadius: 22, padding: "24px 18px", textAlign: "center",
-      color: "#445566", fontSize: 14, fontFamily: "'DM Sans', sans-serif",
+      color: "#6b5a9e", fontSize: 14, fontFamily: "'DM Sans', sans-serif",
     }}>
       Add children to see the Life Graph
     </div>
   );
 
+  // Stretch the axis so the child's current age (and any later events) always fit.
+  const rawMax = Math.max(MAX_AGE, Math.ceil(child.age || 0), ...child.events.map(e => Math.ceil(e.age || 0)));
+  const maxAge = rawMax % 2 === 0 ? rawMax : rawMax + 1;
+  const axisTicks = Array.from({ length: maxAge / 2 + 1 }, (_, i) => i * 2);
+
   const areaPath = (() => {
     if (child.events.length < 2) return "";
-    const pts = child.events.map(e => ({ x: getX(e.age), y: getYCoord(getY(e)) }));
+    const pts = child.events.map(e => ({ x: getX(e.age, maxAge), y: getYCoord(getY(e)) }));
     let d = `M ${pts[0].x} ${PAD.top + INNER_H} L ${pts[0].x} ${pts[0].y}`;
     for (let i = 1; i < pts.length; i++) {
       const prev = pts[i - 1];
@@ -166,20 +205,21 @@ export default function LifeLineGraph() {
       <style>{css}</style>
 
       <div style={{
-        background: "rgba(255,255,255,0.04)",
-        border: "1px solid rgba(255,255,255,0.07)",
+        background: "rgba(255,255,255,0.72)",
+        border: "1px solid rgba(255,255,255,0.95)",
         borderRadius: 22,
         padding: "18px 18px 14px",
+        boxShadow: "0 8px 32px rgba(139,92,246,0.09), inset 0 1px 0 rgba(255,255,255,1)",
       }}>
         <div style={{
-          fontSize: 10, letterSpacing: 3, textTransform: "uppercase",
-          color: "#445566", fontFamily: "'DM Sans', sans-serif", marginBottom: 12,
+          fontSize: 13, letterSpacing: 3, textTransform: "uppercase",
+          color: "#6b5a9e", fontFamily: "'DM Sans', sans-serif", marginBottom: 12,
         }}>Life Graph</div>
 
         {/* Child tabs */}
         <div style={{
           display: "flex", gap: 6,
-          background: "rgba(255,255,255,0.04)",
+          background: "rgba(124,58,237,0.08)",
           borderRadius: 12, padding: 3, marginBottom: 14,
         }}>
           {children.map(c => (
@@ -188,7 +228,7 @@ export default function LifeLineGraph() {
               style={{
                 background: activeChild === c.id ? `${c.color}18` : "none",
                 border: `1px solid ${activeChild === c.id ? c.color + "44" : "transparent"}`,
-                color: activeChild === c.id ? c.color : "#445566",
+                color: activeChild === c.id ? c.color : "#6b5a9e",
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 4,
               }}>
               <i className={`fi ${EMOJI_FLATICON[c.emoji] || "fi-sr-star"}`} style={{ fontSize: 13, color: "inherit" }} /> {c.name}
@@ -197,8 +237,8 @@ export default function LifeLineGraph() {
         </div>
 
         {/* SVG Graph */}
-        <div style={{ position: "relative" }}>
-          <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ overflow: "visible" }}>
+        <div ref={wrapRef} style={{ position: "relative" }}>
+          <svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" style={{ overflow: "visible", display: "block" }}>
             <defs>
               <linearGradient id={`lg-grad-${child.id}`} x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor={child.color} stopOpacity="0.15" />
@@ -210,16 +250,16 @@ export default function LifeLineGraph() {
             {[0.3, 0.55, 0.8].map((y, i) => (
               <line key={i}
                 x1={PAD.left} y1={getYCoord(y)} x2={W - PAD.right} y2={getYCoord(y)}
-                stroke="rgba(255,255,255,0.04)" strokeWidth="1" strokeDasharray="4,4"
+                stroke="rgba(124,58,237,0.08)" strokeWidth="1" strokeDasharray="4,4"
               />
             ))}
 
             {/* Age grid */}
-            {[0, 2, 4, 6, 8, 10, 12].map(age => (
+            {axisTicks.map(age => (
               <g key={age}>
-                <line x1={getX(age)} y1={PAD.top} x2={getX(age)} y2={PAD.top + INNER_H}
-                  stroke="rgba(255,255,255,0.04)" strokeWidth="1" />
-                <text x={getX(age)} y={H - 6} textAnchor="middle" fontSize="9" fill="#334455">
+                <line x1={getX(age, maxAge)} y1={PAD.top} x2={getX(age, maxAge)} y2={PAD.top + INNER_H}
+                  stroke="rgba(124,58,237,0.08)" strokeWidth="1" />
+                <text x={getX(age, maxAge)} y={H - 16} textAnchor="middle" fontSize="13" fontWeight="600" fill="#6b5a9e">
                   {age}
                 </text>
               </g>
@@ -227,11 +267,11 @@ export default function LifeLineGraph() {
 
             {/* Current age marker */}
             <line
-              x1={getX(child.age)} y1={PAD.top - 10} x2={getX(child.age)} y2={PAD.top + INNER_H}
+              x1={getX(child.age, maxAge)} y1={PAD.top - 10} x2={getX(child.age, maxAge)} y2={PAD.top + INNER_H}
               stroke={child.color} strokeWidth="1.5" strokeDasharray="3,3" opacity="0.4"
             />
-            <text x={getX(child.age)} y={PAD.top - 14}
-              textAnchor="middle" fontSize="9" fill={child.color} fontWeight="600">now</text>
+            <text x={getX(child.age, maxAge)} y={PAD.top - 16}
+              textAnchor="middle" fontSize={NOW_FONT} fill={child.color} fontWeight="700">now</text>
 
             {/* Area fill */}
             <path d={areaPath} fill={`url(#lg-grad-${child.id})`} />
@@ -240,14 +280,14 @@ export default function LifeLineGraph() {
             <path
               key={`line-${child.id}`}
               className="line-path"
-              d={buildPath(child.events)}
+              d={buildPath(child.events, maxAge)}
               fill="none" stroke={child.color}
               strokeWidth="2.5" strokeLinecap="round" opacity="0.8"
             />
 
             {/* Nodes */}
             {child.events.map((event, i) => {
-              const x = getX(event.age);
+              const x = getX(event.age, maxAge);
               const y = getYCoord(getY(event));
               const hovered = tooltip?.id === `${child.id}-${i}`;
               return (
@@ -258,12 +298,12 @@ export default function LifeLineGraph() {
                 >
                   {hovered && (
                     <circle cx={x} cy={y} r="14"
-                      fill={`${TYPE_COLORS[event.type]}15`}
-                      stroke={TYPE_COLORS[event.type]} strokeWidth="1" opacity="0.5"
+                      fill={`${catColor(event.category)}15`}
+                      stroke={catColor(event.category)} strokeWidth="1" opacity="0.5"
                     />
                   )}
                   <circle cx={x} cy={y} r={hovered ? "8" : "6"}
-                    fill={TYPE_COLORS[event.type]} stroke="#06090f" strokeWidth="2" />
+                    fill={catColor(event.category)} stroke="#06090f" strokeWidth="2" />
                   <text x={x} y={y + 18} className="flag-label">{event.age}</text>
                 </g>
               );
@@ -278,56 +318,57 @@ export default function LifeLineGraph() {
               transform: "translateX(-50%)",
               fontFamily: "'DM Sans', sans-serif",
             }}>
-              <div style={{ fontWeight: 600, color: TYPE_COLORS[tooltip.event.type], marginBottom: 4, display: "flex", alignItems: "center", gap: 5 }}>
-                {(() => { const Icon = TYPE_PHOSPHOR[tooltip.event.type] || Note; return <Icon size={13} weight="fill" />; })()}
+              <div style={{ fontWeight: 600, color: catColor(tooltip.event.category), marginBottom: 4, display: "flex", alignItems: "center", gap: 5 }}>
+                {(() => { const Icon = catIcon(tooltip.event.category); return <Icon size={13} weight="fill" />; })()}
                 {tooltip.event.label}
               </div>
-              <div style={{ color: "#8899aa", fontSize: 11 }}>Age {tooltip.event.age}</div>
+              <div style={{ color: "#8899aa", fontSize: 13 }}>Age {tooltip.event.age}</div>
               {tooltip.event.amount > 0 && (
-                <div style={{ color: "#EA580C", fontSize: 11, marginTop: 2 }}>💰 ${tooltip.event.amount}</div>
+                <div style={{ color: "#EA580C", fontSize: 13, marginTop: 2 }}>💰 ${tooltip.event.amount}</div>
               )}
-              <div style={{ color: "#334455", fontSize: 10, marginTop: 2, textTransform: "capitalize" }}>
-                {tooltip.event.type}
+              <div style={{ color: "#6b5a9e", fontSize: 13, marginTop: 2 }}>
+                {t.categories[tooltip.event.category] || tooltip.event.category}
               </div>
             </div>
           )}
         </div>
 
         {/* Legend */}
-        <div style={{ display: "flex", gap: 16, marginTop: 8, flexWrap: "wrap" }}>
-          {Object.entries(TYPE_COLORS).map(([type, color]) => (
-            <div key={type} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 15, color: "#8899aa" }}>
-              <div style={{ width: 9, height: 9, borderRadius: "50%", background: color }} />
-              {type.charAt(0).toUpperCase() + type.slice(1)}
+        <div style={{ display: "flex", gap: 10, marginTop: 8, flexWrap: "wrap" }}>
+          {CAT_ORDER.map(key => (
+            <div key={key} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 13, color: "#6b5a9e" }}>
+              <div style={{ width: 8, height: 8, borderRadius: "50%", background: catColor(key) }} />
+              {t.categories[key]}
             </div>
           ))}
         </div>
 
-        {/* Events list */}
+        {/* Events list — show only the first 3 */}
         <div style={{ marginTop: 14 }}>
-          {child.events.map((event, i) => {
-            const Icon = TYPE_PHOSPHOR[event.type] || Note;
+          {child.events.slice(0, 3).map((event, i, arr) => {
+            const Icon = catIcon(event.category);
+            const color = catColor(event.category);
             return (
             <div key={i} style={{
               display: "flex", alignItems: "center", gap: 10,
               padding: "7px 0",
-              borderBottom: i < child.events.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none",
+              borderBottom: i < arr.length - 1 ? "1px solid rgba(124,58,237,0.08)" : "none",
             }}>
               <div style={{
                 width: 26, height: 26, borderRadius: 7,
-                background: `${TYPE_COLORS[event.type]}18`,
-                border: `1px solid ${TYPE_COLORS[event.type]}33`,
+                background: `${color}18`,
+                border: `1px solid ${color}33`,
                 display: "flex", alignItems: "center", justifyContent: "center",
                 flexShrink: 0,
-              }}><Icon size={14} color={TYPE_COLORS[event.type]} weight="fill" /></div>
+              }}><Icon size={14} color={color} weight="fill" /></div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 13, color: "#ddeeff" }}>{event.label}</div>
-                <div style={{ fontSize: 10, color: "#445566", marginTop: 1 }}>
-                  Age {event.age} · {event.type}
+                <div style={{ fontSize: 15, color: "#1e0f3c" }}>{event.label}</div>
+                <div style={{ fontSize: 15, color: "#6b5a9e", marginTop: 1 }}>
+                  Age {event.age} · {t.categories[event.category] || event.category}
                 </div>
               </div>
               {event.amount > 0 && (
-                <div style={{ fontSize: 12, fontWeight: 600, color: "#EA580C" }}>${event.amount}</div>
+                <div style={{ fontSize: 15, fontWeight: 600, color: "#EA580C" }}>${event.amount}</div>
               )}
             </div>
           );})}
