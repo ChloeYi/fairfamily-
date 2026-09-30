@@ -3,16 +3,22 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>How fairfamily works</title>
-<meta name="description" content="Three small steps to make sure every child feels equally seen. 페어패밀리 사용법: 아이 추가, 기록하기, AI 조언." />
+<title>How fairfamily Works — Fair Parenting in 3 Simple Steps</title>
+<meta name="description" content="Add your children, log everyday moments, and get gentle AI parenting nudges. See how fairfamily helps you give every child equal love and attention." />
 <link rel="canonical" href="https://fairfamily.site/how-it-works.html" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="fairfamily" />
-<meta property="og:title" content="How fairfamily works" />
-<meta property="og:description" content="Three small steps to make sure every child feels equally seen. 페어패밀리 사용법: 아이 추가, 기록하기, AI 조언." />
+<meta property="og:title" content="How fairfamily Works — Fair Parenting in 3 Simple Steps" />
+<meta property="og:description" content="Add your children, log everyday moments, and get gentle AI parenting nudges. See how fairfamily helps you give every child equal love and attention." />
 <meta property="og:url" content="https://fairfamily.site/how-it-works.html" />
 <meta property="og:image" content="https://fairfamily.site/logo512.png" />
 <meta name="twitter:card" content="summary" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:locale:alternate" content="ko_KR" />
+<link rel="alternate" hreflang="en" href="https://fairfamily.site/how-it-works.html" />
+<link rel="alternate" hreflang="ko" href="https://fairfamily.site/ko/how-it-works.html" />
+<link rel="alternate" hreflang="x-default" href="https://fairfamily.site/how-it-works.html" />
+<!--LD-->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 <style>
   :root{
@@ -103,7 +109,7 @@
     <div class="nav-right">
       <div class="langtog">
         <button id="en" class="on" onclick="setLang('en',true)">EN</button>
-        <button id="kr" onclick="setLang('kr',true)">한국어</button>
+        <button id="kr" onclick="setLang('kr',true)">KO</button>
       </div>
       <a class="btn btn-primary btn-sm app-link" data-t="launch">Open fairfamily</a>
     </div>
@@ -136,7 +142,7 @@
 </div>
 
 <script>
-  var APP_URL = "app.html";
+  var APP_URL = "/app"; // the React app is served under /app on the same site
   var STEPCFG = [
     {bg:'var(--pink-soft)',ac:'var(--pink-deep)',icon:'🐣'},
     {bg:'var(--sky-soft)',ac:'var(--sky-deep)',icon:'📷'},
@@ -182,7 +188,7 @@
       g.appendChild(el);
     });
   }
-  // Language: an explicit tap on EN/한국어 is remembered in "lang_choice" (shared
+  // Language: an explicit tap on EN/KO is remembered in "lang_choice" (shared
   // with the app at /app); otherwise follow the device language (Korean → kr).
   var curLang='en';
   function deviceLang(){

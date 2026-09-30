@@ -3,16 +3,23 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>fairfamily — Every child deserves equal love</title>
-<meta name="description" content="fairfamily gently reminds you when one child might need a little more of you. 아이들에게 쓴 시간·돈·선물·마음을 기록하고 AI로 공평함을 확인하는 육아 앱." />
+<title>fairfamily — Free Parenting App to Raise Siblings Fairly</title>
+<meta name="description" content="Free parenting app that helps you treat every child fairly. Track time, money, gifts and attention for each kid, compare siblings by age, and get AI parenting tips to ease sibling rivalry." />
+<meta name="keywords" content="parenting app, fair parenting, sibling rivalry, treat children equally, raising siblings, parenting tips, family tracker, AI parenting coach, 육아 앱, 형제 차별, 공평한 육아" />
 <link rel="canonical" href="https://fairfamily.site/" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="fairfamily" />
-<meta property="og:title" content="fairfamily — Every child deserves equal love" />
-<meta property="og:description" content="fairfamily gently reminds you when one child might need a little more of you. 아이들에게 쓴 시간·돈·선물·마음을 기록하고 AI로 공평함을 확인하는 육아 앱." />
+<meta property="og:title" content="fairfamily — Free Parenting App to Raise Siblings Fairly" />
+<meta property="og:description" content="Free parenting app that helps you treat every child fairly. Track time, money, gifts and attention for each kid, compare siblings by age, and get AI parenting tips to ease sibling rivalry." />
 <meta property="og:url" content="https://fairfamily.site/" />
 <meta property="og:image" content="https://fairfamily.site/logo512.png" />
 <meta name="twitter:card" content="summary" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:locale:alternate" content="ko_KR" />
+<link rel="alternate" hreflang="en" href="https://fairfamily.site/" />
+<link rel="alternate" hreflang="ko" href="https://fairfamily.site/ko/" />
+<link rel="alternate" hreflang="x-default" href="https://fairfamily.site/" />
+<!--LD-->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 <style>
@@ -137,6 +144,14 @@
 
   @media(max-width:760px){ .nav-links{display:none} }
 
+/* FAQ */
+.faq{max-width:760px;margin:28px auto 0;display:flex;flex-direction:column;gap:12px}
+.faq-item{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px 22px;box-shadow:0 6px 18px rgba(18,32,63,.06)}
+.faq-item summary{cursor:pointer;font-weight:800;font-size:17px;list-style:none;display:flex;justify-content:space-between;gap:12px}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary::after{content:'+';color:var(--pink-deep);font-size:22px;line-height:1}
+.faq-item[open] summary::after{content:'–'}
+.faq-item p{margin:12px 0 0;line-height:1.7;color:inherit;opacity:.85}
 /* CTA nudge: a constant tiny jiggle + a soft glow that pulses outward */
 @keyframes ff-jiggle {
   0%, 100% { transform: rotate(0) translateY(0); }
@@ -176,7 +191,7 @@
     <div class="nav-right">
       <div class="langtog">
         <button id="en" class="on" onclick="setLang('en',true)">EN</button>
-        <button id="kr" onclick="setLang('kr',true)">한국어</button>
+        <button id="kr" onclick="setLang('kr',true)">KO</button>
       </div>
       <a class="btn btn-primary btn-sm app-link" data-t="launch">Open fairfamily</a>
     </div>
@@ -255,6 +270,14 @@
       <div class="grid4" id="app-grid" style="margin-top:0"></div>
       <div class="push-demo" id="push-demo"></div>
     </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="kicker" data-t="faqSub">Common questions from parents raising more than one child.</div>
+    <h2 class="title" data-t="faqTitle">Parenting questions, answered</h2>
+    <div class="faq" id="faq-list"></div>
   </div>
 </section>
 
@@ -342,7 +365,18 @@
       ctaShareBtn:'Recommend to a friend',
       shareText:'I found fairfamily — it gently helps you love every child fairly. Try it 💗',
       shareCopied:'Link copied — share it with a friend! 💌',
-      footer:'© 2025 fairfamily · Made with 💗 for every child'
+      footer:'© 2025 fairfamily · Made with 💗 for every child',
+      faqTitle:'Parenting questions, answered',
+      faqSub:'Common questions from parents raising more than one child.',
+      faq:[
+        {q:'How can I treat my children fairly?',a:'Fair doesn’t mean identical — it means every child gets what they need over time. fairfamily records the time, money, gifts, school support, one-on-one time, emotional care, experiences and health care each child receives, so you can see the balance at a glance.'},
+        {q:'How do I reduce sibling rivalry and jealousy?',a:'Kids notice small differences long before we do. By logging one-on-one time and gifts for each child, and comparing what siblings got at the same age, you can give every child their turn — and your AI parenting coach suggests gentle ways to rebalance.'},
+        {q:'Is fairfamily a free parenting app?',a:'Yes. fairfamily is free and runs right in your browser on phone or computer — no download needed. An Android app with push reminders is on the way.'},
+        {q:'What does fairfamily track for each child?',a:'Eight areas of parenting: time together, money, gifts, school, one-on-one time, emotional care, fun experiences and health. Snap a photo or type one sentence and AI sorts it into the right category.'},
+        {q:'How does the AI parenting coach work?',a:'It looks at your family’s records and gives warm, practical parenting tips — for example noticing that one child hasn’t had special one-on-one time lately, or that an older sibling got something at the same age.'},
+        {q:'What ages is fairfamily for?',a:'From babies and toddlers to school-age kids and teens. Its age-by-age comparison helps you see whether a younger sibling is getting the same milestones an older one did.'},
+        {q:'Is my family’s data private?',a:'Your records are saved to your own account and are never shown to other users. You can delete your children’s data or your whole account at any time in Settings.'}
+      ]
     },
     kr:{
       navFeatures:'기능', navHow:'작동 방식', navInsights:'AI 코치', navApp:'앱', launch:'fairfamily 열기',
@@ -391,7 +425,18 @@
       ctaShareBtn:'친구에게 추천하기',
       shareText:'fairfamily를 발견했어요 — 모든 아이를 공평하게 사랑하도록 부드럽게 도와줘요. 한번 써보세요 💗',
       shareCopied:'링크를 복사했어요 — 친구에게 공유하세요! 💌',
-      footer:'© 2025 fairfamily · 모든 아이를 위해 💗 마음을 담아'
+      footer:'© 2025 fairfamily · 모든 아이를 위해 💗 마음을 담아',
+      faqTitle:'육아 고민, 여기서 답해 드려요',
+      faqSub:'둘 이상의 아이를 키우는 부모님들이 자주 묻는 질문이에요.',
+      faq:[
+        {q:'아이들을 공평하게 키우려면 어떻게 해야 하나요?',a:'공평함은 똑같이 주는 게 아니라, 시간이 지나도 모든 아이가 필요한 만큼 받는 거예요. 페어패밀리는 아이마다 함께한 시간, 용돈·지출, 선물, 학업 지원, 1:1 시간, 감정 케어, 경험, 건강 관리를 기록해서 균형을 한눈에 보여줘요.'},
+        {q:'형제 갈등과 질투를 줄이는 방법이 있나요?',a:'아이들은 작은 차이도 먼저 알아채요. 첫째·둘째·셋째에게 준 1:1 시간과 선물을 기록하고 같은 나이 때 받은 것을 비교하면 모든 아이에게 차례가 돌아가요. AI 육아 코치가 형제 차별 없이 균형을 맞추는 방법도 알려줘요.'},
+        {q:'페어패밀리는 무료 육아 앱인가요?',a:'네, 무료예요. 설치 없이 휴대폰이나 컴퓨터 브라우저에서 바로 쓸 수 있어요. 알림 기능이 있는 안드로이드 앱도 준비 중이에요.'},
+        {q:'아이별로 무엇을 기록하나요?',a:'육아의 8가지 영역이에요: 함께한 시간, 돈, 선물, 학교, 1:1 시간, 감정 케어, 즐거운 경험, 건강. 사진을 찍거나 한 문장만 적으면 AI가 알맞은 카테고리로 분류해요.'},
+        {q:'AI 육아 코치는 어떻게 작동하나요?',a:'우리 가족의 기록을 살펴보고 따뜻하고 실용적인 육아 조언을 줘요. 예를 들어 한 아이와 요즘 1:1 시간이 부족하다거나, 큰아이는 같은 나이에 무엇을 받았는지 알려줘요.'},
+        {q:'몇 살 아이까지 쓸 수 있나요?',a:'아기와 유아부터 초등학생, 청소년까지 쓸 수 있어요. 나이별 비교로 동생이 형·누나·언니·오빠와 같은 나이에 비슷한 경험을 했는지 확인할 수 있어요.'},
+        {q:'우리 가족 데이터는 안전한가요?',a:'기록은 내 계정에만 저장되고 다른 사용자에게 절대 보이지 않아요. 설정에서 언제든 아이 데이터나 계정 전체를 삭제할 수 있어요.'}
+      ]
     }
   };
 
@@ -430,6 +475,15 @@
       g.appendChild(c);
     });
   }
+  function esc(x){ return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function renderFaq(t){
+    var g=document.getElementById('faq-list'); g.innerHTML='';
+    t.faq.forEach(function(f){
+      var d=document.createElement('details'); d.className='faq-item';
+      d.innerHTML='<summary>'+esc(f.q)+'</summary><p>'+esc(f.a)+'</p>';
+      g.appendChild(d);
+    });
+  }
   function renderApp(t){
     var g=document.getElementById('app-grid'); g.innerHTML='';
     t.appCards.forEach(function(f,i){
@@ -445,7 +499,7 @@
       d.appendChild(p);
     });
   }
-  // Language: an explicit tap on EN/한국어 is remembered in "lang_choice" (shared
+  // Language: an explicit tap on EN/KO is remembered in "lang_choice" (shared
   // with the app at /app); otherwise follow the device language (Korean → kr).
   var curLang='en';
   function deviceLang(){
@@ -465,7 +519,7 @@
     document.querySelector('.kid-emma').textContent=t.kidNames.emma;
     document.querySelector('.kid-liam').textContent=t.kidNames.liam;
     document.querySelector('.kid-zoe').textContent=t.kidNames.zoe;
-    renderBars(t); renderFeatures(t); renderAI(t); renderApp(t);
+    renderBars(t); renderFeatures(t); renderAI(t); renderApp(t); renderFaq(t);
   }
   document.getElementById('shareBtn').addEventListener('click',function(){
     var t=DATA[curLang];
