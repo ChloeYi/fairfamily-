@@ -53,8 +53,11 @@ export default function LoginScreen() {
     } catch (e) {
       const msg = (e?.message || "").toLowerCase();
       const canceled = e.code === "auth/popup-closed-by-user" || msg.includes("cancel");
+      console.error("Google sign-in error:", e);
       if (!canceled)
-        setError(e.code === "auth/popup-blocked" ? t.login.popupBlocked : t.login.googleFailed);
+        setError(e.code === "auth/popup-blocked"
+          ? t.login.popupBlocked
+          : `${t.login.googleFailed} (${e.code || e.message || "unknown"})`);
     } finally { setLoading(false); }
   };
 
