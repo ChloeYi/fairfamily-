@@ -74,6 +74,11 @@ function fillList(html, id, inner) {
 }
 
 function prerenderLists(html, t) {
+  if (t.kidNames) {
+    for (const [kid, name] of Object.entries(t.kidNames)) {
+      html = html.replace(new RegExp(`(class="kid-${kid}"[^>]*>)[^<]*(<)`), `$1${esc(name)}$2`);
+    }
+  }
   if (t.faq) {
     html = fillList(
       html,

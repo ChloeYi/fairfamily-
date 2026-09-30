@@ -77,7 +77,7 @@ export default {
   onboarding: {
     s0pre: "모든 아이는",
     s0shimmer: "평등한 사랑을 받을 자격이 있어요",
-    s0sub: "7살 때 Emma에게 자전거를 사줬나요?\nZoe에게도 같은 걸 해줬나요?\n\n이 앱이 대신 기억해 드릴게요.",
+    s0sub: "7살 때 안나에게 자전거를 사줬나요?\n다혜에게도 같은 걸 해줬나요?\n\n이 앱이 대신 기억해 드릴게요.",
     s0btn: "시작하기 →",
     s1title: "중요한 것들을 추적해요",
     s1btn: "좋아요! →",
@@ -278,16 +278,16 @@ export default {
 
   chatOnboarding: {
     bubble1: "모든 아이는 평등한 사랑을 받을 자격이 있어요",
-    bubble2line1: "Emma에게 7살 때 자전거를 사줬죠,",
-    bubble2line2: "Zoe에게도 같은 걸 해줬나요?",
+    bubble2line1: "안나에게 7살 때 자전거를 사줬죠,",
+    bubble2line2: "다혜에게도 같은 걸 해줬나요?",
     bubble3: "이 앱이 대신 기억해 드릴게요.",
     skip: "건너뛰기",
     getStarted: "시작하기 →",
   },
 
   emotionalOnboarding: {
-    line1: "Emma가 7살 때, 무엇을 사줬나요?",
-    line2a: "이제 Zoe가 7살이에요 —",
+    line1: "안나가 7살 때, 무엇을 사줬나요?",
+    line2a: "이제 다혜가 7살이에요 —",
     line2b: "똑같이 해줬나요?",
     bubble: "시간 + 경험 + 감정 =\n아이들 사이의 균형을 조언해 드려요",
     getStarted: "시작하기 →",
@@ -298,10 +298,14 @@ export default {
     title: "자녀들을 나란히 비교해요",
     chartLabel: "시간에 따른 지출",
     chartSub: "기억 / 이벤트 강도",
-    insight1: "Zoe의 학교 공연에 참석했지만, Emma의 3학년 연극은 기록에 없어요. 기록되었나요?",
+    insight1: "다혜의 학교 공연에 참석했지만, 안나의 3학년 연극은 기록에 없어요. 기록되었나요?",
     radarLabel: "카테고리별 균형",
     radarSub: "거미줄 / 레이더 차트",
-    insight2: "Zoe는 7살 때 디즈니랜드를 방문했어요 — Emma는 잊혀져 집에 있었어요. 같은 경험을 했나요?",
+    insight2: "다혜는 7살 때 디즈니랜드를 방문했어요 — 안나는 잊혀져 집에 있었어요. 같은 경험을 했나요?",
+    kidA: "안나",
+    kidB: "다혜",
+    ages: ["출생", "1살", "2살", "3살", "4살", "5살", "6살", "7살", "8살"],
+    radarAxes: ["시간", "선물", "경험", "성장", "감정", "학교"],
     getStarted: "시작하기 →",
   },
 

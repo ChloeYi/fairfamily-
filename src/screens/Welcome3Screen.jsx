@@ -77,7 +77,7 @@ function smoothRadarPath(values, cx, cy, r) {
   return d + " Z";
 }
 
-function SmoothRadar({ showDot }) {
+function SmoothRadar({ showDot, labels, names }) {
   const size = 260;
   const cx = size / 2, cy = size / 2, r = 90;
   const n = RADAR_AXES.length;
@@ -123,7 +123,7 @@ function SmoothRadar({ showDot }) {
             <text key={i} x={lx} y={ly}
               textAnchor="middle" dominantBaseline="middle"
               fontSize={11} fill="#7c6aaa" fontFamily="'DM Sans', sans-serif" fontWeight={600}>
-              {RADAR_AXES[i]}
+              {labels[i]}
             </text>
           );
         })}
@@ -137,7 +137,7 @@ function SmoothRadar({ showDot }) {
       </svg>
       {/* Legend */}
       <div style={{ display: "flex", gap: 20, marginTop: 8 }}>
-        {[["#7C3AED", "Emma"], ["#EC4899", "Zoe"]].map(([color, name]) => (
+        {[["#7C3AED", names[0]], ["#EC4899", names[1]]].map(([color, name]) => (
           <div key={name} style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <div style={{ width: 12, height: 12, borderRadius: 3, background: color }} />
             <span style={{ fontSize: 13, color: "#7c6aaa", fontFamily: "'DM Sans', sans-serif" }}>{name}</span>
@@ -209,7 +209,7 @@ export default function Welcome3Screen() {
         {/* Chart + insight bubble overlay */}
         <div style={{ position: "relative" }}>
           <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={LINE_DATA} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+            <LineChart data={LINE_DATA.map((d, i) => ({ ...d, age: t.welcome3.ages[i] }))} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(139,92,246,0.08)" />
               <XAxis dataKey="age" tick={{ fontSize: 10, fill: "#7C3AED", fontWeight: 700 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 11, fill: "#7C3AED", fontWeight: 700 }} axisLine={false} tickLine={false} />
@@ -222,13 +222,13 @@ export default function Welcome3Screen() {
                 }}
                 itemStyle={{ fontFamily: "'DM Sans', sans-serif" }}
                 formatter={(value, name) => [
-                  <span style={{ color: name === "Emma" ? "#7C3AED" : "#EC4899", fontWeight: 600 }}>
+                  <span style={{ color: name === t.welcome3.kidA ? "#7C3AED" : "#EC4899", fontWeight: 600 }}>
                     {value}
                   </span>, name
                 ]}
               />
               <Legend wrapperStyle={{ fontSize: 13, fontFamily: "'DM Sans', sans-serif" }} />
-              <Line type="monotone" dataKey="Emma" stroke="#7C3AED" strokeWidth={2.5}
+              <Line type="monotone" dataKey="Emma" name={t.welcome3.kidA} stroke="#7C3AED" strokeWidth={2.5}
                 dot={(props) => {
                   const { cx, cy, index, key } = props;
                   if (index === 1) return (
@@ -241,7 +241,7 @@ export default function Welcome3Screen() {
                 }}
                 activeDot={{ r: 6 }}
               />
-              <Line type="monotone" dataKey="Zoe" stroke="#EC4899" strokeWidth={2.5} dot={{ r: 4, fill: "#EC4899" }} activeDot={{ r: 6 }} />
+              <Line type="monotone" dataKey="Zoe" name={t.welcome3.kidB} stroke="#EC4899" strokeWidth={2.5} dot={{ r: 4, fill: "#EC4899" }} activeDot={{ r: 6 }} />
             </LineChart>
           </ResponsiveContainer>
 
@@ -295,7 +295,7 @@ export default function Welcome3Screen() {
           {t.welcome3.radarLabel}
         </div>
         <div style={{ fontSize: 13, color: "#6b5a9e", marginBottom: 16 }}>{t.welcome3.radarSub}</div>
-        <SmoothRadar showDot={showInsight2} />
+        <SmoothRadar showDot={showInsight2} labels={t.welcome3.radarAxes} names={[t.welcome3.kidA, t.welcome3.kidB]} />
 
       </div>
 

@@ -302,6 +302,10 @@ export default {
     radarLabel: "Balance across categories",
     radarSub: "Spider / radar chart",
     insight2: "Zoe visited Disneyland at age 7 — Emma was forgotten and stayed at home. Did she get the same experience at that age?",
+    kidA: "Emma",
+    kidB: "Zoe",
+    ages: ["Born", "1yr", "2yrs", "3yrs", "4yrs", "5yrs", "6yrs", "7yrs", "8yrs"],
+    radarAxes: ["Time", "Gifts", "Experiences", "Milestones", "Emotional", "School"],
     getStarted: "Get Started →",
   },
 
