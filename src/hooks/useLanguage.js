@@ -1,44 +1,32 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState } from "react";
 import en from "../languages/en";
 import ko from "../languages/ko";
 
 const LanguageContext = createContext(null);
 
-// The marketing site (same origin, at /) keeps its choice in "ff_lang" as "kr"/"en".
-function savedLang() {
-  const app = localStorage.getItem("fairfamily_lang");
-  if (app === "ko" || app === "en") return app;
-  const site = localStorage.getItem("ff_lang");
-  if (site === "kr") return "ko";
-  if (site === "en") return "en";
-  return null;
+// An explicit tap on the language toggle is remembered in "lang_choice" (shared
+// with the website at /, same origin). Otherwise follow the device language.
+const CHOICE_KEY = "lang_choice";
+
+function savedChoice() {
+  try {
+    const c = localStorage.getItem(CHOICE_KEY);
+    return c === "ko" || c === "en" ? c : null;
+  } catch { return null; }
 }
 
-function saveLang(l) {
-  localStorage.setItem("fairfamily_lang", l);
-  localStorage.setItem("ff_lang", l === "ko" ? "kr" : "en");
+function deviceLang() {
+  const l = ((navigator.languages && navigator.languages[0]) || navigator.language || "").toLowerCase();
+  return l.startsWith("ko") ? "ko" : "en";
 }
 
 export function LanguageProvider({ children }) {
-  const [lang, setLang] = useState(() => savedLang() || "en");
-
-  useEffect(() => {
-    if (savedLang()) return; // already chosen here or on the website, skip fetch
-
-    fetch("https://ipapi.co/json/")
-      .then(r => r.json())
-      .then(data => {
-        const detected = data.country_code === "KR" ? "ko" : "en";
-        setLang(detected);
-        saveLang(detected);
-      })
-      .catch(() => {});
-  }, []);
+  const [lang, setLang] = useState(() => savedChoice() || deviceLang());
 
   const toggle = () => {
     const next = (lang || "en") === "ko" ? "en" : "ko";
     setLang(next);
-    saveLang(next);
+    try { localStorage.setItem(CHOICE_KEY, next); } catch {}
   };
 
   const t = lang === "ko" ? ko : en;

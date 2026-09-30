@@ -94,8 +94,8 @@
     <a href="index.html" class="logo"><span class="dot">🌿</span>fairfamily</a>
     <div class="nav-right">
       <div class="langtog">
-        <button id="en" class="on" onclick="setLang('en')">EN</button>
-        <button id="kr" onclick="setLang('kr')">한국어</button>
+        <button id="en" class="on" onclick="setLang('en',true)">EN</button>
+        <button id="kr" onclick="setLang('kr',true)">한국어</button>
       </div>
       <a class="btn btn-primary btn-sm app-link" data-t="launch">Open fairfamily</a>
     </div>
@@ -174,9 +174,16 @@
       g.appendChild(el);
     });
   }
-  function setLang(l){
-    localStorage.setItem('ff_lang',l);
-    localStorage.setItem('fairfamily_lang',l==='kr'?'ko':'en'); // shared with the app at /app
+  // Language: an explicit tap on EN/한국어 is remembered in "lang_choice" (shared
+  // with the app at /app); otherwise follow the device language (Korean → kr).
+  var curLang='en';
+  function deviceLang(){
+    var l=((navigator.languages&&navigator.languages[0])||navigator.language||'').toLowerCase();
+    return l.indexOf('ko')===0?'kr':'en';
+  }
+  function setLang(l,save){
+    curLang=l;
+    if(save){ try{ localStorage.setItem('lang_choice',l==='kr'?'ko':'en'); }catch(e){} }
     var t=DATA[l];
     document.documentElement.lang=(l==='kr'?'ko':'en');
     document.getElementById('en').classList.toggle('on',l==='en');
@@ -190,7 +197,10 @@
   window.addEventListener('scroll',function(){
     document.getElementById('toTop').classList.toggle('show', window.scrollY>420);
   });
-  setLang(localStorage.getItem('ff_lang')||(localStorage.getItem('fairfamily_lang')==='ko'?'kr':'en'));
+  (function(){
+    var c=null; try{ c=localStorage.getItem('lang_choice'); }catch(e){}
+    setLang(c==='ko'?'kr':c==='en'?'en':deviceLang(),false);
+  })();
 </script>
 </body>
 </html>
