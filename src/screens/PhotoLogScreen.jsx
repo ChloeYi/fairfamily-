@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import Anthropic from "@anthropic-ai/sdk";
+import { claude as client } from "../lib/claude";
 import { auth, db } from "../firebase";
 import {
   collection, onSnapshot, addDoc, updateDoc, doc,
@@ -24,11 +24,6 @@ const EMOJI_FLATICON = {
 const KidIcon = ({ emoji, size = 24, color }) => (
   <i className={`fi ${EMOJI_FLATICON[emoji] || "fi-sr-child-head"}`} style={{ fontSize: size, color }} />
 );
-
-const client = new Anthropic({
-  apiKey: process.env.REACT_APP_ANTHROPIC_KEY,
-  dangerouslyAllowBrowser: true,
-});
 
 const MODEL = "claude-sonnet-4-6";
 const BG = "linear-gradient(160deg, #f8f0ff 0%, #eef2ff 50%, #fdf4ff 100%)";

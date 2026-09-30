@@ -45,6 +45,14 @@ export default {
     deleting: "Deleting...",
     deleted: "✓ Deleted",
     confirmDelete: "Delete ALL children and logs? This cannot be undone.",
+    accountTitle: "Delete account",
+    accountDesc: "Permanently delete your FairFamily account and everything in it — your profile, all children, and all logs. You'll be signed out and this can't be undone.",
+    deleteAccount: "Delete my account",
+    deletingAccount: "Deleting account...",
+    confirmDeleteAccount: "Delete your account and ALL data permanently? This cannot be undone.",
+    reauthPassword: "For security, please enter your password to confirm.",
+    reauthNeeded: "For security, please sign in again to confirm deletion.",
+    deleteAccountFailed: "Couldn't delete your account. Please try again.",
   },
 
   login: {

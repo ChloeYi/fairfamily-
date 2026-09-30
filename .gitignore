@@ -32,3 +32,13 @@ yarn-error.log*
 # Claude Code internal files
 .claude/
 .mcp.json
+
+# Vercel site build (npm run build:site)
+dist/
+.vercel
+.env*
+
+# Old copies of the app build (contain an exposed key) — never commit
+website/app.html
+website/static/
+website/asset-manifest.json

@@ -45,6 +45,14 @@ export default {
     deleting: "삭제 중...",
     deleted: "✓ 삭제됨",
     confirmDelete: "모든 아이와 기록을 삭제할까요? 되돌릴 수 없어요.",
+    accountTitle: "계정 삭제",
+    accountDesc: "FairFamily 계정과 모든 데이터(프로필, 아이 정보, 모든 기록)를 영구 삭제해요. 로그아웃되며 되돌릴 수 없어요.",
+    deleteAccount: "계정 삭제하기",
+    deletingAccount: "계정 삭제 중...",
+    confirmDeleteAccount: "계정과 모든 데이터를 영구 삭제할까요? 되돌릴 수 없어요.",
+    reauthPassword: "보안을 위해 비밀번호를 입력해 주세요.",
+    reauthNeeded: "보안을 위해 다시 로그인한 뒤 삭제해 주세요.",
+    deleteAccountFailed: "계정을 삭제하지 못했어요. 다시 시도해 주세요.",
   },
 
   login: {

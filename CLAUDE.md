@@ -6,7 +6,8 @@ FairFamily is a React web app (+ Capacitor Android) that helps parents track fai
 ## Tech stack
 - React 19 + React Router 7
 - Firebase Auth + Firestore (real-time)
-- Anthropic SDK (`claude-sonnet-4-6`) with `dangerouslyAllowBrowser: true`
+- Claude (`claude-sonnet-4-6`) called only from the Vercel function `api/claude.js`
+  (verifies the Firebase ID token, holds the API key). The app calls it via `src/lib/claude.js`.
 - Capacitor for Android packaging
 - Custom i18n system (English + Korean)
 
@@ -30,7 +31,12 @@ REACT_APP_FIREBASE_PROJECT_ID
 REACT_APP_FIREBASE_STORAGE_BUCKET
 REACT_APP_FIREBASE_MESSAGING_SENDER_ID
 REACT_APP_FIREBASE_APP_ID
-REACT_APP_ANTHROPIC_KEY
+REACT_APP_API_BASE        # deployed Vercel URL; required for the Android app
+```
+
+Server-only (Vercel env var, never `REACT_APP_`-prefixed — that would bundle it into the app):
+```
+ANTHROPIC_API_KEY
 ```
 
 ## Run the app

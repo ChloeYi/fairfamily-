@@ -189,6 +189,42 @@ function LangToggle() {
   );
 }
 
+function ExitButton() {
+  const { lang } = useLanguage();
+  const exitApp = () => {
+    const msg = lang === "ko" ? "앱을 닫고 홈으로 나갈까요?" : "Close the app and return home?";
+    if (window.confirm(msg)) {
+      try { window.close(); } catch (e) {}
+      // Return to the marketing website, served at the site root (the app lives under /app)
+      window.location.href = "/";
+    }
+  };
+  return (
+    <button
+      onClick={exitApp}
+      aria-label="Close app"
+      title={lang === "ko" ? "닫기" : "Close"}
+      style={{
+        position: "fixed", top: 18, right: 88, zIndex: 200,
+        width: 36, height: 36, borderRadius: 12,
+        background: "rgba(255,255,255,0.72)",
+        border: "1px solid rgba(255,255,255,0.95)",
+        color: "#5b4899", fontSize: 17, cursor: "pointer",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        fontFamily: "'DM Sans', sans-serif", fontWeight: 700, lineHeight: 1,
+        backdropFilter: "blur(16px)",
+        WebkitBackdropFilter: "blur(16px)",
+        boxShadow: "0 4px 16px rgba(139,92,246,0.15)",
+        transition: "all 0.2s",
+      }}
+      onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.9)"}
+      onMouseLeave={e => e.currentTarget.style.background = "rgba(255,255,255,0.72)"}
+    >
+      ✕
+    </button>
+  );
+}
+
 function BottomNav() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -332,11 +368,12 @@ export default function App() {
 
   return (
     <LanguageProvider>
-      <BrowserRouter>
+      <BrowserRouter basename={process.env.PUBLIC_URL || undefined}>
         <style>{css}</style>
         <div className="orb-1" />
         <div className="orb-2" />
         <div className="orb-3" />
+        <ExitButton />
         <LangToggle />
         <FAQBot />
         <Routes>

@@ -1,9 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { collection, getDocs, deleteDoc } from "firebase/firestore";
-import { auth, db } from "../firebase";
+import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import {
+  deleteUser, reauthenticateWithCredential, reauthenticateWithPopup,
+  GoogleAuthProvider, EmailAuthProvider,
+} from "firebase/auth";
+import { Capacitor } from "@capacitor/core";
+import { FirebaseAuthentication } from "@capacitor-firebase/authentication";
+import { auth, db, googleProvider } from "../firebase";
 import { useLanguage } from "../hooks/useLanguage";
-import { ArrowLeft, Clock, CurrencyDollar, Gift, GraduationCap, UsersThree, Heart, Sparkle, Heartbeat, Trash, BookOpen, Lightbulb } from "@phosphor-icons/react";
+import { ArrowLeft, Clock, CurrencyDollar, Gift, GraduationCap, UsersThree, Heart, Sparkle, Heartbeat, Trash, BookOpen, Lightbulb, UserMinus } from "@phosphor-icons/react";
 
 const BG = "linear-gradient(160deg, #f8f0ff 0%, #eef2ff 50%, #fdf4ff 100%)";
 
@@ -26,23 +32,81 @@ const card = {
 const cardTitle = { display: "flex", alignItems: "center", gap: 9, fontSize: 20, fontWeight: 700, color: "#1e0f3c", marginBottom: 10 };
 const cardSub = { fontSize: 15, color: "#5b4899", marginBottom: 16, lineHeight: 1.65 };
 
+
+// Deletes every child + log under users/{uid}, then the user doc itself.
+async function deleteUserData(uid) {
+  const kids = await getDocs(collection(db, "users", uid, "children"));
+  for (const kid of kids.docs) {
+    const logs = await getDocs(collection(db, "users", uid, "children", kid.id, "logs"));
+    for (const lg of logs.docs) await deleteDoc(lg.ref);
+    await deleteDoc(kid.ref);
+  }
+}
+
+// Firebase only lets a user delete their account if they signed in recently.
+// Re-verify identity up front so we never end up with data deleted but account alive.
+async function reauthenticate(user, t) {
+  const RECENT_MS = 4 * 60 * 1000;
+  const last = Date.parse(user.metadata?.lastSignInTime || 0);
+  if (Date.now() - last < RECENT_MS) return;
+
+  const providerId = user.providerData[0]?.providerId;
+  if (providerId === "google.com") {
+    if (Capacitor.isNativePlatform()) {
+      const res = await FirebaseAuthentication.signInWithGoogle();
+      const idToken = res.credential?.idToken;
+      if (!idToken) throw Object.assign(new Error("cancelled"), { code: "cancelled" });
+      await reauthenticateWithCredential(user, GoogleAuthProvider.credential(idToken));
+    } else {
+      await reauthenticateWithPopup(user, googleProvider);
+    }
+  } else if (providerId === "password") {
+    const pw = window.prompt(t.settings.reauthPassword);
+    if (!pw) throw Object.assign(new Error("cancelled"), { code: "cancelled" });
+    await reauthenticateWithCredential(user, EmailAuthProvider.credential(user.email, pw));
+  }
+}
+
 export default function SettingsScreen() {
   const navigate = useNavigate();
   const { t, titleFont } = useLanguage();
   const [deleting, setDeleting] = useState(false);
   const [done, setDone] = useState(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
+  const [accountError, setAccountError] = useState("");
+
+  const deleteAccount = async () => {
+    if (!window.confirm(t.settings.confirmDeleteAccount)) return;
+    const user = auth.currentUser;
+    if (!user) return;
+    setAccountError("");
+    setDeletingAccount(true);
+    try {
+      await reauthenticate(user, t);
+      await deleteUserData(user.uid);
+      await deleteDoc(doc(db, "users", user.uid));
+      await deleteUser(user);
+      if (Capacitor.isNativePlatform()) {
+        try { await FirebaseAuthentication.signOut(); } catch (_) {}
+      }
+      // onAuthStateChanged now fires with null → App routes to /login.
+      navigate("/welcome", { replace: true });
+    } catch (e) {
+      console.error("Delete account error:", e);
+      const msg = (e?.message || "").toLowerCase();
+      const cancelled = e?.code === "cancelled" || e?.code === "auth/popup-closed-by-user" || msg.includes("cancel");
+      if (!cancelled) {
+        setAccountError(e?.code === "auth/requires-recent-login" ? t.settings.reauthNeeded : t.settings.deleteAccountFailed);
+      }
+      setDeletingAccount(false);
+    }
+  };
 
   const deleteAllData = async () => {
     if (!window.confirm(t.settings.confirmDelete)) return;
     setDeleting(true);
     try {
-      const uid = auth.currentUser?.uid;
-      const kids = await getDocs(collection(db, "users", uid, "children"));
-      for (const kid of kids.docs) {
-        const logs = await getDocs(collection(db, "users", uid, "children", kid.id, "logs"));
-        for (const lg of logs.docs) await deleteDoc(lg.ref);
-        await deleteDoc(kid.ref);
-      }
+      await deleteUserData(auth.currentUser?.uid);
       setDone(true);
       setTimeout(() => navigate("/dashboard"), 1300);
     } catch (e) {
@@ -135,6 +199,23 @@ export default function SettingsScreen() {
           }}>
             {done ? t.settings.deleted : deleting ? t.settings.deleting : t.settings.deleteData}
           </button>
+        </div>
+
+        {/* Danger zone — delete account (required by Google Play / App Store) */}
+        <div style={{ ...card, border: "1px solid rgba(190,18,60,0.3)", background: "rgba(255,240,244,0.75)" }}>
+          <div style={{ ...cardTitle, color: "#be123c" }}><UserMinus size={20} weight="duotone" color="#BE123C" /> {t.settings.accountTitle}</div>
+          <div style={cardSub}>{t.settings.accountDesc}</div>
+          <button onClick={deleteAccount} disabled={deletingAccount} style={{
+            width: "100%", padding: "15px", borderRadius: 16,
+            border: "1.5px solid #BE123C", background: "transparent",
+            color: "#BE123C", fontSize: 16, fontWeight: 700, cursor: deletingAccount ? "default" : "pointer",
+            fontFamily: "'DM Sans', sans-serif", opacity: deletingAccount ? 0.6 : 1,
+          }}>
+            {deletingAccount ? t.settings.deletingAccount : t.settings.deleteAccount}
+          </button>
+          {accountError && (
+            <div role="alert" style={{ marginTop: 12, fontSize: 14, color: "#be123c", lineHeight: 1.5 }}>{accountError}</div>
+          )}
         </div>
 
       </div>

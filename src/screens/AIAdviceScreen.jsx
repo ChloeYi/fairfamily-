@@ -1,14 +1,9 @@
 import { useState, useEffect, useMemo } from "react";
-import Anthropic from "@anthropic-ai/sdk";
+import { claude as client } from "../lib/claude";
 import { collection, onSnapshot } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { useLanguage } from "../hooks/useLanguage";
 import { Command, UsersThree, Robot } from "@phosphor-icons/react";
-
-const client = new Anthropic({
-  apiKey: process.env.REACT_APP_ANTHROPIC_KEY,
-  dangerouslyAllowBrowser: true,
-});
 
 const MODEL = "claude-sonnet-4-6";
 const BG = "linear-gradient(160deg, #f8f0ff 0%, #eef2ff 50%, #fdf4ff 100%)";

@@ -7,6 +7,8 @@ import { auth, db, googleProvider } from "../firebase";
 import { useLanguage } from "../hooks/useLanguage";
 import { Scales } from "@phosphor-icons/react";
 
+const SHOW_APPLE_LOGIN = false;
+
 const BG = "linear-gradient(160deg, #f8f0ff 0%, #eef2ff 50%, #fdf4ff 100%)";
 
 const saveUserToFirestore = async (user) => {
@@ -165,7 +167,9 @@ export default function LoginScreen() {
           {t.login.google}
         </button>
 
-        {/* Apple */}
+        {/* Apple — hidden until Sign in with Apple is actually implemented (iOS launch).
+            A placeholder button got the app rejected on Play (Broken Functionality). */}
+        {SHOW_APPLE_LOGIN && (
         <button onClick={() => setError("Apple sign-in coming soon.")} disabled={loading} style={{ ...glassBtn, opacity: loading ? 0.6 : 1 }}
           onMouseEnter={e => { if (!loading) e.currentTarget.style.background = "rgba(255,255,255,0.95)"; }}
           onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.75)"; }}>
@@ -174,6 +178,7 @@ export default function LoginScreen() {
           </svg>
           {t.login.apple}
         </button>
+        )}
 
         <div style={{ display: "flex", alignItems: "center", gap: 14, margin: "20px 0" }}>
           <div style={{ flex: 1, height: 1, background: "rgba(139,92,246,0.12)" }} />
