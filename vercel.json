@@ -2,23 +2,15 @@
   "framework": null,
   "buildCommand": "npm run build:site",
   "outputDirectory": "dist",
-  "rewrites": [
+  "routes": [
     {
-      "source": "/app/:path*",
-      "destination": "/app/index.html"
-    }
-  ],
-  "redirects": [
-    {
-      "source": "/:path*",
-      "has": [
-        {
-          "type": "host",
-          "value": "www.fairfamily.site"
-        }
-      ],
-      "destination": "https://fairfamily.site/:path*",
-      "permanent": true
-    }
+      "src": "/(.*)",
+      "has": [{ "type": "host", "value": "www.fairfamily.site" }],
+      "status": 308,
+      "headers": { "Location": "https://fairfamily.site/$1" }
+    },
+    { "handle": "filesystem" },
+    { "src": "/app(?:/.*)?", "dest": "/app/index.html" },
+    { "src": "/.*", "status": 404, "dest": "/404.html" }
   ]
 }
