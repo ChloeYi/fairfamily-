@@ -414,6 +414,7 @@
   }
   function setLang(l){
     localStorage.setItem('ff_lang',l);
+    localStorage.setItem('fairfamily_lang',l==='kr'?'ko':'en'); // shared with the app at /app
     var t=DATA[l];
     document.documentElement.lang=(l==='kr'?'ko':'en');
     document.getElementById('en').classList.toggle('on',l==='en');
@@ -441,7 +442,7 @@
   window.addEventListener('scroll',function(){
     document.getElementById('toTop').classList.toggle('show', window.scrollY>420);
   });
-  setLang(localStorage.getItem('ff_lang')||'en');
+  setLang(localStorage.getItem('ff_lang')||(localStorage.getItem('fairfamily_lang')==='ko'?'kr':'en'));
 </script>
 </body>
 </html>
