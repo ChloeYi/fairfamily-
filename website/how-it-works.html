@@ -61,6 +61,20 @@
   .toTop{position:fixed;right:20px;bottom:104px;z-index:65;width:52px;height:52px;border-radius:50%;background:#fff;border:1px solid var(--line);color:var(--sky-deep);font-size:22px;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 22px rgba(18,32,63,.16)}
   .toTop.show{display:flex}
   @media(max-width:560px){.step{grid-template-columns:1fr}.step .ic{width:68px;height:68px;font-size:32px}}
+
+/* CTA nudge: every ~3.5s the start/open buttons give a short wiggle */
+@keyframes ff-wiggle {
+  0%, 82%, 100% { transform: rotate(0) scale(1); }
+  85% { transform: rotate(-4deg) scale(1.06); }
+  88% { transform: rotate(4deg) scale(1.06); }
+  91% { transform: rotate(-3deg) scale(1.04); }
+  94% { transform: rotate(2deg) scale(1.02); }
+}
+.btn.app-link { animation: ff-wiggle 3.5s ease-in-out infinite; transform-origin: center; }
+/* the bottom bar button is half the screen wide: wiggle its icon + label instead */
+.bottombar .app-link > span { display: inline-block; animation: ff-wiggle 3.5s ease-in-out infinite; }
+.app-link:hover, .app-link:hover > span, .app-link:focus-visible { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .btn.app-link, .bottombar .app-link > span { animation: none; } }
 </style>
 </head>
 <body>
