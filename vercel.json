@@ -2,5 +2,23 @@
   "framework": null,
   "buildCommand": "npm run build:site",
   "outputDirectory": "dist",
-  "rewrites": [{ "source": "/app/:path*", "destination": "/app/index.html" }]
+  "rewrites": [
+    {
+      "source": "/app/:path*",
+      "destination": "/app/index.html"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.fairfamily.site"
+        }
+      ],
+      "destination": "https://fairfamily.site/:path*",
+      "permanent": true
+    }
+  ]
 }

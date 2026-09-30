@@ -1,3 +1,6 @@
-# https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /app/
+Disallow: /api/
+
+Sitemap: https://fairfamily.site/sitemap.xml
