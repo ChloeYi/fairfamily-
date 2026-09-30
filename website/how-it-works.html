@@ -62,19 +62,30 @@
   .toTop.show{display:flex}
   @media(max-width:560px){.step{grid-template-columns:1fr}.step .ic{width:68px;height:68px;font-size:32px}}
 
-/* CTA nudge: every ~3.5s the start/open buttons give a short wiggle */
-@keyframes ff-wiggle {
-  0%, 82%, 100% { transform: rotate(0) scale(1); }
-  85% { transform: rotate(-4deg) scale(1.06); }
-  88% { transform: rotate(4deg) scale(1.06); }
-  91% { transform: rotate(-3deg) scale(1.04); }
-  94% { transform: rotate(2deg) scale(1.02); }
+/* CTA nudge: a constant tiny jiggle + a soft glow that pulses outward */
+@keyframes ff-jiggle {
+  0%, 100% { transform: rotate(0) translateY(0); }
+  25% { transform: rotate(-1.6deg) translateY(-1px); }
+  50% { transform: rotate(0) translateY(0); }
+  75% { transform: rotate(1.6deg) translateY(-1px); }
 }
-.btn.app-link { animation: ff-wiggle 3.5s ease-in-out infinite; transform-origin: center; }
-/* the bottom bar button is half the screen wide: wiggle its icon + label instead */
-.bottombar .app-link > span { display: inline-block; animation: ff-wiggle 3.5s ease-in-out infinite; }
+@keyframes ff-glow {
+  0% { box-shadow: 0 0 0 0 rgba(255, 93, 162, .55), 0 8px 22px rgba(18, 32, 63, .16); }
+  70% { box-shadow: 0 0 0 14px rgba(255, 93, 162, 0), 0 8px 22px rgba(18, 32, 63, .16); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 93, 162, 0), 0 8px 22px rgba(18, 32, 63, .16); }
+}
+@keyframes ff-text-glow {
+  0%, 100% { text-shadow: 0 0 0 rgba(255, 255, 255, 0); }
+  50% { text-shadow: 0 0 12px rgba(255, 255, 255, .9); }
+}
+.btn.app-link { animation: ff-jiggle .9s ease-in-out infinite, ff-glow 1.8s ease-out infinite; transform-origin: center; }
+/* the bottom bar button is half the screen wide: jiggle + glow its icon and label instead */
+.bottombar .app-link > span { display: inline-block; animation: ff-jiggle .9s ease-in-out infinite, ff-text-glow 1.8s ease-in-out infinite; }
 .app-link:hover, .app-link:hover > span, .app-link:focus-visible { animation-play-state: paused; }
-@media (prefers-reduced-motion: reduce) { .btn.app-link, .bottombar .app-link > span { animation: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .btn.app-link { animation: ff-glow 1.8s ease-out infinite; }
+  .bottombar .app-link > span { animation: none; }
+}
 </style>
 </head>
 <body>
