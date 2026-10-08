@@ -368,7 +368,7 @@ export default function LifeLineGraph() {
                 </div>
               </div>
               {event.amount > 0 && (
-                <div style={{ fontSize: 15, fontWeight: 600, color: "#EA580C" }}>${event.amount}</div>
+                <div style={{ fontSize: 15, fontWeight: 600, color: "#EA580C" }}>{t.money(event.amount)}</div>
               )}
             </div>
           );})}

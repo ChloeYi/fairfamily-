@@ -1,5 +1,6 @@
 export default {
   lang: { flag: "🇺🇸", code: "EN" },
+  money: (n) => `$${(Number(n) || 0).toLocaleString()}`,
 
   nav: {
     dashboard: "Dashboard",
@@ -20,11 +21,10 @@ export default {
     howtoTitle: "How to use FairFamily",
     howtoSub: "The fastest way to log everything at once:",
     howto: [
-      "Open the Log tab and pick \"All-in-one\".",
-      "Choose which child it's for.",
-      "Write everything in one sentence — e.g. \"Bought Emma a $200 bike for her birthday and took her to soccer practice.\"",
-      "Tap \"Sort with AI\" — it splits your text into the right categories automatically.",
-      "Tap \"Save all\" to save them.",
+      "Open the Log tab — \"All-in-one\" is already open.",
+      "Write what happened today, the way you'd say it. Several kids in one sentence is fine — e.g. \"Drove Emma to math class, played Lego with Liam for 30 min. Yesterday bought Emma sneakers, $45\"",
+      "Tap \"Sort with AI\" — it splits your text by child and category, and picks up dates like \"yesterday\".",
+      "Check the child names (tap a name to change it), then tap \"Save all\".",
       "Your Dashboard radar and comparison update automatically. ✅",
     ],
     guideTitle: "What goes in each category?",
@@ -115,6 +115,7 @@ export default {
     titleHighlight: "Family",
     childrenLabel: "Your Children",
     score: "score",
+    needsMore: "A little more 💗",
     spent: "spent",
     events: "events",
     radarLabel: "Fairness Radar",
@@ -180,6 +181,11 @@ export default {
     totalSpent: "Total Spent",
     gifts: "Gifts",
     experiences: "Experiences",
+    lastOneOnOne: "Last 1-on-1",
+    changeAvatar: "Tap to change the picture",
+    monthTogether: "Together this month",
+    daysAgoShort: (n) => (n === 0 ? "Today" : `${n}d ago`),
+    hoursShort: (h) => `${h}h`,
     addLog: "+ Log Event",
     typeLabel: "Type",
     descLabel: "Description",
@@ -226,7 +232,15 @@ export default {
     scanPhoto: "Scan Photo",
     quickLog: "Quick Log",
     smartLog: "All-in-one",
-    smartPlaceholder: "Write everything in one go — e.g. \"Bought Emma a $200 bike for her birthday and took her to soccer practice.\" AI sorts it into categories.",
+    smartPlaceholder: (names = []) => {
+      const a = names[0] || "your oldest", b = names[1];
+      return b
+        ? `Just write what happened today.\ne.g. "Drove ${a} to math class, played Lego with ${b} for 30 min. Yesterday bought ${a} sneakers, $45"\nAI splits it by child and category.`
+        : `Just write what happened today.\ne.g. "Played Lego with ${a} for 30 min. Yesterday bought sneakers, $45"\nAI splits it into entries.`;
+    },
+    smartPickChild: "Some entries don't have a child yet — tap a name.",
+    smartWhichChild: "Who is this for? Tap a name",
+    daysAgo: (n) => (n === 1 ? "Yesterday" : `${n} days ago`),
     smartAnalyze: "Sort with AI",
     smartAnalyzing: "AI is sorting...",
     smartNone: "Couldn't find anything to log. Try rephrasing.",
@@ -349,7 +363,7 @@ export default {
       { icon: "🕸️", title: "Fairness Radar", body: "The radar compares 8 areas — Time, Money, Gifts, School, 1-on-1, Heart, Fun, Health — side by side, so you can spot gaps at a glance." },
       { icon: "📊", title: "Age-Matched Comparison", body: "Tap a colored metric to compare what each child got at the same age — money, birthday gifts, time together, and more." },
       { icon: "📈", title: "Life Graph", body: "Each child's logged moments are laid out across their life, so big events aren't forgotten." },
-      { icon: "📷", title: "Log Events", body: "In the Log tab, scan a photo, write one sentence in 'All-in-one', or pick a category. The AI sorts it into the right place for you." },
+      { icon: "📷", title: "Log Events", body: "In the Log tab, just write what happened in 'All-in-one'. The AI splits it by child and category. You can also scan a photo or log manually." },
       { icon: "✨", title: "AI Tips", body: "AI Tips reviews your family data and gives honest, gentle suggestions on staying fair to each child." },
       { icon: "🧒", title: "Kids", body: "Add and manage your children here, and open each child's room to log or edit events." },
       { icon: "⚙️", title: "Settings & Help", body: "Settings explains every category, shows how to use the app, and lets you manage your data. The 💬 button opens Help anytime." },
@@ -372,7 +386,7 @@ export default {
       },
       {
         q: "How do I log an event?",
-        a: "Go to the Log tab → select which child it's for → write what happened (or use \"All-in-one\" to type everything in one sentence) → tap Save. The AI sorts it into the right category for you.",
+        a: "Open the Log tab — \"All-in-one\" opens first → write what happened, for all your kids at once → tap \"Sort with AI\" and it splits it by child and category → check and save. Prefer picking each field? Use \"Quick Log\".",
       },
       {
         q: "How does photo scanning work?",

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { claude as client, DailyLimitError } from "../lib/claude";
+import KidAvatar from "../components/KidAvatar";
 import PremiumModal from "../components/PremiumModal";
 import { auth, db } from "../firebase";
 import {
@@ -88,8 +89,8 @@ const css = `
     box-shadow: 0 2px 10px rgba(139,92,246,0.06);
   }
   .glass-input:focus {
-    border-color: rgba(217,119,6,0.4);
-    box-shadow: 0 0 0 3px rgba(217,119,6,0.08);
+    border-color: rgba(255,61,146,0.4);
+    box-shadow: 0 0 0 3px rgba(255,61,146,0.08);
   }
   .glass-input::placeholder { color: #6b5a9e; }
 
@@ -104,30 +105,30 @@ const css = `
   }
 
   .photo-zone {
-    border: 2px dashed rgba(217,119,6,0.3);
+    border: 2px dashed rgba(255,61,146,0.3);
     border-radius: 24px; padding: 36px 20px;
     text-align: center; cursor: pointer; transition: all 0.2s;
     position: relative; overflow: hidden;
     background: rgba(255,255,255,0.55);
     backdrop-filter: blur(10px);
-    box-shadow: 0 4px 20px rgba(217,119,6,0.06);
+    box-shadow: 0 4px 20px rgba(255,61,146,0.06);
   }
   .photo-zone:hover {
-    border-color: rgba(217,119,6,0.55);
+    border-color: rgba(255,61,146,0.55);
     background: rgba(255,255,255,0.75);
   }
 
   .scan-line {
     position: absolute; left: 0; right: 0; height: 2px;
-    background: linear-gradient(90deg, transparent, #EA580C, transparent);
+    background: linear-gradient(90deg, transparent, #FF3D92, transparent);
     animation: scanLine 2s ease-in-out infinite;
-    box-shadow: 0 0 12px #EA580C;
+    box-shadow: 0 0 12px #FF3D92;
   }
 
   .spinner {
     width: 28px; height: 28px;
-    border: 2px solid rgba(217,119,6,0.15);
-    border-top-color: #EA580C; border-radius: 50%;
+    border: 2px solid rgba(255,61,146,0.15);
+    border-top-color: #FF3D92; border-radius: 50%;
     animation: spin 0.8s linear infinite; margin: 0 auto 10px;
   }
 
@@ -157,8 +158,13 @@ const CATEGORIES = [
 ];
 const CATEGORY_KEYS = CATEGORIES.map(c => c.key);
 
-// Current age derived live from birth year; falls back to a stored age for older records.
-const currentAge = (c) => c?.birthYear ? Math.max(0, new Date().getFullYear() - Number(c.birthYear)) : (c?.age ?? "");
+// Age at a given date (default: today) — computed from birthYear so the parent never types it;
+// falls back to a stored age for older records.
+const ageAt = (c, date) => c?.birthYear
+  ? Math.max(0, (date || new Date()).getFullYear() - Number(c.birthYear))
+  : (Number(c?.age) || null);
+// Noon, N days ago (for "yesterday" etc. written in free text).
+const dateDaysAgo = (n) => { const d = new Date(); d.setDate(d.getDate() - n); d.setHours(12, 0, 0, 0); return d; };
 
 const toBase64 = (file) => new Promise((resolve, reject) => {
   const reader = new FileReader();
@@ -180,12 +186,11 @@ export default function PhotoLogScreen() {
   const [amount, setAmount] = useState("");
   const [hours, setHours] = useState("");   // duration for the "time" category
   const [times, setTimes] = useState("");
-  const [age, setAge] = useState("");
   const [photo, setPhoto] = useState(null);
   const [scanning, setScanning] = useState(false);
   const [scannedText, setScannedText] = useState("");
   const [saved, setSaved] = useState(false);
-  const [activeMode, setActiveMode] = useState("photo");
+  const [activeMode, setActiveMode] = useState("smart");
   const [saveError, setSaveError] = useState("");
   // Log date: "today" (now) or "other" (a picked calendar date).
   const [dateMode, setDateMode] = useState("today");
@@ -301,12 +306,9 @@ export default function PhotoLogScreen() {
     ? new Date(customDate + "T12:00:00")
     : serverTimestamp();
 
-  // When a past date is picked, default the age to the child's age in that year.
+  // Picked calendar date (age is computed from birth year at save time).
   const onPickDate = (value) => {
     setCustomDate(value);
-    if (value && selectedChild?.birthYear) {
-      setAge(String(Math.max(0, Number(value.slice(0, 4)) - Number(selectedChild.birthYear))));
-    }
   };
 
   const openCalendar = () => {
@@ -337,7 +339,7 @@ export default function PhotoLogScreen() {
       times: Math.max(1, parseInt(entry.times) || 1),
       age: entry.age ?? null,
       photoUrl: entry.photoUrl || null,
-      createdAt: logCreatedAt(),
+      createdAt: entry.createdAt || logCreatedAt(),
     });
     await updateDoc(doc(db, "users", userUid, "children", childId), {
       totalSpent: increment(amt),
@@ -370,7 +372,7 @@ export default function PhotoLogScreen() {
         amount,
         hours,
         times,
-        age: parseFloat(age) || Number(currentAge(selectedChild)) || null,
+        age: ageAt(selectedChild, dateMode === "other" && customDate ? new Date(customDate + "T12:00:00") : null),
         photoUrl: photo,
       });
       setSaved(true);
@@ -386,16 +388,28 @@ export default function PhotoLogScreen() {
   const runBulkParse = async () => {
     if (!bulkText.trim()) return;
     setSaveError(""); setBulkBusy(true); setBulkResult(null);
+    // Oldest first, so the AI can resolve "첫째/둘째/막내" etc.
+    const kids = [...children].sort((a, b) => (Number(a.birthYear) || 9999) - (Number(b.birthYear) || 9999));
+    const kidList = kids.map((c, i) => `${c.id}: ${c.name}${c.birthYear ? ` (born ${c.birthYear})` : ""} — birth order ${i + 1}`).join("\n");
+    const today = new Date();
     try {
       const message = await client.messages.create({
-        model: MODEL, max_tokens: 700, feature: "scan",
+        model: MODEL, max_tokens: 1500, feature: "scan",
         messages: [{ role: "user", content: [{ type: "text", text:
-          `The user logs things they did for or with their child, in free text (often Korean). Split it into separate entries. For each, pick a category from: time, money, gifts, school, oneOnOne, emotional, experiences, health (time=time spent together, money=an expense/shopping, gifts=a present, school=school activity/trip, oneOnOne=one-on-one time, emotional=affection/comfort/praise, experiences=fun/outings/travel, health=health/exercise/doctor). Give a short description, a numeric amount if a price is mentioned (else 0), and "times" = how many times it happened (e.g. "played soccer twice" → 2; default 1).\nText: """${bulkText}"""\nReturn JSON only as an array: [{"category":"gifts","desc":"...","amount":0,"times":1}]` }]}],
+          `The parent has these children (id: name):\n${kidList || "(none)"}\nToday is ${today.toDateString()}.\nThe parent logs things they did for or with their children, in free text (often Korean). Split it into separate entries — one entry per child per activity (if one activity involved several children, e.g. "took both kids to the park", make one entry for each child). For each entry set "childId" to the id of the child it is about, matched by name, nickname, or birth-order words (첫째/큰애/형/누나/언니/오빠 = oldest, 둘째, 막내/작은애/동생 = youngest; first = oldest). Use null if you cannot tell. Set "daysAgo" = how many days ago it happened (0 = today, 1 = 어제/yesterday, 2 = 그저께; resolve weekday names like "토요일" to the most recent past one; default 0). For each, pick a category from: time, money, gifts, school, oneOnOne, emotional, experiences, health (time=time spent together, money=an expense/shopping, gifts=a present, school=school activity/trip, oneOnOne=one-on-one time, emotional=affection/comfort/praise, experiences=fun/outings/travel, health=health/exercise/doctor). Give a short description, a numeric amount if a price is mentioned (else 0), "hours" = duration in hours for time/oneOnOne entries if mentioned (e.g. "30분" → 0.5, "2시간" → 2; else 0), and "times" = how many times it happened (e.g. "played soccer twice" → 2; default 1).\nText: """${bulkText}"""\nReturn JSON only as an array: [{"childId":"...","category":"gifts","desc":"...","amount":0,"hours":0,"times":1,"daysAgo":0}]` }]}],
       });
       const clean = message.content[0].text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
       let entries = JSON.parse(clean);
       if (!Array.isArray(entries)) entries = [entries];
-      entries = entries.filter(e => e && CATEGORY_KEYS.includes(e.category));
+      const ids = new Set(children.map(c => c.id));
+      const fallback = children.length === 1 ? children[0].id : null;
+      entries = entries
+        .filter(e => e && CATEGORY_KEYS.includes(e.category))
+        .map(e => ({
+          ...e,
+          childId: ids.has(e.childId) ? e.childId : fallback,
+          daysAgo: Math.min(365, Math.max(0, parseInt(e.daysAgo) || 0)),
+        }));
       setBulkResult(entries);
     } catch (err) {
       if (err instanceof DailyLimitError) { setLimitHit({ limit: err.limit }); return; }
@@ -407,14 +421,17 @@ export default function PhotoLogScreen() {
   const saveBulk = async () => {
     const user = auth.currentUser;
     if (!user) { setSaveError(t.photoLog.mustLogin); return; }
-    if (!selectedChildId) { setSaveError(t.photoLog.pickChild); return; }
     if (!bulkResult?.length) return;
+    if (bulkResult.some(e => !e.childId)) { setSaveError(t.photoLog.smartPickChild); return; }
+    setSaveError("");
     try {
-      const ageVal = parseFloat(age) || Number(currentAge(selectedChild)) || null;
       for (const e of bulkResult) {
-        await writeLog(user.uid, selectedChildId, {
+        const child = children.find(c => c.id === e.childId);
+        const when = e.daysAgo > 0 ? dateDaysAgo(e.daysAgo) : null;
+        await writeLog(user.uid, e.childId, {
           category: e.category, desc: e.desc || t.categories[e.category],
-          amount: e.amount, times: e.times, age: ageVal, photoUrl: null,
+          amount: e.amount, hours: e.hours, times: e.times, age: ageAt(child, when), photoUrl: null,
+          createdAt: when || serverTimestamp(),
         });
       }
       setSaved(true);
@@ -424,6 +441,12 @@ export default function PhotoLogScreen() {
       console.error("Bulk save error:", err);
       setSaveError(t.photoLog.saveFailed);
     }
+  };
+
+  // Reassign one AI-parsed entry to a different child.
+  const setEntryChild = (i, childId) => {
+    setSaveError("");
+    setBulkResult(r => r.map((e, j) => (j === i ? { ...e, childId } : e)));
   };
 
   const formatDate = (ts) => {
@@ -539,8 +562,8 @@ export default function PhotoLogScreen() {
           position: "relative", zIndex: 1,
         }}>
           {[
-            { id: "photo", Icon: Camera, label: t.photoLog.scanPhoto },
             { id: "smart", Icon: MagicWand, label: t.photoLog.smartLog },
+            { id: "photo", Icon: Camera, label: t.photoLog.scanPhoto },
             { id: "quick", Icon: PencilSimple, label: t.photoLog.quickLog },
           ].map(({ id, Icon, label }) => {
             const active = activeMode === id;
@@ -548,9 +571,9 @@ export default function PhotoLogScreen() {
               <button key={id} onClick={() => setActiveMode(id)} style={{
                 flex: 1, padding: "12px 4px", borderRadius: 13,
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                background: active ? "rgba(217,119,6,0.1)" : "none",
-                border: active ? "1px solid rgba(217,119,6,0.3)" : "1px solid transparent",
-                color: active ? "#EA580C" : "#a394c8",
+                background: active ? "rgba(255,61,146,0.1)" : "none",
+                border: active ? "1px solid rgba(255,61,146,0.3)" : "1px solid transparent",
+                color: active ? "#FF3D92" : "#a394c8",
                 cursor: "pointer", fontSize: 13, fontWeight: 600,
                 fontFamily: "'DM Sans', sans-serif", transition: "all 0.2s",
               }}>
@@ -562,7 +585,7 @@ export default function PhotoLogScreen() {
         </div>
 
         {/* Child Selector */}
-        <div className="label">{t.photoLog.whoFor}</div>
+        {activeMode !== "smart" && <div className="label">{t.photoLog.whoFor}</div>}
         {childrenLoading ? (
           <div style={{ textAlign: "center", padding: "24px 0", color: "#6b5a9e", fontSize: 15, position: "relative", zIndex: 1 }}>
             {t.photoLog.loadingChildren}
@@ -575,10 +598,10 @@ export default function PhotoLogScreen() {
             borderRadius: 18, color: "#6b5a9e", fontSize: 15, marginBottom: 24,
             position: "relative", zIndex: 1,
           }}>{t.photoLog.noChildren}</div>
-        ) : (
+        ) : activeMode === "smart" ? null : (
           <div style={{ display: "flex", gap: 10, marginBottom: 24, flexWrap: "wrap" }}>
             {children.map((c, i) => (
-              <button key={c.id} onClick={() => { setSelectedChildId(c.id); setAge(String(currentAge(c))); }}
+              <button key={c.id} onClick={() => setSelectedChildId(c.id)}
                 style={{
                   flex: "1 1 80px", minWidth: 72, padding: "14px 10px", borderRadius: 20,
                   background: selectedChildId === c.id
@@ -593,7 +616,7 @@ export default function PhotoLogScreen() {
                     : "0 4px 12px rgba(139,92,246,0.07)",
                   position: "relative", zIndex: 1,
                 }}>
-                <KidIcon emoji={c.emoji} size={28} color={selectedChildId === c.id ? c.color : "#6b5a9e"} />
+                <KidAvatar emoji={c.emoji} size={44} color={c.color} ring={selectedChildId === c.id} style={{ margin: "0 auto" }} />
                 <div style={{ fontSize: 13, color: selectedChildId === c.id ? c.color : "#6b5a9e", marginTop: 6, fontWeight: 600 }}>
                   {c.name}
                 </div>
@@ -602,7 +625,8 @@ export default function PhotoLogScreen() {
           </div>
         )}
 
-        {/* When? — Today or a picked calendar date */}
+        {/* When? — Today or a picked calendar date (smart mode reads it from the text) */}
+        {activeMode !== "smart" && (<>
         <div className="label">{t.photoLog.whenLabel}</div>
         <div style={{ display: "flex", gap: 8, marginBottom: dateMode === "other" ? 12 : 24, position: "relative", zIndex: 1 }}>
           {[
@@ -638,24 +662,33 @@ export default function PhotoLogScreen() {
             <span style={{ fontSize: 18 }}>📅</span>
           </button>
         )}
+        </>)}
 
         {/* SMART (write-it-all) MODE */}
         {activeMode === "smart" && (
           <div style={{ marginBottom: 24, animation: "fadeUp 0.4s ease both", position: "relative", zIndex: 1 }}>
             <textarea className="glass-input" value={bulkText}
               onChange={e => setBulkText(e.target.value)}
-              placeholder={t.photoLog.smartPlaceholder} rows={4}
+              placeholder={t.photoLog.smartPlaceholder(children.map(c => c.name))} rows={5} autoFocus
               style={{ resize: "none", lineHeight: 1.7 }} />
             <button onClick={runBulkParse} disabled={bulkBusy || !bulkText.trim()} style={{
               width: "100%", padding: "15px", borderRadius: 16, border: "none",
-              background: bulkBusy || !bulkText.trim() ? "rgba(217,119,6,0.12)" : "linear-gradient(135deg, #EA580C, #F59E0B)",
-              color: bulkBusy || !bulkText.trim() ? "#c4a484" : "#fff",
+              background: bulkBusy || !bulkText.trim() ? "rgba(255,61,146,0.12)" : "linear-gradient(135deg, #FF3D92, #FF7AB6)",
+              color: bulkBusy || !bulkText.trim() ? "#f0a8c8" : "#fff",
               fontSize: 15, fontWeight: 700, cursor: bulkBusy || !bulkText.trim() ? "default" : "pointer",
               fontFamily: "'DM Sans', sans-serif", display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
             }}>
               <MagicWand size={18} weight="duotone" />
               {bulkBusy ? t.photoLog.smartAnalyzing : t.photoLog.smartAnalyze}
             </button>
+
+            {saveError && (
+              <div style={{
+                marginTop: 12, padding: "12px 16px",
+                background: "rgba(236,72,153,0.08)", border: "1px solid rgba(236,72,153,0.22)",
+                borderRadius: 14, color: "#9d174d", fontSize: 14,
+              }}>{saveError}</div>
+            )}
 
             {bulkResult && (
               <div style={{ marginTop: 16 }}>
@@ -674,9 +707,34 @@ export default function PhotoLogScreen() {
                           display: "flex", alignItems: "center", justifyContent: "center",
                           fontSize: 13, fontWeight: 700, color: "#7C3AED", textAlign: "center", lineHeight: 1.1,
                         }}>{t.categories[e.category]}</div>
-                        <div style={{ flex: 1 }}>
+                        <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ fontSize: 15, color: "#1e0f3c", fontWeight: 500 }}>{e.desc}</div>
+                          {e.daysAgo > 0 && (
+                            <div style={{ fontSize: 12, color: "#6b5a9e", marginTop: 2 }}>{t.photoLog.daysAgo(e.daysAgo)}</div>
+                          )}
+                          {children.length > 1 && (
+                            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 8 }}>
+                              {children.map(c => {
+                                const on = e.childId === c.id;
+                                return (
+                                  <button key={c.id} onClick={() => setEntryChild(i, c.id)} style={{
+                                    padding: "4px 11px", borderRadius: 999, fontSize: 12, fontWeight: 600,
+                                    cursor: "pointer", fontFamily: "'DM Sans', sans-serif",
+                                    border: `1px solid ${on ? c.color + "80" : "rgba(124,58,237,0.15)"}`,
+                                    background: on ? `${c.color}22` : "rgba(255,255,255,0.7)",
+                                    color: on ? c.color : "#a394c8",
+                                  }}>{c.name}</button>
+                                );
+                              })}
+                            </div>
+                          )}
+                          {!e.childId && (
+                            <div style={{ fontSize: 12, color: "#be185d", marginTop: 4 }}>{t.photoLog.smartWhichChild}</div>
+                          )}
                         </div>
+                        {Number(e.hours) > 0 && (
+                          <div style={{ fontSize: 15, fontWeight: 700, color: "#7C3AED", fontFamily: titleFont }}>{t.photoLog.hoursDisplay(Number(e.hours))}</div>
+                        )}
                         {Number(e.amount) > 0 && (
                           <div style={{ fontSize: 15, fontWeight: 700, color: "#7C3AED", fontFamily: titleFont }}>{t.money(e.amount)}</div>
                         )}
@@ -687,7 +745,7 @@ export default function PhotoLogScreen() {
                       background: saved ? "linear-gradient(135deg, #10B981, #06B6D4)" : "linear-gradient(135deg, #7C3AED, #EC4899)",
                       color: "#fff", fontSize: 16, fontWeight: 700, cursor: "pointer",
                       fontFamily: "'DM Sans', sans-serif",
-                      opacity: !selectedChildId ? 0.45 : 1,
+                      opacity: bulkResult.some(e => !e.childId) ? 0.45 : 1,
                     }}>
                       {saved ? t.photoLog.saved : t.photoLog.smartSaveAll(bulkResult.length)}
                     </button>
@@ -731,15 +789,15 @@ export default function PhotoLogScreen() {
                   {scanning && (
                     <div>
                       <div className="spinner" />
-                      <div style={{ fontSize: 14, color: "#EA580C", animation: "pulse 1s ease infinite" }}>
+                      <div style={{ fontSize: 14, color: "#FF3D92", animation: "pulse 1s ease infinite" }}>
                         {t.photoLog.scanning}
                       </div>
                     </div>
                   )}
                   {scannedText && (
                     <div style={{
-                      background: "rgba(217,119,6,0.08)", border: "1px solid rgba(217,119,6,0.2)",
-                      borderRadius: 14, padding: 14, fontSize: 13, color: "#92400e",
+                      background: "rgba(255,61,146,0.08)", border: "1px solid rgba(255,61,146,0.2)",
+                      borderRadius: 14, padding: 14, fontSize: 13, color: "#9d174d",
                       textAlign: "left", marginTop: 10,
                     }}>✓ {scannedText}</div>
                   )}
@@ -747,9 +805,9 @@ export default function PhotoLogScreen() {
               ) : (
                 <div>
                   <div style={{ marginBottom: 14, display: "flex", justifyContent: "center" }}>
-                    <Camera size={56} weight="duotone" color="#EA580C" />
+                    <Camera size={56} weight="duotone" color="#FF3D92" />
                   </div>
-                  <div style={{ fontSize: 16, color: "#EA580C", fontWeight: 500, marginBottom: 6 }}>
+                  <div style={{ fontSize: 16, color: "#FF3D92", fontWeight: 500, marginBottom: 6 }}>
                     {t.photoLog.tapPhoto}
                   </div>
                   <div style={{ fontSize: 14, color: "#6b5a9e" }}>{t.photoLog.photoHint}</div>
@@ -815,18 +873,13 @@ export default function PhotoLogScreen() {
             <input className="glass-input" value={times} onChange={e => setTimes(e.target.value)}
               placeholder={t.photoLog.timesPlaceholder} type="number" min="1" style={{ marginBottom: 0 }} />
           </div>
-          <div style={{ width: 92 }}>
-            <div className="label">{t.photoLog.ageLabel}</div>
-            <input className="glass-input" value={age} onChange={e => setAge(e.target.value)}
-              placeholder={t.photoLog.agePlaceholder} type="number" style={{ marginBottom: 0 }} />
-          </div>
         </div>
 
         {suggestions.length > 0 && (
           <div style={{
             marginTop: 14, padding: "12px 16px",
-            background: "rgba(217,119,6,0.07)", border: "1px solid rgba(217,119,6,0.18)",
-            borderRadius: 14, color: "#92400e", fontSize: 13, lineHeight: 1.6,
+            background: "rgba(255,61,146,0.07)", border: "1px solid rgba(255,61,146,0.18)",
+            borderRadius: 14, color: "#9d174d", fontSize: 13, lineHeight: 1.6,
           }}>
             💡 {t.photoLog.suggestIntro} {suggestions.join(", ")}
           </div>

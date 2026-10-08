@@ -159,7 +159,7 @@ export default function OnboardingScreen({ onDone }) {
   const primaryBtn = {
     marginTop: 28, padding: "17px 52px",
     borderRadius: 20,
-    background: saving ? "rgba(255,255,255,0.08)" : "linear-gradient(135deg, #FF6B6B, #EA580C)",
+    background: saving ? "rgba(255,255,255,0.08)" : "linear-gradient(135deg, #FF7AB6, #FF3D92)",
     border: "none", cursor: saving ? "not-allowed" : "pointer",
     fontSize: 16, fontWeight: 700,
     color: saving ? "#667788" : "#000",
@@ -178,7 +178,7 @@ export default function OnboardingScreen({ onDone }) {
           width: i === currentStep ? 24 : 7,
           height: 7, borderRadius: 4,
           background: i === currentStep
-            ? "linear-gradient(90deg, #FF6B6B, #EA580C)"
+            ? "linear-gradient(90deg, #FF7AB6, #FF3D92)"
             : "rgba(255,255,255,0.1)",
           transition: "all 0.35s ease",
           boxShadow: i === currentStep ? "0 0 10px rgba(255,107,107,0.5)" : "none",

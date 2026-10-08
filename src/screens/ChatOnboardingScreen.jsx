@@ -128,9 +128,9 @@ export default function ChatOnboardingScreen() {
             }}>
               {bubble.side === "right" ? (
                 <>
-                  You give Emma a bike at age 7,{"\n"}
+                  {t.chatOnboarding.bubble2line1}{"\n"}
                   <span className="shake-text" style={{ fontWeight: 700 }}>
-                    Did you do the same for Zoe?
+                    {t.chatOnboarding.bubble2line2}
                   </span>
                 </>
               ) : bubble.text}

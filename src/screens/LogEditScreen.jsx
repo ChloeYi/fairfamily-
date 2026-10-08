@@ -69,8 +69,8 @@ export default function LogEditScreen() {
       const update = {
         category,
         desc: desc.trim() || t.categories[category],
-        amount: category === "time" ? 0 : parseFloat(amount) || 0,
-        hours: category === "time" ? parseFloat(hours) || 0 : 0,
+        amount: (category === "time" || category === "oneOnOne") ? 0 : parseFloat(amount) || 0,
+        hours: (category === "time" || category === "oneOnOne") ? parseFloat(hours) || 0 : 0,
         times: Math.max(1, parseInt(times) || 1),
       };
       if (dateStr) update.createdAt = new Date(dateStr + "T12:00:00");
@@ -107,7 +107,7 @@ export default function LogEditScreen() {
       minHeight: "100vh", background: BG, fontFamily: "'DM Sans', sans-serif",
       color: "#1e0f3c", paddingBottom: 40,
     }}>
-      <div style={{ padding: "36px 20px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <div style={{ padding: "72px 20px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <button onClick={() => navigate(-1)} style={iconBtn} aria-label="back">
           <ArrowLeft size={20} color="#7c6faa" weight="bold" />
         </button>
@@ -156,7 +156,7 @@ export default function LogEditScreen() {
 
             {/* Amount + Times */}
             <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
-              {category === "time" ? (
+              {(category === "time" || category === "oneOnOne") ? (
                 <div style={{ flex: 1 }}>
                   <div style={label}>{t.photoLog.hoursLabel}</div>
                   <input value={hours} onChange={e => setHours(e.target.value)}

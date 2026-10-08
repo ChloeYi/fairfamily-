@@ -4,11 +4,11 @@ import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer, Tool
 import { collection, onSnapshot } from "firebase/firestore";
 import { signOut } from "firebase/auth";
 import { auth, db } from "../firebase";
+import KidAvatar from "../components/KidAvatar";
 import { useLanguage } from "../hooks/useLanguage";
 import LifeLineGraph from "./LifeLineGraph";
 import Tour from "../components/Tour";
 import PremiumModal from "../components/PremiumModal";
-import { UsersThree } from "@phosphor-icons/react";
 
 const EMOJI_FLATICON = {
   "🌸": "fi-sr-child-head",
@@ -381,7 +381,8 @@ export default function DashboardScreen() {
             animation: "fadeUp 0.5s ease both",
           }}>
             <div style={{ marginBottom: 20, display: "flex", justifyContent: "center" }}>
-              <UsersThree size={72} weight="duotone" color="#7C3AED" />
+              <img src={`${process.env.PUBLIC_URL || ""}/img/empty/kids.webp`} alt="" width={180} height={180}
+                style={{ width: 180, height: 180, borderRadius: "50%", objectFit: "cover", boxShadow: "0 8px 30px rgba(255,61,146,0.15)" }} />
             </div>
             <div style={{
               fontFamily: titleFont,
@@ -395,38 +396,38 @@ export default function DashboardScreen() {
           <>
             <div className="label" style={{ paddingLeft: 4 }}>{t.dashboard.childrenLabel}</div>
 
-            {children.map((c, i) => {
-              const avg = Math.round(Object.values(c.scores).reduce((a, b) => a + b) / 8);
+            {(() => {
+              // No per-child grades. Only gently flag the child who could use a little more, when the gap is real.
+              const avgOf = (c) => Object.values(c.scores).reduce((a, b) => a + b) / 8;
+              const lowest = children.length >= 2 && fairness < 85
+                ? [...children].sort((a, b) => avgOf(a) - avgOf(b))[0].id
+                : null;
+              return children.map((c, i) => {
+              const needsMore = c.id === lowest;
               return (
                 <div key={c.id} className="child-row" {...(i === 0 ? { "data-tour": "children" } : {})} style={{ animationDelay: `${i * 0.09}s` }}
                   onClick={() => navigate(`/child/${c.id}`)}>
-                  <div style={{
-                    width: 58, height: 58, borderRadius: 18, flexShrink: 0,
-                    background: `linear-gradient(135deg, ${c.color}35, ${c.color}18)`,
-                    border: `2px solid ${c.color}50`,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    boxShadow: `0 4px 16px ${c.color}28`,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                  }}><KidIcon emoji={c.emoji} size={26} color={c.color} /></div>
+                  <div style={{ flexShrink: 0 }}><KidAvatar emoji={c.emoji} size={56} color={c.color} /></div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontWeight: 600, fontSize: 18, letterSpacing: -0.2 }}>{c.name}</div>
                     <div style={{ fontSize: 15, color: "#6b5a9e", marginTop: 3 }}>
-                      {t.childRoom.ageAt(c.age)}
+                      {t.childRoom.ageAt(c.birthYear ? Math.max(0, new Date().getFullYear() - Number(c.birthYear)) : c.age)}
                       {c.totalSpent > 0 && ` · ${t.money(c.totalSpent)} ${t.dashboard.spent}`}
                       {(c.giftCount + c.experienceCount) > 0 && ` · ${c.giftCount + c.experienceCount} ${t.dashboard.events}`}
                     </div>
                   </div>
-                  <div style={{ textAlign: "right", marginRight: 4 }}>
+                  {needsMore && (
                     <div style={{
-                      fontSize: 20, fontWeight: 700, fontFamily: titleFont,
-                      color: avg > 60 ? "#7C3AED" : avg > 40 ? "#EA580C" : "#EC4899",
-                    }}>{avg}%</div>
-                    <div style={{ fontSize: 13, color: "#445566", letterSpacing: 1 }}>{t.dashboard.score}</div>
-                  </div>
+                      marginRight: 4, padding: "6px 10px", borderRadius: 999,
+                      background: "rgba(236,72,153,0.1)", border: "1px solid rgba(236,72,153,0.25)",
+                      color: "#DB2777", fontSize: 13, fontWeight: 700, whiteSpace: "nowrap",
+                    }}>{t.dashboard.needsMore}</div>
+                  )}
                   <div style={{ color: "#6b5a9e", fontSize: 20 }}>›</div>
                 </div>
               );
-            })}
+              });
+            })()}
 
             <div data-tour="lifegraph"><LifeLineGraph /></div>
 

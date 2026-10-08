@@ -2,19 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { collection, onSnapshot, addDoc, deleteDoc, doc, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "../firebase";
+import KidAvatar from "../components/KidAvatar";
 import { useLanguage } from "../hooks/useLanguage";
-import { Baby, Trash, CaretRight } from "@phosphor-icons/react";
-
-const EMOJI_FLATICON = {
-  "🌸": "fi-sr-child-head",
-  "⚡": "fi-sr-child",
-  "🌻": "fi-sr-baby",
-  "🦋": "fi-sr-user-crown",
-  "🌈": "fi-sr-face-smile-hearts",
-  "⭐": "fi-sr-face-awesome",
-  "🎯": "fi-sr-face-glasses",
-  "🔥": "fi-sr-face-smile-halo",
-};
+import { Trash, CaretRight } from "@phosphor-icons/react";
 
 const BG = "linear-gradient(160deg, #f8f0ff 0%, #eef2ff 50%, #fdf4ff 100%)";
 
@@ -235,7 +225,8 @@ export default function KidsScreen() {
         {!loading && children.length === 0 && (
           <div style={{ textAlign: "center", padding: "80px 20px", animation: "fadeUp 0.5s ease both", position: "relative", zIndex: 1 }}>
             <div style={{ marginBottom: 20, display: "flex", justifyContent: "center" }}>
-              <Baby size={72} weight="duotone" color="#EC4899" />
+              <img src={`${process.env.PUBLIC_URL || ""}/img/empty/kids.webp`} alt="" width={180} height={180}
+                style={{ width: 180, height: 180, borderRadius: "50%", objectFit: "cover", boxShadow: "0 8px 30px rgba(255,61,146,0.15)" }} />
             </div>
             <div style={{ fontFamily: titleFont, fontSize: 28, fontWeight: 400, marginBottom: 12, color: "#1e0f3c" }}>
               {t.kids.noChildren}
@@ -252,16 +243,7 @@ export default function KidsScreen() {
             <div key={c.id} className="kid-card"
               style={{ animationDelay: `${i * 0.07}s`, borderColor: `${c.color}30` }}
               onClick={() => navigate(`/child/${c.id}`)}>
-              <div style={{
-                width: 62, height: 62, borderRadius: 20, flexShrink: 0,
-                background: `linear-gradient(135deg, ${c.color}28, ${c.color}12)`,
-                border: `2px solid ${c.color}40`,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                boxShadow: `0 6px 20px ${c.color}22`,
-              }}>
-                <i className={`fi ${EMOJI_FLATICON[c.emoji] || "fi-sr-star"}`}
-                   style={{ fontSize: 28, color: c.color }} />
-              </div>
+              <div style={{ flexShrink: 0 }}><KidAvatar emoji={c.emoji} size={62} color={c.color} /></div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontWeight: 600, fontSize: 20, letterSpacing: -0.2, color: "#1e0f3c" }}>{c.name}</div>
                 <div style={{ fontSize: 15, color: "#6b5a9e", marginTop: 4 }}>

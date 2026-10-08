@@ -5,6 +5,7 @@ import {
   increment, serverTimestamp, query, orderBy,
 } from "firebase/firestore";
 import { auth, db } from "../firebase";
+import KidAvatar, { AVATAR_KEYS } from "../components/KidAvatar";
 import { useLanguage } from "../hooks/useLanguage";
 
 const BG = "linear-gradient(160deg, #f8f0ff 0%, #eef2ff 50%, #fdf4ff 100%)";
@@ -91,7 +92,6 @@ export default function ChildRoomScreen() {
   const [desc, setDesc] = useState("");
   const [amount, setAmount] = useState("");
   const [hours, setHours] = useState("");
-  const [logAge, setLogAge] = useState("");
   const [dateMode, setDateMode] = useState("today");   // "today" | "other"
   const [customDate, setCustomDate] = useState("");
   const [saving, setSaving] = useState(false);
@@ -115,12 +115,14 @@ export default function ChildRoomScreen() {
     if (!desc.trim() || !uid || saving) return;
     setSaving(true);
     try {
-      const isTime = logType === "time";
+      const isTime = logType === "time" || logType === "oneOnOne";
       const amt = isTime ? 0 : parseFloat(amount) || 0;
-      const ageVal = parseFloat(logAge) || child?.age || null;
-      const when = dateMode === "other" && customDate
-        ? new Date(customDate + "T12:00:00")
-        : serverTimestamp();
+      const picked = dateMode === "other" && customDate ? new Date(customDate + "T12:00:00") : null;
+      // Age is computed from birth year — the parent never types it.
+      const ageVal = child?.birthYear
+        ? Math.max(0, (picked || new Date()).getFullYear() - Number(child.birthYear))
+        : (Number(child?.age) || null);
+      const when = picked || serverTimestamp();
       await addDoc(collection(db, "users", uid, "children", id, "logs"), {
         category: logType,
         desc: desc.trim(),
@@ -134,7 +136,7 @@ export default function ChildRoomScreen() {
         ...(logType === "gifts" && { giftCount: increment(1) }),
         ...(logType === "experiences" && { experienceCount: increment(1) }),
       });
-      setDesc(""); setAmount(""); setHours(""); setLogAge(""); setDateMode("today"); setCustomDate(""); setShowForm(false);
+      setDesc(""); setAmount(""); setHours(""); setDateMode("today"); setCustomDate(""); setShowForm(false);
     } finally {
       setSaving(false);
     }
@@ -160,8 +162,24 @@ export default function ChildRoomScreen() {
 
   const accentColor = child.color || "#7C3AED";
   const totalSpent = child.totalSpent || 0;
-  const giftCount = child.giftCount || 0;
-  const expCount = child.experienceCount || 0;
+  const ageNow = child.birthYear
+    ? Math.max(0, new Date().getFullYear() - Number(child.birthYear))
+    : child.age;
+
+  // Attention first: when was the last one-on-one, and how much time together this month.
+  const tsDate = (ts) => (!ts ? null : ts.toDate ? ts.toDate() : new Date(ts.seconds * 1000));
+  const lastOneOnOne = logs.find(l => l.category === "oneOnOne");
+  const lastOneOnOneDate = tsDate(lastOneOnOne?.createdAt);
+  const daysSinceOneOnOne = lastOneOnOneDate
+    ? Math.max(0, Math.floor((Date.now() - lastOneOnOneDate.getTime()) / 86400000))
+    : null;
+  const now = new Date();
+  const monthHours = logs.reduce((sum, l) => {
+    const d = tsDate(l.createdAt);
+    if (!d || d.getFullYear() !== now.getFullYear() || d.getMonth() !== now.getMonth()) return sum;
+    if (l.category !== "time" && l.category !== "oneOnOne") return sum;
+    return sum + (Number(l.hours) || 0) * Math.max(1, Number(l.times) || 1);
+  }, 0);
 
   const formatDate = (ts) => {
     if (!ts) return "";
@@ -202,14 +220,16 @@ export default function ChildRoomScreen() {
       {/* Child profile */}
       <div style={{ padding: "0 20px 24px", animation: "fadeUp 0.5s ease both" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 24 }}>
-          <div style={{
-            width: 84, height: 84, borderRadius: 26,
-            background: `linear-gradient(135deg, ${accentColor}30, ${accentColor}12)`,
-            border: `2px solid ${accentColor}44`,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 42,
-            boxShadow: `0 8px 32px ${accentColor}22, inset 0 1px 0 rgba(255,255,255,0.8)`,
-          }}>{child.emoji}</div>
+          <button
+            title={t.childRoom.changeAvatar}
+            onClick={() => {
+              // Tap the picture to switch to the next illustration.
+              const next = AVATAR_KEYS[(AVATAR_KEYS.indexOf(child.emoji) + 1) % AVATAR_KEYS.length];
+              updateDoc(doc(db, "users", uid, "children", id), { emoji: next });
+            }}
+            style={{ border: "none", background: "none", padding: 0, cursor: "pointer", flexShrink: 0 }}>
+            <KidAvatar emoji={child.emoji} size={84} color={accentColor} />
+          </button>
           <div>
             <h1 style={{
               fontFamily: titleFont,
@@ -217,7 +237,7 @@ export default function ChildRoomScreen() {
               color: accentColor,
             }}>{child.name}</h1>
             <div style={{ color: "#6b5a9e", fontSize: 15, marginTop: 6 }}>
-              {t.childRoom.ageAt(child.age)}
+              {t.childRoom.ageAt(ageNow)}
             </div>
           </div>
         </div>
@@ -225,9 +245,13 @@ export default function ChildRoomScreen() {
         {/* Stats */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
           {[
-            { label: t.childRoom.totalSpent, value: `$${totalSpent.toLocaleString()}`, color: "#EA580C" },
-            { label: t.childRoom.gifts, value: giftCount, color: "#EC4899" },
-            { label: t.childRoom.experiences, value: expCount, color: "#7C3AED" },
+            {
+              label: t.childRoom.lastOneOnOne,
+              value: daysSinceOneOnOne === null ? "–" : t.childRoom.daysAgoShort(daysSinceOneOnOne),
+              color: daysSinceOneOnOne === null || daysSinceOneOnOne > 7 ? "#DB2777" : accentColor,
+            },
+            { label: t.childRoom.monthTogether, value: t.childRoom.hoursShort(Math.round(monthHours * 10) / 10), color: accentColor },
+            { label: t.childRoom.totalSpent, value: t.money(totalSpent), color: "#6b5a9e", small: true },
           ].map((s, i) => (
             <div key={i} style={{
               background: "rgba(255,255,255,0.72)",
@@ -240,7 +264,7 @@ export default function ChildRoomScreen() {
             }}>
               <div style={{
                 fontFamily: titleFont,
-                fontSize: 28, fontWeight: 700, color: s.color,
+                fontSize: s.small ? 18 : 26, fontWeight: 700, color: s.color,
                 lineHeight: 1,
               }}>{s.value}</div>
               <div style={{ fontSize: 13, color: "#6b5a9e", marginTop: 6, letterSpacing: 1.5, textTransform: "uppercase" }}>
@@ -256,7 +280,7 @@ export default function ChildRoomScreen() {
         {/* Add log button / form */}
         <div style={{ marginBottom: 18 }}>
           {!showForm ? (
-            <button onClick={() => { setShowForm(true); setLogAge(String(child.age || "")); }} style={{
+            <button onClick={() => setShowForm(true)} style={{
               width: "100%", padding: "16px",
               borderRadius: 20, border: `1px solid ${accentColor}35`,
               background: `${accentColor}0c`,
@@ -307,9 +331,9 @@ export default function ChildRoomScreen() {
               />
 
               <div style={{ fontSize: 13, letterSpacing: 2.5, color: "#6b5a9e", fontWeight: 700, textTransform: "uppercase", marginBottom: 8 }}>
-                {logType === "time" ? t.photoLog.hoursLabel : t.childRoom.amountLabel}
+                {(logType === "time" || logType === "oneOnOne") ? t.photoLog.hoursLabel : t.childRoom.amountLabel}
               </div>
-              {logType === "time" ? (
+              {(logType === "time" || logType === "oneOnOne") ? (
                 <input className="cr-input"
                   value={hours} onChange={e => setHours(e.target.value)}
                   placeholder={t.photoLog.hoursPlaceholder} type="number" min="0" step="0.5"
@@ -323,7 +347,7 @@ export default function ChildRoomScreen() {
                 />
               )}
 
-              {/* When + Age */}
+              {/* When */}
               <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 13, letterSpacing: 2.5, color: "#6b5a9e", fontWeight: 700, textTransform: "uppercase", marginBottom: 8 }}>
@@ -341,16 +365,6 @@ export default function ChildRoomScreen() {
                     ))}
                   </div>
                 </div>
-                <div style={{ width: 92 }}>
-                  <div style={{ fontSize: 13, letterSpacing: 2.5, color: "#6b5a9e", fontWeight: 700, textTransform: "uppercase", marginBottom: 8 }}>
-                    {t.photoLog.ageLabel}
-                  </div>
-                  <input className="cr-input"
-                    value={logAge} onChange={e => setLogAge(e.target.value)}
-                    placeholder={t.photoLog.agePlaceholder} type="number"
-                    style={{ marginBottom: 0 }}
-                  />
-                </div>
               </div>
 
               {dateMode === "other" && (
@@ -361,7 +375,7 @@ export default function ChildRoomScreen() {
               )}
 
               <div style={{ display: "flex", gap: 10 }}>
-                <button onClick={() => { setShowForm(false); setDesc(""); setAmount(""); setHours(""); setLogAge(""); setDateMode("today"); setCustomDate(""); }} style={{
+                <button onClick={() => { setShowForm(false); setDesc(""); setAmount(""); setHours(""); setDateMode("today"); setCustomDate(""); }} style={{
                   flex: 1, padding: "13px", borderRadius: 14,
                   background: "rgba(255,255,255,0.7)", border: "1px solid rgba(255,255,255,0.95)",
                   color: "#6b5a9e", cursor: "pointer", fontSize: 14,
@@ -400,7 +414,10 @@ export default function ChildRoomScreen() {
             borderRadius: 24, animation: "fadeUp 0.5s ease both",
             boxShadow: "0 4px 20px rgba(139,92,246,0.07)",
           }}>
-            <div style={{ fontSize: 44, marginBottom: 14 }}>✨</div>
+            <div style={{ marginBottom: 14, display: "flex", justifyContent: "center" }}>
+              <img src={`${process.env.PUBLIC_URL || ""}/img/empty/logs.webp`} alt="" width={140} height={140}
+                style={{ width: 140, height: 140, borderRadius: "50%", objectFit: "cover", boxShadow: "0 8px 30px rgba(255,61,146,0.15)" }} />
+            </div>
             <div style={{ fontSize: 18, color: "#6b5b9e", marginBottom: 8 }}>{t.childRoom.noLogs}</div>
             <div style={{ fontSize: 14, color: "#6b5a9e" }}>{t.childRoom.noLogsHint}</div>
           </div>
@@ -442,7 +459,7 @@ export default function ChildRoomScreen() {
                   }}>
                     {log.amount > 0 ? (
                       <div style={{ fontSize: 15, fontWeight: 700, color: "#EA580C", fontFamily: titleFont }}>
-                        ${log.amount}
+                        {t.money(log.amount)}
                       </div>
                     ) : log.hours > 0 ? (
                       <div style={{ fontSize: 15, fontWeight: 700, color: "#6366F1", fontFamily: titleFont }}>

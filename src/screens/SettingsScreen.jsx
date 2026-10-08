@@ -166,7 +166,7 @@ export default function SettingsScreen() {
 
         {/* Category guide */}
         <div style={card}>
-          <div style={cardTitle}><Lightbulb size={20} weight="duotone" color="#EA580C" /> {t.settings.guideTitle}</div>
+          <div style={cardTitle}><Lightbulb size={20} weight="duotone" color="#FF3D92" /> {t.settings.guideTitle}</div>
           <div style={cardSub}>{t.settings.guideSub}</div>
           {CAT_ORDER.map(key => {
             const Icon = CAT_ICONS[key];
