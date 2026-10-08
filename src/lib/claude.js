@@ -8,15 +8,30 @@ import { auth } from "../firebase";
 
 const API_BASE = (process.env.REACT_APP_API_BASE || "").replace(/\/$/, "");
 
-async function create({ messages, max_tokens }) {
+// Thrown when the free daily AI limit is used up (server answers 429 daily_limit).
+export class DailyLimitError extends Error {
+  constructor(feature, limit) {
+    super("daily-limit");
+    this.name = "DailyLimitError";
+    this.feature = feature;
+    this.limit = limit;
+  }
+}
+
+// feature: "advice" (AI advice, 3/day free) or "scan" (photo/text logging, 10/day free)
+async function create({ messages, max_tokens, feature = "advice" }) {
   const user = auth.currentUser;
   if (!user) throw new Error("not-signed-in");
   const idToken = await user.getIdToken();
   const res = await fetch(`${API_BASE}/api/claude`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${idToken}` },
-    body: JSON.stringify({ messages, max_tokens }),
+    body: JSON.stringify({ messages, max_tokens, feature }),
   });
+  if (res.status === 429) {
+    const j = await res.json().catch(() => ({}));
+    if (j.error === "daily_limit") throw new DailyLimitError(j.feature || feature, j.limit);
+  }
   if (!res.ok) throw new Error(`claude-proxy-${res.status}`);
   return res.json(); // { content: [{ type: "text", text }] } — same shape as the SDK
 }

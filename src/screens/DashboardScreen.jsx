@@ -7,6 +7,7 @@ import { auth, db } from "../firebase";
 import { useLanguage } from "../hooks/useLanguage";
 import LifeLineGraph from "./LifeLineGraph";
 import Tour from "../components/Tour";
+import PremiumModal from "../components/PremiumModal";
 import { UsersThree } from "@phosphor-icons/react";
 
 const EMOJI_FLATICON = {
@@ -156,12 +157,13 @@ const COMPARE_METRICS = [
 
 export default function DashboardScreen() {
   const navigate = useNavigate();
+  const [showPremium, setShowPremium] = useState(false);
   const [showTour, setShowTour] = useState(false);
   const [compareMetric, setCompareMetric] = useState("all");
   // Which "All"-mode event cells are expanded (key: `${childId}-${age}`).
   const [expandedCells, setExpandedCells] = useState({});
   const toggleCell = (key) => setExpandedCells(p => ({ ...p, [key]: !p[key] }));
-  const { t, titleFont } = useLanguage();
+  const { t, titleFont, lang } = useLanguage();
 
   const [rawChildren, setRawChildren] = useState([]);
   const [childLogs, setChildLogs] = useState({});
@@ -304,9 +306,19 @@ export default function DashboardScreen() {
       color: "#1e0f3c", paddingBottom: 90, position: "relative", zIndex: 1,
     }}>
       <style>{css}</style>
+      <PremiumModal open={showPremium} reason="button" onClose={() => setShowPremium(false)} />
+
+      {/* Premium (coming soon) — measures interest before we build payments */}
+      <button onClick={() => setShowPremium(true)} style={{
+        position: "absolute", top: 22, left: 20, zIndex: 2,
+        fontSize: 12, fontWeight: 700, color: "#fff", cursor: "pointer",
+        background: "linear-gradient(135deg,#7C3AED,#EC4899)", border: "none",
+        padding: "5px 11px", borderRadius: 999, fontFamily: "'DM Sans', sans-serif",
+        boxShadow: "0 4px 14px rgba(236,72,153,0.3)",
+      }}>✨ {lang === "ko" ? "프리미엄" : "Premium"}</button>
 
       {/* Header */}
-      <div style={{ padding: "36px 24px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div style={{ padding: "72px 24px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div>
           <div style={{ fontSize: 13, letterSpacing: 3, color: "#6b5a9e", fontWeight: 700, textTransform: "uppercase", marginBottom: 8 }}>
             {t.dashboard.greeting}
@@ -356,7 +368,7 @@ export default function DashboardScreen() {
             fontSize: 13, color: "#6b5a9e", background: "none",
             border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif",
             letterSpacing: 0.3, padding: 0,
-          }}>Sign out</button>
+          }}>{lang === "ko" ? "로그아웃" : "Sign out"}</button>
         </div>
       </div>
 
@@ -400,7 +412,7 @@ export default function DashboardScreen() {
                     <div style={{ fontWeight: 600, fontSize: 18, letterSpacing: -0.2 }}>{c.name}</div>
                     <div style={{ fontSize: 15, color: "#6b5a9e", marginTop: 3 }}>
                       {t.childRoom.ageAt(c.age)}
-                      {c.totalSpent > 0 && ` · $${c.totalSpent.toLocaleString()} ${t.dashboard.spent}`}
+                      {c.totalSpent > 0 && ` · ${t.money(c.totalSpent)} ${t.dashboard.spent}`}
                       {(c.giftCount + c.experienceCount) > 0 && ` · ${c.giftCount + c.experienceCount} ${t.dashboard.events}`}
                     </div>
                   </div>
@@ -453,7 +465,7 @@ export default function DashboardScreen() {
             {/* Age Grid */}
             {ageGridAges.length > 0 && (() => {
               const metric = COMPARE_METRICS.find(m => m.key === compareMetric) || COMPARE_METRICS[0];
-              const showVal = (v) => metric.money ? `$${v.toLocaleString()}` : t.dashboard.times(v);
+              const showVal = (v) => metric.money ? t.money(v) : t.dashboard.times(v);
               return (
               <div className="glass-card" data-tour="comparison" style={{ animationDelay: "0.35s" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>

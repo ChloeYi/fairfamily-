@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { claude as client } from "../lib/claude";
+import { claude as client, DailyLimitError } from "../lib/claude";
+import PremiumModal from "../components/PremiumModal";
 import { auth, db } from "../firebase";
 import {
   collection, onSnapshot, addDoc, updateDoc, doc,
@@ -170,6 +171,7 @@ export default function PhotoLogScreen() {
   const { t, titleFont } = useLanguage();
   const navigate = useNavigate();
   const [children, setChildren] = useState([]);
+  const [limitHit, setLimitHit] = useState(null); // { limit } when the free daily AI limit is used up
   const [childrenLoading, setChildrenLoading] = useState(true);
   const [recentLogs, setRecentLogs] = useState([]);
   const [selectedChildId, setSelectedChildId] = useState(null);
@@ -237,7 +239,7 @@ export default function PhotoLogScreen() {
     setScanning(true); setScannedText("");
     try {
       const message = await client.messages.create({
-        model: MODEL, max_tokens: 256,
+        model: MODEL, max_tokens: 256, feature: "scan",
         messages: [{ role: "user", content: [
           { type: "image", source: { type: "base64", media_type: mediaType || "image/jpeg", data: base64 } },
           { type: "text", text: `Look at this image. Extract:\n- Item name/description\n- Amount/price if visible\n- Category, one of: time, money, gifts, school, oneOnOne, emotional, experiences, health\n(time=time spent together, money=an expense/shopping, gifts=a present, school=school activity/trip, oneOnOne=one-on-one time, emotional=affection/comfort, experiences=fun/outings/travel, health=health/exercise/doctor)\nReturn as JSON only: {"desc":"...","amount":"...","category":"gifts"}` },
@@ -250,6 +252,7 @@ export default function PhotoLogScreen() {
       if (parsed.category && CATEGORY_KEYS.includes(parsed.category)) setLogType(parsed.category);
       setScannedText(t.photoLog.detected(parsed.desc, parsed.amount ? String(parsed.amount).replace(/[^0-9.]/g, "") : ""));
     } catch (err) {
+      if (err instanceof DailyLimitError) { setLimitHit({ limit: err.limit }); setScannedText(""); return; }
       console.error("Vision scan error:", err);
       setScannedText(t.photoLog.couldntRead);
     } finally { setScanning(false); }
@@ -345,7 +348,7 @@ export default function PhotoLogScreen() {
   const suggestions = useMemo(() => {
     const s = [];
     if (!desc.trim()) s.push(t.photoLog.suggestDesc);
-    if (logType === "time") {
+    if (logType === "time" || logType === "oneOnOne") {
       if (!hours) s.push(t.photoLog.suggestHours);
     } else if (!amount) {
       s.push(t.photoLog.suggestAmount);
@@ -385,7 +388,7 @@ export default function PhotoLogScreen() {
     setSaveError(""); setBulkBusy(true); setBulkResult(null);
     try {
       const message = await client.messages.create({
-        model: MODEL, max_tokens: 700,
+        model: MODEL, max_tokens: 700, feature: "scan",
         messages: [{ role: "user", content: [{ type: "text", text:
           `The user logs things they did for or with their child, in free text (often Korean). Split it into separate entries. For each, pick a category from: time, money, gifts, school, oneOnOne, emotional, experiences, health (time=time spent together, money=an expense/shopping, gifts=a present, school=school activity/trip, oneOnOne=one-on-one time, emotional=affection/comfort/praise, experiences=fun/outings/travel, health=health/exercise/doctor). Give a short description, a numeric amount if a price is mentioned (else 0), and "times" = how many times it happened (e.g. "played soccer twice" → 2; default 1).\nText: """${bulkText}"""\nReturn JSON only as an array: [{"category":"gifts","desc":"...","amount":0,"times":1}]` }]}],
       });
@@ -395,6 +398,7 @@ export default function PhotoLogScreen() {
       entries = entries.filter(e => e && CATEGORY_KEYS.includes(e.category));
       setBulkResult(entries);
     } catch (err) {
+      if (err instanceof DailyLimitError) { setLimitHit({ limit: err.limit }); return; }
       console.error("Bulk parse error:", err);
       setSaveError(t.photoLog.couldntRead);
     } finally { setBulkBusy(false); }
@@ -435,6 +439,7 @@ export default function PhotoLogScreen() {
       paddingBottom: 90, position: "relative", zIndex: 1,
     }}>
       <style>{css}</style>
+      <PremiumModal open={!!limitHit} reason="limit" limit={limitHit?.limit} onClose={() => setLimitHit(null)} />
 
       {/* Centered calendar popup */}
       {showCal && (() => {
@@ -673,7 +678,7 @@ export default function PhotoLogScreen() {
                           <div style={{ fontSize: 15, color: "#1e0f3c", fontWeight: 500 }}>{e.desc}</div>
                         </div>
                         {Number(e.amount) > 0 && (
-                          <div style={{ fontSize: 15, fontWeight: 700, color: "#7C3AED", fontFamily: titleFont }}>${e.amount}</div>
+                          <div style={{ fontSize: 15, fontWeight: 700, color: "#7C3AED", fontFamily: titleFont }}>{t.money(e.amount)}</div>
                         )}
                       </div>
                     ))}
@@ -792,7 +797,7 @@ export default function PhotoLogScreen() {
 
         {/* Amount + Times + Age */}
         <div style={{ display: "flex", gap: 10, alignItems: "flex-end" }}>
-          {logType === "time" ? (
+          {(logType === "time" || logType === "oneOnOne") ? (
             <div style={{ flex: 1 }}>
               <div className="label">{t.photoLog.hoursLabel}</div>
               <input className="glass-input" value={hours} onChange={e => setHours(e.target.value)}
@@ -882,7 +887,7 @@ export default function PhotoLogScreen() {
                   <div style={{
                     fontSize: 15, fontWeight: 700, color: "#7C3AED",
                     fontFamily: titleFont,
-                  }}>${log.amount}</div>
+                  }}>{t.money(log.amount)}</div>
                 )}
                 {!(log.amount > 0) && log.hours > 0 && (
                   <div style={{

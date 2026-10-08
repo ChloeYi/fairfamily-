@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
-import { claude as client } from "../lib/claude";
+import { claude as client, DailyLimitError } from "../lib/claude";
+import PremiumModal from "../components/PremiumModal";
 import { collection, onSnapshot } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { useLanguage } from "../hooks/useLanguage";
@@ -116,6 +117,7 @@ export default function AIAdviceScreen() {
   const [selectedPrompt, setSelectedPrompt] = useState(null);
   const [response, setResponse] = useState("");
   const [activeSection, setActiveSection] = useState("insights");
+  const [limitHit, setLimitHit] = useState(null); // { limit } when the free daily AI limit is used up
 
   useEffect(() => {
     const uid = auth.currentUser?.uid;
@@ -162,6 +164,7 @@ Return ONLY valid JSON with no markdown, no code fences, no explanation.` }],
       const parsed = parseJSON(message.content[0].text);
       setInsights(parsed.map(ins => ({ ...ins, child: children[ins.childIndex] || children[0] })));
     } catch (e) {
+      if (e instanceof DailyLimitError) { setLimitHit({ limit: e.limit }); setInsights(null); return; }
       console.error("AI insights error:", e);
       setInsights([{ urgent: false, child: children[0],
         title: lang === "ko" ? "연결 문제" : "Connection issue",
@@ -187,6 +190,7 @@ ${langInstruction}` }],
       stream.on("text", text => setResponse(prev => prev + text));
       await stream.finalMessage();
     } catch (e) {
+      if (e instanceof DailyLimitError) { setLimitHit({ limit: e.limit }); setSelectedPrompt(null); return; }
       console.error("Ask AI error:", e);
       setResponse(lang === "ko" ? "지금 Claude AI에 연결할 수 없어요." : "Sorry, I couldn't connect to Claude AI right now.");
     } finally { setLoading(false); }
@@ -198,6 +202,7 @@ ${langInstruction}` }],
       fontFamily: "'DM Sans', sans-serif", color: "#1e0f3c",
       paddingBottom: 90, position: "relative", zIndex: 1,
     }}>
+      <PremiumModal open={!!limitHit} reason="limit" limit={limitHit?.limit} onClose={() => setLimitHit(null)} />
       <style>{css}</style>
 
       {/* Header */}
