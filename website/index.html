@@ -146,6 +146,34 @@
 
   @media(max-width:760px){ .nav-links{display:none} }
 
+/* click-through demo */
+.demo{max-width:520px;margin:36px auto 0}
+.demo-dots{display:flex;justify-content:center;gap:8px;margin-bottom:16px}
+.demo-dots span{width:34px;height:6px;border-radius:999px;background:var(--line);transition:background .3s}
+.demo-dots span.on{background:var(--pink-deep)}
+.demo-card{background:#fff;border:1px solid var(--line);border-radius:26px;padding:24px;box-shadow:0 24px 60px rgba(18,32,63,.10);text-align:left}
+.demo-label{font-size:14px;font-weight:800;color:var(--navy-2);letter-spacing:.4px;margin-bottom:10px}
+.demo-input{min-height:96px;background:#fbf7ff;border:1px solid #efe6ff;border-radius:16px;padding:14px 16px;font-size:17px;font-weight:600;line-height:1.6;color:var(--navy)}
+.demo-input .caret{display:inline-block;width:2px;height:1.1em;background:var(--pink-deep);vertical-align:-3px;margin-left:1px;animation:demoBlink 1s steps(1) infinite}
+@keyframes demoBlink{50%{opacity:0}}
+.demo-result{display:grid;gap:10px}
+.demo-row{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:16px;opacity:0;transform:translateY(8px);animation:demoIn .4s ease forwards}
+@keyframes demoIn{to{opacity:1;transform:none}}
+.demo-row img{width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0}
+.demo-row .who{font-size:13px;font-weight:800;padding:3px 10px;border-radius:999px;display:inline-block;margin-bottom:3px}
+.demo-row .what{font-size:16px;font-weight:700;color:var(--navy)}
+.demo-row .meta{font-size:13px;font-weight:700;color:var(--navy-2)}
+.demo-row .val{margin-left:auto;font-weight:900;color:var(--violet);font-size:16px;white-space:nowrap}
+.demo-done{text-align:center;padding:10px 4px}
+.demo-done .big{font-size:44px}
+.demo-done b{display:block;font-size:20px;font-weight:900;margin-top:6px;color:var(--navy)}
+.demo-done p{font-size:16px;font-weight:600;color:var(--navy-2);margin-top:6px}
+.demo-btn{width:100%;margin-top:16px;font-size:18px;padding:16px}
+.demo-btn.pulse{animation:ff-glow 1.8s ease-out infinite}
+.demo-again{display:none;margin:12px auto 0;background:none;border:none;color:var(--sky-deep);font-weight:800;font-size:15px;cursor:pointer;font-family:inherit}
+.demo-hint{text-align:center;margin-top:14px;color:var(--navy-2);font-size:16px;font-weight:700;min-height:24px}
+@media (prefers-reduced-motion: reduce){.demo-row{animation:none;opacity:1;transform:none}}
+
 /* FAQ */
 .faq{max-width:760px;margin:28px auto 0;display:flex;flex-direction:column;gap:12px}
 .faq-item{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px 22px;box-shadow:0 6px 18px rgba(18,32,63,.06)}
@@ -226,14 +254,21 @@
   </div>
 </header>
 
-<section>
+<section id="try">
   <div class="wrap">
-    <div class="kicker">🎬</div>
-    <h2 class="title" data-t="videoTitle">See fairfamily in action</h2>
-    <p class="sec-sub" data-t="videoSub">A little walkthrough of how it feels day to day.</p>
-    <div class="video-box">
-      <div class="play">▶</div>
-      <div class="video-note" data-t="videoNote">Your intro video goes here</div>
+    <div class="kicker">👆</div>
+    <h2 class="title" data-t="demoTitle">Try it — three taps</h2>
+    <p class="sec-sub" data-t="demoSub">Just write what happened. AI sorts it by child.</p>
+    <div class="demo" id="demo">
+      <div class="demo-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="demo-card">
+        <div class="demo-label" id="demoLabel"></div>
+        <div class="demo-input" id="demoInput"></div>
+        <div class="demo-result" id="demoResult"></div>
+        <button class="btn btn-primary demo-btn" id="demoBtn" type="button"></button>
+        <button class="demo-again" id="demoAgain" type="button" data-t="demoAgain">↺ Watch again</button>
+      </div>
+      <p class="demo-hint" id="demoHint"></p>
     </div>
   </div>
 </section>
@@ -333,6 +368,22 @@
       previewTitle:'Balance check', previewPill:'🌿 In balance',
       previewNote:'Zoe hasn’t received a gift in a while — maybe a little music toy?',
       videoTitle:'See fairfamily in action', videoSub:'A little walkthrough of how it feels day to day.', videoNote:'Your intro video goes here',
+      demoTitle:'Try it — three taps', demoSub:'Just write what happened. AI sorts it by child.', demoAgain:'↺ Watch again',
+      demo:{
+        label:'WRITE IT ALL AT ONCE',
+        text:'Drove Emma to math class, played Lego with Liam for 30 min. Yesterday bought Emma sneakers, $45',
+        btn1:'✨ Sort with AI', btn2:'Save all 3', btn3:'Try it with your kids →',
+        hint1:'Step 1 · Write it the way you’d say it — several kids in one go is fine.',
+        hint2:'Step 2 · AI split it by child and category. Wrong name? Tap to change it.',
+        hint3:'Step 3 · Saved to each child — the balance chart updates right away.',
+        rows:[
+          {kid:'emma',name:'Emma',cat:'School',what:'Drove to math class',val:''},
+          {kid:'liam',name:'Liam',cat:'1-on-1',what:'Played Lego together',val:'30 min'},
+          {kid:'emma',name:'Emma',cat:'Money',what:'Sneakers',val:'$45',when:'Yesterday'}
+        ],
+        doneTitle:'3 entries saved',
+        doneSub:'Emma 2 · Liam 1 — you’ll see it side by side on the dashboard.'
+      },
       quote:'Did you give Emma a bike at 7? Now Zoe is 7 — did you do the same?',
       quoteSub:'fairfamily remembers — so you don’t have to.',
       featKicker:'How fairfamily helps', featTitle:'Made for everyday parenting',
@@ -393,6 +444,22 @@
       previewTitle:'균형 체크', previewPill:'🌿 균형 잡힘',
       previewNote:'다혜는 한동안 선물을 못 받았어요 — 작은 음악 장난감 어때요?',
       videoTitle:'fairfamily 미리 보기', videoSub:'매일 어떤 느낌인지 짧게 둘러보세요.', videoNote:'소개 영상이 여기에 들어갑니다',
+      demoTitle:'직접 눌러보세요 — 딱 세 번', demoSub:'있었던 일을 그냥 적으면, AI가 아이별로 나눠요.', demoAgain:'↺ 처음부터 다시 보기',
+      demo:{
+        label:'한번에 적기',
+        text:'안나 수학학원 데려다주고, 지호랑 30분 레고함. 어제 안나 운동화 6만원',
+        btn1:'✨ AI로 정리', btn2:'3개 모두 저장', btn3:'우리 아이들로 해보기 →',
+        hint1:'1단계 · 말하듯 적어요. 아이 여럿을 한 번에 적어도 돼요.',
+        hint2:'2단계 · AI가 아이별·항목별로 나눴어요. 이름이 틀리면 눌러서 바꿔요.',
+        hint3:'3단계 · 아이마다 저장됐어요. 대시보드 균형 그래프에 바로 반영돼요.',
+        rows:[
+          {kid:'emma',name:'안나',cat:'학교',what:'수학학원 데려다줌',val:''},
+          {kid:'liam',name:'지호',cat:'단둘이',what:'레고 함께함',val:'30분'},
+          {kid:'emma',name:'안나',cat:'지출',what:'운동화',val:'₩60,000',when:'어제'}
+        ],
+        doneTitle:'3개 저장됐어요',
+        doneSub:'안나 2개 · 지호 1개 — 대시보드에서 나란히 보여요.'
+      },
       quote:'안나에게 7살 때 자전거를 사줬나요? 이제 다혜가 7살이에요 — 똑같이 해줬나요?',
       quoteSub:'fairfamily가 기억해요 — 당신이 애쓰지 않아도 되도록.',
       featKicker:'fairfamily가 돕는 방법', featTitle:'매일의 육아를 위해 만들었어요',
@@ -505,6 +572,58 @@
   }
   // Language: an explicit tap on EN/KO is remembered in "lang_choice" (shared
   // with the app at /app); otherwise follow the device language (Korean → kr).
+  // Click-through demo of "write it all at once" (3 taps, no sign-in).
+  var DEMO_AV = {emma:'/app/img/avatars/avatar-1.webp', liam:'/app/img/avatars/avatar-2.webp', zoe:'/app/img/avatars/avatar-3.webp'};
+  var demoTimer = null, demoStep = 0;
+  function renderDemo(t){
+    var d = t.demo, input = document.getElementById('demoInput'), res = document.getElementById('demoResult'),
+        btn = document.getElementById('demoBtn'), hint = document.getElementById('demoHint'),
+        label = document.getElementById('demoLabel'), again = document.getElementById('demoAgain'),
+        dots = document.querySelectorAll('.demo-dots span');
+    if (!input) return;
+    clearInterval(demoTimer);
+    function setStep(n){
+      demoStep = n;
+      dots.forEach(function(x,i){ x.classList.toggle('on', i <= n); });
+      hint.textContent = [d.hint1, d.hint2, d.hint3][n];
+      btn.textContent = [d.btn1, d.btn2, d.btn3][n];
+      again.style.display = n === 2 ? 'block' : 'none';
+    }
+    label.textContent = d.label; label.style.display = '';
+    input.style.display = ''; res.innerHTML = '';
+    btn.classList.remove('pulse'); btn.disabled = true;
+    setStep(0);
+    // type the sentence in, then invite the first tap
+    var i = 0; input.innerHTML = '<span class="caret"></span>';
+    demoTimer = setInterval(function(){
+      i += 1;
+      input.innerHTML = d.text.slice(0, i).replace(/&/g,'&amp;').replace(/</g,'&lt;') + '<span class="caret"></span>';
+      if (i >= d.text.length) { clearInterval(demoTimer); btn.disabled = false; btn.classList.add('pulse'); }
+    }, 38);
+    btn.onclick = function(){
+      if (demoStep === 0) {
+        clearInterval(demoTimer); input.textContent = d.text;
+        res.innerHTML = d.rows.map(function(r, k){
+          var c = kid[r.kid];
+          return '<div class="demo-row" style="animation-delay:' + (k * 0.18) + 's">' +
+            '<img src="' + DEMO_AV[r.kid] + '" alt="">' +
+            '<div><span class="who" style="background:' + c.bg + ';color:' + c.ac + '">' + r.name + '</span>' +
+            '<div class="what">' + r.what + '</div>' +
+            '<div class="meta">' + r.cat + (r.when ? ' · ' + r.when : '') + '</div></div>' +
+            (r.val ? '<div class="val">' + r.val + '</div>' : '') + '</div>';
+        }).join('');
+        input.style.display = 'none'; label.style.display = 'none';
+        setStep(1);
+      } else if (demoStep === 1) {
+        res.innerHTML = '<div class="demo-done"><div class="big">✅</div><b>' + d.doneTitle + '</b><p>' + d.doneSub + '</p></div>';
+        setStep(2);
+      } else {
+        window.location.href = APP_URL;
+      }
+    };
+    again.onclick = function(){ renderDemo(t); };
+  }
+
   var curLang='en';
   function deviceLang(){
     var l=((navigator.languages&&navigator.languages[0])||navigator.language||'').toLowerCase();
@@ -523,7 +642,7 @@
     document.querySelector('.kid-emma').textContent=t.kidNames.emma;
     document.querySelector('.kid-liam').textContent=t.kidNames.liam;
     document.querySelector('.kid-zoe').textContent=t.kidNames.zoe;
-    renderBars(t); renderFeatures(t); renderAI(t); renderApp(t); renderFaq(t);
+    renderBars(t); renderFeatures(t); renderAI(t); renderApp(t); renderFaq(t); renderDemo(t);
   }
   document.getElementById('shareBtn').addEventListener('click',function(){
     var t=DATA[curLang];
