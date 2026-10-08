@@ -5,12 +5,36 @@
   "routes": [
     {
       "src": "/(.*)",
-      "has": [{ "type": "host", "value": "www.fairfamily.site" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "www.fairfamily.site"
+        }
+      ],
       "status": 308,
-      "headers": { "Location": "https://fairfamily.site/$1" }
+      "headers": {
+        "Location": "https://fairfamily.site/$1"
+      }
     },
-    { "handle": "filesystem" },
-    { "src": "/app(?:/.*)?", "dest": "/app/index.html" },
-    { "src": "/.*", "status": 404, "dest": "/404.html" }
+    {
+      "src": "/__/auth/(.*)",
+      "dest": "https://fairfamily-36d9b.firebaseapp.com/__/auth/$1"
+    },
+    {
+      "src": "/__/firebase/(.*)",
+      "dest": "https://fairfamily-36d9b.firebaseapp.com/__/firebase/$1"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/app(?:/.*)?",
+      "dest": "/app/index.html"
+    },
+    {
+      "src": "/.*",
+      "status": 404,
+      "dest": "/404.html"
+    }
   ]
 }
