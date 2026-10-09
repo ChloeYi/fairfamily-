@@ -20,6 +20,7 @@ import EmotionalOnboardingScreen from "./screens/EmotionalOnboardingScreen";
 import Welcome3Screen from "./screens/Welcome3Screen";
 import FAQBot from "./components/FAQBot";
 import FeedbackButton from "./components/FeedbackButton";
+import AdminScreen from "./screens/AdminScreen";
 
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
@@ -436,6 +437,11 @@ export default function App() {
           <Route path="/settings" element={
             !user ? <Navigate to="/login" replace />
             : <SettingsScreen />
+          } />
+
+          <Route path="/admin" element={
+            !user ? <Navigate to="/login" replace />
+            : <AdminScreen />
           } />
 
           <Route path="*" element={<Navigate to="/" replace />} />
