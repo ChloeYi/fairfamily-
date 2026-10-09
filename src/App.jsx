@@ -19,6 +19,7 @@ import ChatOnboardingScreen from "./screens/ChatOnboardingScreen";
 import EmotionalOnboardingScreen from "./screens/EmotionalOnboardingScreen";
 import Welcome3Screen from "./screens/Welcome3Screen";
 import FAQBot from "./components/FAQBot";
+import FeedbackButton from "./components/FeedbackButton";
 
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
@@ -376,6 +377,7 @@ export default function App() {
         <ExitButton />
         <LangToggle />
         <FAQBot />
+        {user && onboardingDone && <FeedbackButton />}
         <Routes>
           <Route path="/" element={<Navigate to="/welcome" replace />} />
 
