@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>fairfamily — Free Parenting App to Raise Siblings Fairly</title>
+<title>FairFamily — Free Parenting App to Raise Siblings Fairly</title>
 <meta name="description" content="Free parenting app that helps you treat every child fairly. Track time, money, gifts and attention for each kid, compare siblings by age, and get AI parenting tips to ease sibling rivalry." />
 <meta name="keywords" content="parenting app, fair parenting, sibling rivalry, treat children equally, raising siblings, parenting tips, family tracker, AI parenting coach, 육아 앱, 형제 차별, 공평한 육아" />
 <meta name="naver-site-verification" content="f5b7ad46e6238603852ee69942c94464cdbd6a33" />
 <meta name="google-site-verification" content="p4bhsGCfaogXCHDz3iNamzp7iDXTQum-YjiRAx5TPeU" />
 <link rel="canonical" href="https://fairfamily.site/" />
 <meta property="og:type" content="website" />
-<meta property="og:site_name" content="fairfamily" />
-<meta property="og:title" content="fairfamily — Free Parenting App to Raise Siblings Fairly" />
+<meta property="og:site_name" content="FairFamily" />
+<meta property="og:title" content="FairFamily — Free Parenting App to Raise Siblings Fairly" />
 <meta property="og:description" content="Free parenting app that helps you treat every child fairly. Track time, money, gifts and attention for each kid, compare siblings by age, and get AI parenting tips to ease sibling rivalry." />
 <meta property="og:url" content="https://fairfamily.site/" />
 <meta property="og:image" content="https://fairfamily.site/logo512.png" />
@@ -21,361 +21,496 @@
 <link rel="alternate" hreflang="en" href="https://fairfamily.site/" />
 <link rel="alternate" hreflang="ko" href="https://fairfamily.site/ko/" />
 <link rel="alternate" hreflang="x-default" href="https://fairfamily.site/" />
+<link rel="icon" href="/favicon.ico" />
 <!--LD-->
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
 <style>
+  /* FairFamily brand system — ink + white, one pink→violet accent taken from the app */
   :root{
-    --pink:#ff5da2; --pink-deep:#ff3d92; --pink-soft:#ffe6f1;
-    --sky:#3d9bff; --sky-deep:#1f83f5; --sky-soft:#e6f2ff;
-    --violet:#7c6cf5; --violet-soft:#eeeaff;
-    --navy:#12203f;         /* main text */
-    --navy-2:#33415c;       /* secondary text */
-    --bg:#ffffff; --line:#eef1f6; --card:#ffffff;
-    --grad:linear-gradient(135deg,#ff5da2 0%,#3d9bff 100%);
+    --ink:#0f1222; --ink-2:#3d4359; --mute:#6b7186; --line:#e9eaf0; --line-2:#f1f1f6;
+    --bg:#ffffff; --soft:#f7f5fb; --soft-2:#fbf9fd;
+    --pink:#ff4d8d; --violet:#7c3aed; --violet-soft:#f1ebfe; --pink-soft:#ffeef4;
+    --accent:linear-gradient(135deg,#ff4d8d 0%,#7c3aed 100%);
+    --radius:20px;
+    --font:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR',system-ui,sans-serif;
   }
   *{margin:0;padding:0;box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{font-family:'Pretendard',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--navy);line-height:1.5;-webkit-font-smoothing:antialiased;padding-bottom:86px}
-  a{text-decoration:none;color:inherit}
-  .wrap{max-width:1040px;margin:0 auto;padding:0 22px}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{font-family:var(--font);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;word-break:keep-all;overflow-wrap:break-word}
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
+  section{padding:112px 0}
+  @media(max-width:760px){section{padding:76px 0}.wrap{padding:0 20px}}
 
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:16px;font-family:inherit;font-weight:800;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease}
-  .btn:hover{transform:translateY(-2px)}
-  .btn-primary{background:var(--grad);color:#fff;padding:17px 30px;font-size:19px;box-shadow:0 12px 26px rgba(255,93,162,.28)}
-  .btn-ghost{background:#fff;color:var(--sky-deep);padding:16px 28px;font-size:19px;border:2px solid var(--sky-soft)}
-  .btn-sm{padding:11px 20px;font-size:16px;border-radius:13px}
+  /* type */
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--violet);letter-spacing:-.01em}
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+  h1,h2,h3{letter-spacing:-.035em;color:var(--ink);text-wrap:balance}
+  h1{font-size:clamp(38px,6vw,68px);line-height:1.12;font-weight:800}
+  h2{font-size:clamp(30px,4.2vw,46px);line-height:1.2;font-weight:800}
+  h3{font-size:20px;line-height:1.35;font-weight:700;letter-spacing:-.02em}
+  .lead{font-size:clamp(17px,1.6vw,20px);color:var(--ink-2);line-height:1.65;max-width:34em}
+  .sec-head{max-width:720px;margin-bottom:56px}
+  .sec-head.center{margin-left:auto;margin-right:auto;text-align:center}
+  .sec-head h2{margin-top:14px}
+  .sec-head p{margin-top:16px}
+  .grad-text{background:var(--accent);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+  /* buttons */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:14px;font:600 16px/1 var(--font);cursor:pointer;white-space:nowrap;transition:transform .15s ease,box-shadow .15s ease,background .15s ease;letter-spacing:-.01em}
+  .btn-primary{background:var(--ink);color:#fff;padding:17px 26px}
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(15,18,34,.18)}
+  .btn-accent{background:var(--accent);color:#fff;padding:17px 26px;box-shadow:0 10px 26px rgba(124,58,237,.25)}
+  .btn-accent:hover{transform:translateY(-1px);box-shadow:0 14px 30px rgba(124,58,237,.32)}
+  .btn-ghost{background:#fff;color:var(--ink);padding:16px 24px;border:1px solid var(--line)}
+  .btn-ghost:hover{border-color:#cfd2dc}
+  .btn-sm{padding:11px 16px;font-size:14px;border-radius:11px}
+  .btn svg{width:18px;height:18px}
+  a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid #b9a2f8;outline-offset:3px;border-radius:12px}
 
   /* nav */
-  nav{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
-  .nav-in{display:flex;align-items:center;justify-content:space-between;height:70px}
-  .logo{display:flex;align-items:center;gap:9px;font-weight:900;font-size:24px;color:var(--navy)}
-  .logo .dot{width:34px;height:34px;border-radius:11px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:18px}
-  .nav-links{display:flex;align-items:center;gap:30px}
-  .nav-links a{font-weight:700;color:var(--navy);font-size:17px}
-  .nav-links a:hover{color:var(--sky-deep)}
-  .nav-right{display:flex;align-items:center;gap:14px}
-  .langtog{display:inline-flex;background:#f1f4f9;border-radius:999px;padding:3px}
-  .langtog button{padding:6px 13px;border-radius:999px;border:none;background:transparent;color:var(--navy-2);font-weight:800;font-size:13px;cursor:pointer;font-family:inherit}
-  .langtog button.on{background:#fff;color:var(--pink-deep);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+  .nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.86);backdrop-filter:saturate(180%) blur(14px);-webkit-backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid transparent;transition:border-color .2s}
+  .nav.scrolled{border-bottom-color:var(--line)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:68px;gap:16px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;letter-spacing:-.03em}
+  .brand svg{width:30px;height:30px;flex:0 0 auto}
+  .nav-links{display:flex;gap:32px;font-size:15px;font-weight:500;color:var(--ink-2)}
+  .nav-links a:hover{color:var(--ink)}
+  .nav-r{display:flex;align-items:center;gap:10px}
+  .lang{display:inline-flex;border:1px solid var(--line);border-radius:10px;padding:3px}
+  .lang button{border:0;background:transparent;font:600 12px/1 var(--font);color:var(--mute);padding:7px 9px;border-radius:7px;cursor:pointer}
+  .lang button.on{background:var(--ink);color:#fff}
+  @media(max-width:900px){.nav-links{display:none}}
+  @media(max-width:420px){.nav .btn-sm{padding:10px 12px;font-size:13px}.brand{font-size:17px}.brand svg{width:26px;height:26px}}
 
   /* hero */
-  .hero{text-align:center;padding:76px 0 44px}
-  .badge{display:inline-block;background:var(--pink-soft);color:var(--pink-deep);font-weight:800;font-size:16px;padding:9px 18px;border-radius:999px;margin-bottom:26px}
-  .hero h1{font-size:clamp(40px,8vw,74px);font-weight:900;line-height:1.08;letter-spacing:-1px;max-width:820px;margin:0 auto;color:var(--navy)}
-  .hero h1 .hl{color:var(--pink-deep)}
-  .hero p.sub{color:var(--navy-2);font-size:clamp(19px,2.8vw,25px);font-weight:600;max-width:640px;margin:24px auto 0}
-  .hero-cta{display:flex;gap:15px;justify-content:center;flex-wrap:wrap;margin-top:34px}
-  .noinstall{color:var(--sky-deep);font-size:17px;font-weight:700;margin-top:18px}
+  .hero{overflow:hidden;padding:72px 0 96px;background:radial-gradient(1100px 520px at 85% -10%,#f3ecff 0%,rgba(243,236,255,0) 60%),radial-gradient(700px 420px at -10% 10%,#fff0f6 0%,rgba(255,240,246,0) 60%)}
+  .hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:56px;align-items:center}
+  .hero h1{margin-top:20px}
+  .hero .lead{margin-top:22px}
+  .hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
+  .trust{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:26px;font-size:14px;color:var(--mute);font-weight:500}
+  .trust span{display:inline-flex;align-items:center;gap:6px}
+  .trust svg{width:16px;height:16px;color:#16a34a}
+  .hero-visual{position:relative;display:flex;justify-content:center;min-height:560px}
+  .phone{position:relative;width:300px;max-width:100%;border-radius:46px;background:#0d0e17;padding:10px;box-shadow:0 40px 80px -20px rgba(40,20,90,.35),0 0 0 1px rgba(0,0,0,.04)}
+  .phone img{border-radius:37px;width:100%;height:auto;aspect-ratio:600/1299;object-fit:cover;object-position:top;background:#f4effb}
+  .phone.back{position:absolute;width:250px;right:-6px;top:70px;transform:rotate(6deg);opacity:.98;z-index:0}
+  .phone.front{z-index:1;margin-right:120px}
+  .float-card{position:absolute;z-index:2;left:-12px;bottom:46px;width:270px;background:#fff;border-radius:18px;padding:16px 18px;box-shadow:0 24px 50px -16px rgba(30,20,70,.28),0 0 0 1px var(--line-2)}
+  .float-card .tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--violet);background:var(--violet-soft);padding:4px 9px;border-radius:999px}
+  .float-card p{font-size:14px;line-height:1.55;color:var(--ink-2);margin-top:10px}
+  .float-card b{color:var(--ink)}
+  @media(max-width:960px){.hero-grid{grid-template-columns:1fr;gap:40px}.hero-visual{min-height:0}.phone.front{margin-right:90px}.phone.back{right:calc(50% - 230px)}}
+  @media(max-width:520px){.hero{padding:40px 0 64px}.phone{width:236px;border-radius:38px;padding:8px}.phone img{border-radius:31px}.phone.front{margin-right:64px}.phone.back{width:190px;right:6px;top:54px}.float-card{width:230px;left:0;bottom:24px;padding:13px 14px}.hero-cta .btn{flex:1 1 auto}}
 
-  /* preview card */
-  .preview{max-width:640px;margin:56px auto 0;background:var(--card);border:1px solid var(--line);border-radius:26px;padding:30px;box-shadow:0 24px 60px rgba(18,32,63,.10)}
-  .preview .head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
-  .preview .head b{font-size:22px;color:var(--navy)}
-  .pill{font-size:15px;font-weight:800;color:var(--sky-deep);background:var(--sky-soft);padding:7px 15px;border-radius:999px}
-  .bars{display:grid;gap:16px}
-  .bar-row{display:grid;grid-template-columns:70px 1fr;align-items:center;gap:14px}
-  .bar-row span{font-size:16px;color:var(--navy);font-weight:700}
-  .track{position:relative;height:16px;border-radius:999px;background:#f0f3f8;overflow:hidden}
-  .seg{position:absolute;top:0;height:100%}
-  .legend{display:flex;gap:22px;justify-content:center;margin-top:22px;flex-wrap:wrap}
-  .legend b{font-size:16px;font-weight:800;color:var(--navy);display:inline-flex;align-items:center;gap:7px}
-  .legend .d{width:12px;height:12px;border-radius:50%;display:inline-block}
-  .prev-note{margin-top:20px;background:var(--sky-soft);color:var(--navy);border-radius:16px;padding:15px 16px;font-size:16px;font-weight:700;text-align:center}
+  /* quote band */
+  .band{background:var(--ink);color:#fff;padding:96px 0;text-align:center}
+  .band blockquote{font-size:clamp(26px,3.6vw,40px);font-weight:700;letter-spacing:-.035em;line-height:1.35;max-width:820px;margin:0 auto;text-wrap:balance}
+  .band blockquote span{color:#ff8cb5}
+  .band p{margin:22px auto 0;max-width:620px;color:#b8bccc;font-size:17px}
 
-  /* section */
-  section{padding:70px 0}
-  .kicker{text-align:center;color:var(--sky-deep);font-weight:800;font-size:18px;letter-spacing:.3px}
-  h2.title{text-align:center;font-size:clamp(30px,5vw,48px);font-weight:900;margin-top:10px;color:var(--navy);letter-spacing:-.5px}
-  .sec-sub{text-align:center;color:var(--navy-2);font-size:20px;font-weight:600;max-width:580px;margin:14px auto 0}
+  /* steps */
+  .step{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:72px;align-items:center;padding:28px 0}
+  .step + .step{margin-top:56px}
+  .step:nth-child(even) .step-visual{order:-1}
+  .step-num{font-size:14px;font-weight:700;color:var(--violet);letter-spacing:.02em}
+  .step h3{font-size:clamp(24px,2.6vw,32px);font-weight:800;letter-spacing:-.035em;margin-top:10px;line-height:1.3}
+  .step p{margin-top:16px;color:var(--ink-2);font-size:17px;max-width:30em}
+  .step ul{list-style:none;margin-top:22px;display:grid;gap:10px}
+  .step li{display:flex;gap:10px;font-size:15.5px;color:var(--ink-2)}
+  .step li svg{width:20px;height:20px;flex:0 0 auto;color:var(--violet);margin-top:2px}
+  .step-visual{display:flex;justify-content:center;gap:18px;background:var(--soft);border-radius:28px;padding:44px 20px}
+  .step-visual .phone{width:250px}
+  .step-visual .phone.sm{width:210px;margin-top:40px}
+  @media(max-width:900px){.step{grid-template-columns:1fr;gap:32px}.step:nth-child(even) .step-visual{order:0}.step-visual{padding:32px 12px}.step-visual .phone{width:200px;padding:7px;border-radius:32px}.step-visual .phone img{border-radius:26px}.step-visual .phone.sm{width:170px}}
+  @media(max-width:420px){.step-visual .phone.sm{display:none}.step-visual .phone{width:220px}}
 
-  /* video */
-  .video-box{max-width:820px;margin:40px auto 0;aspect-ratio:16/9;border-radius:24px;background:linear-gradient(135deg,var(--pink-soft),var(--sky-soft));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;border:1px solid var(--line)}
-  .play{width:78px;height:78px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--pink-deep);box-shadow:0 12px 30px rgba(18,32,63,.16)}
-  .video-note{color:var(--navy-2);font-weight:700;font-size:17px}
-
-  /* quote */
-  .quote{max-width:800px;margin:0 auto;text-align:center;background:var(--pink-soft);border-radius:28px;padding:52px 32px}
-  .quote p{font-size:clamp(23px,3.4vw,32px);font-weight:900;line-height:1.3;color:var(--navy)}
-  .quote small{display:block;margin-top:16px;color:var(--navy-2);font-size:18px;font-weight:700}
+  /* demo */
+  .demo-sec{background:var(--soft)}
+  .demo{max-width:460px;margin:0 auto}
+  .demo-dots{display:flex;justify-content:center;gap:6px;margin-bottom:16px}
+  .demo-dots span{width:28px;height:4px;border-radius:2px;background:#dcd6ea;transition:background .3s}
+  .demo-dots span.on{background:var(--violet)}
+  .demo-card{background:#fff;border-radius:24px;padding:24px;box-shadow:0 20px 50px -24px rgba(40,20,90,.25),0 0 0 1px var(--line-2)}
+  .demo-label{font-size:12px;font-weight:700;color:var(--mute);letter-spacing:.06em;margin-bottom:10px}
+  .demo-input{min-height:96px;border:1px solid var(--line);border-radius:14px;padding:14px 16px;font-size:16px;line-height:1.6;color:var(--ink)}
+  .caret{display:inline-block;width:2px;height:18px;background:var(--violet);vertical-align:-3px;margin-left:1px;animation:blink 1s steps(2) infinite}
+  @keyframes blink{50%{opacity:0}}
+  .demo-result{display:grid;gap:10px}
+  .demo-row{display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:12px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:12px 14px;animation:rise .45s ease both}
+  .demo-row img{width:42px;height:42px;border-radius:12px;object-fit:cover;background:var(--soft)}
+  .demo-row .who{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px}
+  .demo-row .what{font-weight:600;font-size:15px;margin-top:4px}
+  .demo-row .meta{font-size:13px;color:var(--mute)}
+  .demo-row .val{font-weight:700;font-size:15px}
+  .demo-done{text-align:center;padding:16px 4px}
+  .demo-done .big{width:52px;height:52px;margin:0 auto 12px;border-radius:50%;background:#ecfdf3;color:#16a34a;display:flex;align-items:center;justify-content:center}
+  .demo-done .big svg{width:26px;height:26px}
+  .demo-done b{font-size:19px}
+  .demo-done p{color:var(--ink-2);margin-top:6px}
+  .demo-btn{width:100%;margin-top:16px}
+  .demo-btn:disabled{opacity:.5;cursor:default;transform:none;box-shadow:none}
+  .demo-again{display:none;margin:12px auto 0;border:0;background:none;color:var(--mute);font:500 14px var(--font);cursor:pointer}
+  .demo-hint{text-align:center;color:var(--ink-2);font-size:15px;margin-top:16px;min-height:24px}
+  @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
   /* features */
-  .grid4{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:22px;margin-top:44px}
-  .fcard{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:30px;box-shadow:0 10px 30px rgba(18,32,63,.05)}
-  .fcard .ic{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;margin-bottom:18px}
-  .fcard h3{font-size:23px;font-weight:900;color:var(--navy)}
-  .fcard p{color:var(--navy-2);font-size:17px;font-weight:600;margin-top:8px;line-height:1.55}
+  .feat{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:24px;overflow:hidden}
+  .fcard{background:#fff;padding:34px 30px}
+  .fcard .ic{width:44px;height:44px;border-radius:12px;background:var(--violet-soft);color:var(--violet);display:flex;align-items:center;justify-content:center}
+  .fcard .ic svg{width:22px;height:22px}
+  .fcard h3{margin-top:20px}
+  .fcard p{margin-top:8px;color:var(--ink-2);font-size:15.5px}
+  @media(max-width:900px){.feat{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:580px){.feat{grid-template-columns:1fr}.fcard{padding:28px 24px}}
 
-  /* ai insights */
-  .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:22px;margin-top:44px}
-  .icard{border-radius:24px;padding:26px;border:1px solid var(--line);background:#fff;box-shadow:0 10px 30px rgba(18,32,63,.05)}
-  .icard .who{display:flex;align-items:center;gap:12px;margin-bottom:14px}
-  .icard .av{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px}
-  .icard .who b{font-size:19px;color:var(--navy)}
-  .icard p{font-size:17px;font-weight:600;line-height:1.6;color:var(--navy)}
+  /* areas */
+  .areas{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+  .areas a{display:inline-flex;align-items:center;gap:8px;padding:12px 18px;border:1px solid var(--line);border-radius:999px;font-weight:600;font-size:15px;color:var(--ink);background:#fff;transition:border-color .15s,background .15s}
+  .areas a:hover{border-color:#c9b6f7;background:var(--soft-2)}
+  .areas a i{width:8px;height:8px;border-radius:50%;background:var(--accent)}
 
-  /* cta */
-  .cta{max-width:800px;margin:0 auto;text-align:center;background:var(--grad);color:#fff;border-radius:32px;padding:62px 32px;box-shadow:0 24px 56px rgba(63,155,255,.28)}
-  .cta h2{font-size:clamp(30px,5vw,46px);font-weight:900;color:#fff}
-  .cta p{color:#fff;opacity:.96;font-size:20px;font-weight:600;margin-top:14px}
-  .cta .btn{margin-top:30px;background:#fff;color:var(--pink-deep);font-size:20px}
-  .cta .refer{margin-top:26px;color:#fff;opacity:.95;font-size:18px;font-weight:700}
-  .cta .share-btn{margin-top:14px;background:rgba(255,255,255,.18);color:#fff;border:2px solid rgba(255,255,255,.55);font-size:18px}
-  .cta .share-btn:hover{background:rgba(255,255,255,.28)}
+  /* privacy */
+  .trust-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+  .tcard{border:1px solid var(--line);border-radius:var(--radius);padding:28px}
+  .tcard svg{width:26px;height:26px;color:var(--ink)}
+  .tcard h3{margin-top:16px;font-size:18px}
+  .tcard p{margin-top:8px;color:var(--ink-2);font-size:15px}
+  @media(max-width:800px){.trust-grid{grid-template-columns:1fr}}
 
-  /* app / push highlight */
-  .appwrap{max-width:900px;margin:44px auto 0;background:linear-gradient(135deg,var(--violet-soft),var(--sky-soft));border:1px solid var(--line);border-radius:28px;padding:40px 32px;text-align:center}
-  .appwrap .soon{display:inline-block;background:var(--violet);color:#fff;font-weight:800;font-size:15px;padding:7px 16px;border-radius:999px;margin-bottom:18px}
-  .push-demo{max-width:460px;margin:26px auto 0;display:grid;gap:12px}
-  .push{display:flex;align-items:flex-start;gap:13px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:15px 17px;text-align:left;box-shadow:0 8px 22px rgba(18,32,63,.08)}
-  .push .pic{width:40px;height:40px;border-radius:11px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-  .push .pbody b{display:block;font-size:16px;color:var(--navy);font-weight:900}
-  .push .pbody span{font-size:15px;color:var(--navy-2);font-weight:600;line-height:1.45}
+  /* faq */
+  .faq-wrap{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:64px;align-items:start}
+  .faq-wrap .sec-head{margin-bottom:0}
+  .faq-item{border-bottom:1px solid var(--line);padding:22px 0}
+  .faq-item:first-child{border-top:1px solid var(--line)}
+  .faq-item summary{list-style:none;cursor:pointer;font-weight:600;font-size:17px;display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+  .faq-item summary::-webkit-details-marker{display:none}
+  .faq-item summary::after{content:'';flex:0 0 auto;width:12px;height:12px;margin-top:6px;border-right:2px solid var(--mute);border-bottom:2px solid var(--mute);transform:rotate(45deg);transition:transform .2s}
+  .faq-item[open] summary::after{transform:rotate(-135deg);margin-top:10px}
+  .faq-item p{margin-top:12px;color:var(--ink-2);font-size:15.5px;line-height:1.7}
+  @media(max-width:900px){.faq-wrap{grid-template-columns:1fr;gap:28px}}
 
-  footer{text-align:center;padding:38px 22px 30px;color:var(--navy-2);font-size:16px;font-weight:700}
+  /* final cta */
+  .final{padding:0 0 112px}
+  .final-box{border-radius:32px;background:var(--ink);color:#fff;padding:72px 48px;text-align:center;position:relative;overflow:hidden}
+  .final-box::before{content:'';position:absolute;inset:-40% -20% auto auto;width:560px;height:560px;background:radial-gradient(circle,rgba(124,58,237,.55),rgba(124,58,237,0) 65%);pointer-events:none}
+  .final-box::after{content:'';position:absolute;inset:auto auto -45% -15%;width:520px;height:520px;background:radial-gradient(circle,rgba(255,77,141,.4),rgba(255,77,141,0) 65%);pointer-events:none}
+  .final-box > *{position:relative}
+  .final-box h2{color:#fff}
+  .final-box p{color:#c3c6d4;margin:16px auto 0;max-width:520px;font-size:17px}
+  .final-box .btn{margin-top:32px;background:#fff;color:var(--ink);padding:18px 30px}
+  @media(max-width:600px){.final-box{padding:56px 24px;border-radius:24px}}
 
-  /* sticky bottom action bar */
-  .bottombar{position:fixed;left:0;right:0;bottom:0;z-index:70;background:var(--grad);display:flex;box-shadow:0 -6px 24px rgba(18,32,63,.18)}
-  .bottombar a{flex:1;display:flex;align-items:center;justify-content:center;gap:10px;padding:20px 10px;color:#fff;font-weight:900;font-size:20px}
-  .bottombar .divider{width:1px;background:rgba(255,255,255,.4);margin:14px 0}
-  .bottombar .ic{font-size:22px}
+  /* footer */
+  footer{border-top:1px solid var(--line);padding:56px 0 40px;font-size:14px;color:var(--mute)}
+  .foot{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(2,minmax(0,1fr));gap:40px}
+  .foot h4{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:14px}
+  .foot ul{list-style:none;display:grid;gap:10px}
+  .foot a:hover{color:var(--ink)}
+  .foot .about{max-width:340px;margin-top:14px;line-height:1.7}
+  .biz{margin-top:44px;padding-top:24px;border-top:1px solid var(--line-2);display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px}
+  @media(max-width:700px){.foot{grid-template-columns:1fr 1fr}.foot > div:first-child{grid-column:1/-1}}
 
-  /* back to top */
-  .toTop{position:fixed;right:20px;bottom:104px;z-index:65;width:52px;height:52px;border-radius:50%;background:#fff;border:1px solid var(--line);color:var(--sky-deep);font-size:22px;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 22px rgba(18,32,63,.16)}
-  .toTop.show{display:flex}
-
-  @media(max-width:760px){ .nav-links{display:none} }
-
-/* click-through demo */
-.demo{max-width:520px;margin:36px auto 0}
-.demo-dots{display:flex;justify-content:center;gap:8px;margin-bottom:16px}
-.demo-dots span{width:34px;height:6px;border-radius:999px;background:var(--line);transition:background .3s}
-.demo-dots span.on{background:var(--pink-deep)}
-.demo-card{background:#fff;border:1px solid var(--line);border-radius:26px;padding:24px;box-shadow:0 24px 60px rgba(18,32,63,.10);text-align:left}
-.demo-label{font-size:14px;font-weight:800;color:var(--navy-2);letter-spacing:.4px;margin-bottom:10px}
-.demo-input{min-height:96px;background:#fbf7ff;border:1px solid #efe6ff;border-radius:16px;padding:14px 16px;font-size:17px;font-weight:600;line-height:1.6;color:var(--navy)}
-.demo-input .caret{display:inline-block;width:2px;height:1.1em;background:var(--pink-deep);vertical-align:-3px;margin-left:1px;animation:demoBlink 1s steps(1) infinite}
-@keyframes demoBlink{50%{opacity:0}}
-.demo-result{display:grid;gap:10px}
-.demo-row{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:16px;opacity:0;transform:translateY(8px);animation:demoIn .4s ease forwards}
-@keyframes demoIn{to{opacity:1;transform:none}}
-.demo-row img{width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0}
-.demo-row .who{font-size:13px;font-weight:800;padding:3px 10px;border-radius:999px;display:inline-block;margin-bottom:3px}
-.demo-row .what{font-size:16px;font-weight:700;color:var(--navy)}
-.demo-row .meta{font-size:13px;font-weight:700;color:var(--navy-2)}
-.demo-row .val{margin-left:auto;font-weight:900;color:var(--violet);font-size:16px;white-space:nowrap}
-.demo-done{text-align:center;padding:10px 4px}
-.demo-done .big{font-size:44px}
-.demo-done b{display:block;font-size:20px;font-weight:900;margin-top:6px;color:var(--navy)}
-.demo-done p{font-size:16px;font-weight:600;color:var(--navy-2);margin-top:6px}
-.demo-btn{width:100%;margin-top:16px;font-size:18px;padding:16px}
-.demo-btn.pulse{animation:ff-glow 1.8s ease-out infinite}
-.demo-again{display:none;margin:12px auto 0;background:none;border:none;color:var(--sky-deep);font-weight:800;font-size:15px;cursor:pointer;font-family:inherit}
-.demo-hint{text-align:center;margin-top:14px;color:var(--navy-2);font-size:16px;font-weight:700;min-height:24px}
-@media (prefers-reduced-motion: reduce){.demo-row{animation:none;opacity:1;transform:none}}
-
-/* FAQ */
-.faq{max-width:760px;margin:28px auto 0;display:flex;flex-direction:column;gap:12px}
-.faq-item{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px 22px;box-shadow:0 6px 18px rgba(18,32,63,.06)}
-.faq-item summary{cursor:pointer;font-weight:800;font-size:17px;list-style:none;display:flex;justify-content:space-between;gap:12px}
-.faq-item summary::-webkit-details-marker{display:none}
-.faq-item summary::after{content:'+';color:var(--pink-deep);font-size:22px;line-height:1}
-.faq-item[open] summary::after{content:'–'}
-.faq-item p{margin:12px 0 0;line-height:1.7;color:inherit;opacity:.85}
-/* CTA nudge: a constant tiny jiggle + a soft glow that pulses outward */
-@keyframes ff-jiggle {
-  0%, 100% { transform: rotate(0) translateY(0); }
-  25% { transform: rotate(-1.6deg) translateY(-1px); }
-  50% { transform: rotate(0) translateY(0); }
-  75% { transform: rotate(1.6deg) translateY(-1px); }
-}
-@keyframes ff-glow {
-  0% { box-shadow: 0 0 0 0 rgba(255, 93, 162, .55), 0 8px 22px rgba(18, 32, 63, .16); }
-  70% { box-shadow: 0 0 0 14px rgba(255, 93, 162, 0), 0 8px 22px rgba(18, 32, 63, .16); }
-  100% { box-shadow: 0 0 0 0 rgba(255, 93, 162, 0), 0 8px 22px rgba(18, 32, 63, .16); }
-}
-@keyframes ff-text-glow {
-  0%, 100% { text-shadow: 0 0 0 rgba(255, 255, 255, 0); }
-  50% { text-shadow: 0 0 12px rgba(255, 255, 255, .9); }
-}
-.btn.app-link { animation: ff-jiggle .9s ease-in-out infinite, ff-glow 1.8s ease-out infinite; transform-origin: center; }
-/* the bottom bar button is half the screen wide: jiggle + glow its icon and label instead */
-.bottombar .app-link > span { display: inline-block; animation: ff-jiggle .9s ease-in-out infinite, ff-text-glow 1.8s ease-in-out infinite; }
-.app-link:hover, .app-link:hover > span, .app-link:focus-visible { animation-play-state: paused; }
-@media (prefers-reduced-motion: reduce) {
-  .btn.app-link { animation: ff-glow 1.8s ease-out infinite; }
-  .bottombar .app-link > span { animation: none; }
-}
+  /* mobile sticky CTA */
+  .mbar{display:none}
+  @media(max-width:760px){
+    body{padding-bottom:84px}
+    .mbar{display:block;position:fixed;left:0;right:0;bottom:0;z-index:60;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));background:rgba(255,255,255,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line)}
+    .mbar .btn{width:100%}
+  }
+  .reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.caret{animation:none}html{scroll-behavior:auto}}
 </style>
 </head>
 <body>
-<nav>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="ffg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff4d8d"/><stop offset="1" stop-color="#7c3aed"/></linearGradient>
+    <symbol id="logo" viewBox="0 0 32 32"><rect width="32" height="32" rx="9" fill="url(#ffg)"/><circle cx="12" cy="13" r="4.2" fill="#fff"/><circle cx="20.5" cy="14.5" r="3.4" fill="#fff" fill-opacity=".85"/><path d="M6.5 24.5c1.2-3.6 3.6-5.4 6-5.4s4.6 1.5 5.6 4.1M15.6 24.5c.9-2.8 2.8-4.2 4.9-4.2 2.1 0 3.9 1.4 4.9 4.2" stroke="#fff" stroke-width="2.2" stroke-linecap="round" fill="none"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-pen" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></g></symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6H7l1.5-2h7L17 6h1.5A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5Z"/><circle cx="12" cy="13" r="3.5"/></g></symbol>
+    <symbol id="i-age" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2.5"/><path d="M8 2.5v3M16 2.5v3M3 9.5h18M12 9.5V21"/></g></symbol>
+    <symbol id="i-radar" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 2.5 21 9l-3.4 10.5H6.4L3 9Z"/><path d="M12 7.5 16.3 10.6l-1.6 5H9.3l-1.6-5Z" fill="currentColor" fill-opacity=".18"/></g></symbol>
+    <symbol id="i-timeline" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18"/><path d="M3 16l5-5 4 3 7-8"/><circle cx="8" cy="11" r="1.4" fill="currentColor"/><circle cx="12" cy="14" r="1.4" fill="currentColor"/></g></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9Z"/><path d="M18.5 15.5l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8Z"/></g></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10.5" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></g></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 5.1A10 10 0 0 1 12 5c5.5 0 9 5 9 7a9.6 9.6 0 0 1-2.4 3.3M6.3 6.3C4.1 7.8 3 10.6 3 12c0 2 3.5 7 9 7a9.7 9.7 0 0 0 4.4-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></g></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M5.5 7l1 12.5A1.5 1.5 0 0 0 8 21h8a1.5 1.5 0 0 0 1.5-1.5L18.5 7M9 7V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V7"/></g></symbol>
+  </defs>
+</svg>
+
+<nav class="nav" id="nav">
   <div class="wrap nav-in">
-    <a href="index.html" class="logo"><span class="dot">🌿</span>fairfamily</a>
+    <a href="index.html" class="brand" aria-label="FairFamily"><svg><use href="#logo"/></svg><span data-t="brand">FairFamily</span></a>
     <div class="nav-links">
+      <a href="#how" data-t="navHow">How it works</a>
       <a href="#features" data-t="navFeatures">Features</a>
-      <a href="how-it-works.html" data-t="navHow">How it works</a>
       <a href="/guide/index.html" data-t="navGuide">Guide</a>
-      <a href="#ai" data-t="navInsights">AI Coach</a>
-      <a href="#app" data-t="navApp">App</a>
+      <a href="#faq" data-t="navFaq">FAQ</a>
     </div>
-    <div class="nav-right">
-      <div class="langtog">
+    <div class="nav-r">
+      <div class="lang" role="group" aria-label="Language">
         <button id="en" class="on" onclick="setLang('en',true)">EN</button>
         <button id="kr" onclick="setLang('kr',true)">KO</button>
       </div>
-      <a class="btn btn-primary btn-sm app-link" data-t="launch">Open fairfamily</a>
+      <a class="btn btn-primary btn-sm app-link" data-t="launch">Start free</a>
     </div>
   </div>
 </nav>
 
-<header class="hero wrap">
-  <span class="badge" data-t="badge">For parents who care deeply</span>
-  <h1 data-t="headline">Every child deserves equal love &amp; attention</h1>
-  <p class="sub" data-t="sub">fairfamily gently reminds you when one child might need a little more of you — before they have to ask.</p>
-  <div class="hero-cta">
-    <a class="btn btn-primary app-link" data-t="cta1">Get Started Free</a>
-    <a class="btn btn-ghost" href="how-it-works.html" data-t="cta2">See How It Works</a>
-  </div>
-  <p class="noinstall" data-t="noInstall">No install — runs right in your browser</p>
-
-  <div class="preview">
-    <div class="head">
-      <b data-t="previewTitle">Balance check</b>
-      <span class="pill" data-t="previewPill">🌿 In balance</span>
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow"><span class="dot"></span><span data-t="badge">Fair parenting for families with more than one child</span></span>
+      <h1 data-t="headline">Fair to every child — and you’ll know it.</h1>
+      <p class="lead" data-t="sub">FairFamily records the time, gifts and attention each child gets, compares siblings at the same age, and tells you who needs a little more of you this week.</p>
+      <div class="hero-cta">
+        <a class="btn btn-accent app-link"><span data-t="cta1">Start free</span><svg><use href="#i-arrow"/></svg></a>
+        <a class="btn btn-ghost" href="/guide/index.html" data-t="cta2">See the 3-minute guide</a>
+      </div>
+      <div class="trust">
+        <span><svg><use href="#i-check"/></svg><span data-t="trust1">Free</span></span>
+        <span><svg><use href="#i-check"/></svg><span data-t="trust2">Works in your browser</span></span>
+        <span><svg><use href="#i-check"/></svg><span data-t="trust3">Sign up with Google in seconds</span></span>
+      </div>
     </div>
-    <div class="bars" id="bars"></div>
-    <div class="legend">
-      <b><span class="d" style="background:var(--pink)"></span><span class="kid-emma">Emma</span></b>
-      <b><span class="d" style="background:var(--sky)"></span><span class="kid-liam">Liam</span></b>
-      <b><span class="d" style="background:var(--violet)"></span><span class="kid-zoe">Zoe</span></b>
+    <div class="hero-visual">
+      <div class="phone back"><img data-img="radar" src="/img/product/en-radar.webp" alt="" width="600" height="1299" loading="eager"></div>
+      <div class="phone front"><img data-img="dash" src="/img/product/en-dash.webp" alt="FairFamily dashboard" width="600" height="1299" loading="eager"></div>
+      <div class="float-card">
+        <span class="tag"><svg width="13" height="13"><use href="#i-spark"/></svg><span data-t="floatTag">AI insight</span></span>
+        <p data-t="floatText">Liam had 30 minutes one-on-one this month; Emma had 4 hours. Try 20 minutes × 3 with Liam this week.</p>
+      </div>
     </div>
-    <div class="prev-note" data-t="previewNote">Zoe hasn’t received a gift in a while — maybe a little music toy?</div>
   </div>
 </header>
 
-<section id="try">
+<section id="try" class="demo-sec">
   <div class="wrap">
-    <div class="kicker">👆</div>
-    <h2 class="title" data-t="demoTitle">Try it — three taps</h2>
-    <p class="sec-sub" data-t="demoSub">Just write what happened. AI sorts it by child.</p>
+    <div class="sec-head center">
+      <span class="eyebrow"><span class="dot"></span><span data-t="demoKicker">Try it here</span></span>
+      <h2 data-t="demoTitle">Three taps. No sign-up.</h2>
+      <p class="lead" style="margin-left:auto;margin-right:auto" data-t="demoSub">Write what happened. AI sorts it by child.</p>
+    </div>
     <div class="demo" id="demo">
       <div class="demo-dots" aria-hidden="true"><span></span><span></span><span></span></div>
       <div class="demo-card">
         <div class="demo-label" id="demoLabel"></div>
         <div class="demo-input" id="demoInput"></div>
         <div class="demo-result" id="demoResult"></div>
-        <button class="btn btn-primary demo-btn" id="demoBtn" type="button"></button>
+        <button class="btn btn-accent demo-btn" id="demoBtn" type="button"></button>
         <button class="demo-again" id="demoAgain" type="button" data-t="demoAgain">↺ Watch again</button>
       </div>
-      <p class="demo-hint" id="demoHint"></p>
+      <p class="demo-hint" id="demoHint" aria-live="polite"></p>
     </div>
   </div>
 </section>
 
-<section style="padding-top:0">
+<div class="band">
   <div class="wrap">
-    <div class="quote">
-      <p data-t="quote">Did you give Emma a bike at 7? Now Zoe is 7 — did you do the same?</p>
-      <small data-t="quoteSub">fairfamily remembers — so you don’t have to.</small>
+    <blockquote><span>“</span><span data-t="quote" style="color:inherit">She got a bike when she was seven. What did I get?</span><span>”</span></blockquote>
+    <p data-t="quoteSub">Kids compare what they got at the same age. Parents rarely remember. FairFamily keeps the record, so every child gets their turn.</p>
+  </div>
+</div>
+
+<section id="how">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow"><span class="dot"></span><span data-t="howKicker">How it works</span></span>
+      <h2 data-t="howTitle">Write it down, compare, get a next step.</h2>
+    </div>
+
+    <div class="step reveal">
+      <div>
+        <div class="step-num" data-t="s1num">STEP 01</div>
+        <h3 data-t="s1title">Write one sentence — or snap a photo</h3>
+        <p data-t="s1desc">Type what happened the way you’d say it. AI splits it into entries by child and category. Or upload a photo of a gift or receipt and it fills in the details.</p>
+        <ul>
+          <li><svg><use href="#i-check"/></svg><span data-t="s1b1">Several things in one sentence are split automatically</span></li>
+          <li><svg><use href="#i-check"/></svg><span data-t="s1b2">Photos are read for item, amount and category</span></li>
+          <li><svg><use href="#i-check"/></svg><span data-t="s1b3">Log past events with the right date and age</span></li>
+        </ul>
+      </div>
+      <div class="step-visual">
+        <div class="phone"><img data-img="smart" src="/img/product/en-smart.webp" alt="" width="600" height="1299" loading="lazy"></div>
+        <div class="phone sm"><img data-img="scan" src="/img/product/en-scan.webp" alt="" width="600" height="1299" loading="lazy"></div>
+      </div>
+    </div>
+
+    <div class="step reveal">
+      <div>
+        <div class="step-num" data-t="s2num">STEP 02</div>
+        <h3 data-t="s2title">Compare siblings at the same age</h3>
+        <p data-t="s2desc">See what each child received at 6, at 7, at 8 — side by side. The fairness radar shows which kind of attention leans toward whom.</p>
+        <ul>
+          <li><svg><use href="#i-check"/></svg><span data-t="s2b1">Age-matched comparison by money, birthdays, time and more</span></li>
+          <li><svg><use href="#i-check"/></svg><span data-t="s2b2">8-area fairness radar for every child</span></li>
+          <li><svg><use href="#i-check"/></svg><span data-t="s2b3">Fairness score and alerts on the dashboard</span></li>
+        </ul>
+      </div>
+      <div class="step-visual">
+        <div class="phone"><img data-img="age" src="/img/product/en-age.webp" alt="" width="600" height="1299" loading="lazy"></div>
+      </div>
+    </div>
+
+    <div class="step reveal">
+      <div>
+        <div class="step-num" data-t="s3num">STEP 03</div>
+        <h3 data-t="s3title">Get a small, specific next step</h3>
+        <p data-t="s3desc">The AI coach reads your family’s records and suggests what to do this week — who, what, and for how long. You can also ask it anything.</p>
+        <ul>
+          <li><svg><use href="#i-check"/></svg><span data-t="s3b1">Insights for each child, based on your own records</span></li>
+          <li><svg><use href="#i-check"/></svg><span data-t="s3b2">Concrete suggestions, like 20 minutes × 3 a week</span></li>
+          <li><svg><use href="#i-check"/></svg><span data-t="s3b3">Warm and non-judgmental — no scores for parents</span></li>
+        </ul>
+      </div>
+      <div class="step-visual">
+        <div class="phone"><img data-img="ai" src="/img/product/en-ai.webp" alt="" width="600" height="1299" loading="lazy"></div>
+      </div>
     </div>
   </div>
 </section>
+
+
 
 <section id="features">
   <div class="wrap">
-    <div class="kicker" data-t="featKicker">How fairfamily helps</div>
-    <h2 class="title" data-t="featTitle">Made for everyday parenting</h2>
-    <div class="grid4" id="features-grid"></div>
-  </div>
-</section>
-
-<section id="ai">
-  <div class="wrap">
-    <div class="kicker">🤖</div>
-    <h2 class="title" data-t="aiTitle">Your AI parenting coach</h2>
-    <div class="grid3" id="ai-grid"></div>
-  </div>
-</section>
-
-<section id="app">
-  <div class="wrap">
-    <div class="kicker">📱</div>
-    <h2 class="title" data-t="appTitle">Soon on your phone — it watches, so you can rest</h2>
-    <p class="sec-sub" data-t="appSub">Coming as a mobile app with push notifications. Even when you do nothing, fairfamily quietly keeps track and tells you what each child needs — before they ever have to ask.</p>
-    <div class="appwrap">
-      <span class="soon" data-t="appSoon">🔔 Push notifications — coming soon</span>
-      <div class="grid4" id="app-grid" style="margin-top:0"></div>
-      <div class="push-demo" id="push-demo"></div>
+    <div class="sec-head">
+      <span class="eyebrow"><span class="dot"></span><span data-t="featKicker">Features</span></span>
+      <h2 data-t="featTitle">Everything you need to keep it fair</h2>
     </div>
-  </div>
-</section>
-
-<section id="faq">
-  <div class="wrap">
-    <div class="kicker" data-t="faqSub">Common questions from parents raising more than one child.</div>
-    <h2 class="title" data-t="faqTitle">Parenting questions, answered</h2>
-    <div class="faq" id="faq-list"></div>
+    <div class="feat reveal" id="features-grid"></div>
   </div>
 </section>
 
 <section style="padding-top:0">
   <div class="wrap">
-    <div class="cta">
-      <h2 data-t="ctaTitle">Sign up free — and raise them fair</h2>
-      <p data-t="ctaWebSub">Create your free account and give every child their fair share of time, gifts, school moments and heart — the systematic, gentle way.</p>
-      <a class="btn app-link" data-t="ctaBtn">Create your free account</a>
-      <div class="refer" data-t="ctaRefer">Love fairfamily? Tell a friend — every family deserves a fair start. 💌</div>
-      <button class="btn share-btn" id="shareBtn"><span>💌</span><span data-t="ctaShareBtn">Recommend to a friend</span></button>
+    <div class="sec-head center" style="margin-bottom:32px">
+      <span class="eyebrow"><span class="dot"></span><span data-t="areasKicker">What we track</span></span>
+      <h2 data-t="areasTitle">Eight areas children notice</h2>
+      <p class="lead" style="margin-left:auto;margin-right:auto" data-t="areasSub">Each area is a line on the fairness radar. Tap one to read why it matters.</p>
+    </div>
+    <div class="areas" id="areas"></div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow"><span class="dot"></span><span data-t="privKicker">Privacy</span></span>
+      <h2 data-t="privTitle">Your family’s records stay yours</h2>
+    </div>
+    <div class="trust-grid">
+      <div class="tcard"><svg><use href="#i-lock"/></svg><h3 data-t="p1t">Saved to your account only</h3><p data-t="p1d">Every record is stored under your own login, separate from every other family.</p></div>
+      <div class="tcard"><svg><use href="#i-eye"/></svg><h3 data-t="p2t">Never shown to others</h3><p data-t="p2d">No other user can see your children or what you log.</p></div>
+      <div class="tcard"><svg><use href="#i-trash"/></svg><h3 data-t="p3t">Delete any time</h3><p data-t="p3d">Remove a child, all records, or your whole account from Settings.</p></div>
     </div>
   </div>
 </section>
 
-<footer data-t="footer">© 2025 fairfamily · Made with 💗 for every child</footer>
-<div class="legal" style="text-align:center;padding:0 22px 34px;font-size:14px;color:#5a6785"><a href="/privacy.html" style="color:inherit">개인정보처리방침 · Privacy</a> &nbsp;·&nbsp; <a href="/terms.html" style="color:inherit">이용약관 · Terms</a> &nbsp;·&nbsp; <a href="/guide/index.html" style="color:inherit">사용법 가이드 · Guide</a> &nbsp;·&nbsp; <a href="mailto:chloe.heydayii@gmail.com" style="color:inherit">chloe.heydayii@gmail.com</a></div>
+<section id="faq" style="padding-top:0">
+  <div class="wrap faq-wrap">
+    <div class="sec-head">
+      <span class="eyebrow"><span class="dot"></span><span data-t="faqKicker">FAQ</span></span>
+      <h2 data-t="faqTitle">Questions from parents</h2>
+      <p class="lead" data-t="faqSub">Common questions from parents raising more than one child.</p>
+      <a class="btn btn-ghost" style="margin-top:24px" href="/guide/faq.html" data-t="faqMore">All questions</a>
+    </div>
+    <div id="faq-list"></div>
+  </div>
+</section>
 
-<button class="toTop" id="toTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<section class="final">
+  <div class="wrap">
+    <div class="final-box">
+      <h2 data-t="ctaTitle">Start today. It’s free.</h2>
+      <p data-t="ctaWebSub">Add your children, write one sentence, and see the balance on your dashboard.</p>
+      <a class="btn app-link"><span data-t="ctaBtn">Create your free account</span><svg><use href="#i-arrow"/></svg></a>
+    </div>
+  </div>
+</section>
 
-<div class="bottombar">
-  <a href="how-it-works.html"><span class="ic">📖</span><span data-t="barHow">How it works</span></a>
-  <span class="divider"></span>
-  <a class="app-link"><span class="ic">🚀</span><span data-t="barStart">Get Started Free</span></a>
-</div>
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div>
+        <a href="index.html" class="brand"><svg><use href="#logo"/></svg><span>FairFamily</span></a>
+        <p class="about" data-t="footAbout">A record-keeping tool that helps parents give every child their fair share of time, gifts and attention.</p>
+      </div>
+      <div>
+        <h4 data-t="footProduct">Product</h4>
+        <ul>
+          <li><a class="app-link" data-t="footApp">Open the app</a></li>
+          <li><a href="/guide/index.html" data-t="footGuide">User guide</a></li>
+          <li><a href="/guide/why.html" data-t="footWhy">Why it matters</a></li>
+          <li><a href="/guide/faq.html" data-t="footFaq">FAQ</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 data-t="footCompany">Company</h4>
+        <ul>
+          <li><a href="mailto:hello@fairfamily.site">hello@fairfamily.site</a></li>
+          <li><a href="/privacy.html" data-t="footPrivacy">Privacy Policy</a></li>
+          <li><a href="/terms.html" data-t="footTerms">Terms of Service</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="biz">
+      <span data-t="bizName">FairFamily</span>
+      <span data-t="bizContact">Contact: hello@fairfamily.site</span>
+      <span>© 2026 FairFamily. All rights reserved.</span>
+    </div>
+  </div>
+</footer>
+
+<div class="mbar"><a class="btn btn-accent app-link"><span data-t="barStart">Start free</span><svg><use href="#i-arrow"/></svg></a></div>
 
 <script>
   var APP_URL = "/app"; // the React app is served under /app on the same site
 
   var kid = {
-    emma:{bg:'var(--pink-soft)',ac:'var(--pink-deep)',emoji:'🌸'},
-    liam:{bg:'var(--sky-soft)',ac:'var(--sky-deep)',emoji:'⚡'},
-    zoe:{bg:'var(--violet-soft)',ac:'var(--violet)',emoji:'🌻'}
+    emma:{bg:'#ffeef4',ac:'#e0306f'},
+    liam:{bg:'#f1ebfe',ac:'#7c3aed'},
+    zoe:{bg:'#e8f3ff',ac:'#1f6fd6'}
   };
-  var kidBar = {emma:'var(--pink)',liam:'var(--sky)',zoe:'var(--violet)'};
-  var featIcon = ['📖','⚖️','📸','💗'];
-  var featTint = ['var(--pink-soft)','var(--sky-soft)','var(--violet-soft)','var(--pink-soft)'];
-  var appIcon = ['🔔','🌱','✨'];
-  var appTint = ['var(--pink-soft)','var(--sky-soft)','var(--violet-soft)'];
+  var featIcon = ['i-pen','i-camera','i-age','i-radar','i-timeline','i-spark'];
+  var AREA_SLUG = ['cat-time','cat-money','cat-gifts','cat-school','cat-one-on-one','cat-emotional','cat-experiences','cat-health'];
 
   var DATA = {
     en:{
-      navFeatures:'Features', navHow:'How it works', navGuide:'Guide', navInsights:'AI Coach', navApp:'App', launch:'Open fairfamily',
-      barHow:'How it works', barStart:'Get Started Free',
-      badge:'For parents who care deeply',
-      headline:'Every child deserves equal love & attention',
-      sub:'fairfamily gently reminds you when one child might need a little more of you — before they have to ask.',
-      cta1:'Get Started Free', cta2:'See How It Works',
-      noInstall:'No install — runs right in your browser',
-      previewTitle:'Balance check', previewPill:'🌿 In balance',
-      previewNote:'Zoe hasn’t received a gift in a while — maybe a little music toy?',
-      videoTitle:'See fairfamily in action', videoSub:'A little walkthrough of how it feels day to day.', videoNote:'Your intro video goes here',
-      demoTitle:'Try it — three taps', demoSub:'Just write what happened. AI sorts it by child.', demoAgain:'↺ Watch again',
+      brand:'FairFamily', navHow:'How it works', navFeatures:'Features', navGuide:'Guide', navFaq:'FAQ', launch:'Start free', barStart:'Start free',
+      badge:'Fair parenting for families with more than one child',
+      headline:'Fair to every child — and you’ll know it.',
+      sub:'FairFamily records the time, gifts and attention each child gets, compares siblings at the same age, and tells you who needs a little more of you this week.',
+      cta1:'Start free', cta2:'See the 3-minute guide',
+      trust1:'Free', trust2:'Works in your browser', trust3:'Sign up with Google in seconds',
+      floatTag:'AI insight',
+      floatText:'Liam had 30 minutes one-on-one this month; Emma had 4 hours. Try 20 minutes × 3 with Liam this week.',
+      quote:'She got a bike when she was seven. What did I get?',
+      quoteSub:'Kids compare what they got at the same age. Parents rarely remember. FairFamily keeps the record, so every child gets their turn.',
+      howKicker:'How it works', howTitle:'Write it down, compare, get a next step.',
+      s1num:'STEP 01', s1title:'Write one sentence — or snap a photo',
+      s1desc:'Type what happened the way you’d say it. AI splits it into entries by child and category. Or upload a photo of a gift or receipt and it fills in the details.',
+      s1b1:'Several things in one sentence are split automatically', s1b2:'Photos are read for item, amount and category', s1b3:'Log past events with the right date and age',
+      s2num:'STEP 02', s2title:'Compare siblings at the same age',
+      s2desc:'See what each child received at 6, at 7, at 8 — side by side. The fairness radar shows which kind of attention leans toward whom.',
+      s2b1:'Age-matched comparison by money, birthdays, time and more', s2b2:'8-area fairness radar for every child', s2b3:'Fairness score and alerts on the dashboard',
+      s3num:'STEP 03', s3title:'Get a small, specific next step',
+      s3desc:'The AI coach reads your family’s records and suggests what to do this week — who, what, and for how long. You can also ask it anything.',
+      s3b1:'Insights for each child, based on your own records', s3b2:'Concrete suggestions, like 20 minutes × 3 a week', s3b3:'Warm and non-judgmental — no scores for parents',
+      demoKicker:'Try it here', demoTitle:'Three taps. No sign-up.', demoSub:'Write what happened. AI sorts it by child.', demoAgain:'↺ Watch again',
       demo:{
-        label:'WRITE IT ALL AT ONCE',
+        label:'ALL-IN-ONE',
         text:'Drove Emma to math class, played Lego with Liam for 30 min. Yesterday bought Emma sneakers, $45',
-        btn1:'✨ Sort with AI', btn2:'Save all 3', btn3:'Try it with your kids →',
+        btn1:'Sort with AI', btn2:'Save all 3', btn3:'Try it with your kids →',
         hint1:'Step 1 · Write it the way you’d say it — several kids in one go is fine.',
         hint2:'Step 2 · AI split it by child and category. Wrong name? Tap to change it.',
-        hint3:'Step 3 · Saved to each child — the balance chart updates right away.',
+        hint3:'Step 3 · Saved to each child — the dashboard updates right away.',
         rows:[
           {kid:'emma',name:'Emma',cat:'School',what:'Drove to math class',val:''},
           {kid:'liam',name:'Liam',cat:'1-on-1',what:'Played Lego together',val:'30 min'},
@@ -384,74 +519,69 @@
         doneTitle:'3 entries saved',
         doneSub:'Emma 2 · Liam 1 — you’ll see it side by side on the dashboard.'
       },
-      quote:'Did you give Emma a bike at 7? Now Zoe is 7 — did you do the same?',
-      quoteSub:'fairfamily remembers — so you don’t have to.',
-      featKicker:'How fairfamily helps', featTitle:'Made for everyday parenting',
+      featKicker:'Features', featTitle:'Everything you need to keep it fair',
       features:[
-        {title:'Life Story',desc:'Track milestones and memories by age for each child'},
-        {title:'Balance Check',desc:'See fairness across time, gifts, school and heart'},
-        {title:'Photo Log',desc:'Capture moments with AI-powered photo scanning'},
-        {title:'AI Tips',desc:'Gentle reminders to keep your love balanced and fair'}
+        {title:'One-sentence logging',desc:'Write it like a text message. AI splits it by child and category.'},
+        {title:'Photo scan',desc:'Snap a gift, receipt or report card. AI reads the item and amount.'},
+        {title:'Age-matched comparison',desc:'What did each child get at the same age? See it side by side.'},
+        {title:'Fairness radar',desc:'Eight areas of attention, one chart per child, overlaid.'},
+        {title:'Life graph',desc:'Every logged moment on a timeline of your child’s age.'},
+        {title:'AI coach',desc:'Personal insights and answers based on your family’s records.'}
       ],
-      aiTitle:'Your AI parenting coach',
-      insights:[
-        {kid:'emma',name:'Emma',text:'You attended Zoe’s school show but Emma’s 3rd grade theatre wasn’t logged. Did this happen?'},
-        {kid:'liam',name:'Liam',text:'Emma got a bike when she was 7. Liam just turned 7 — maybe time for something special? 🚲'},
-        {kid:'zoe',name:'Zoe',text:'Zoe hasn’t received a special gift in a while — she might love a little music toy! 🎵'}
-      ],
-      cats:['Time','Money','Gifts','School','Heart','Fun'],
-      kidNames:{emma:'Emma',liam:'Liam',zoe:'Zoe'},
-      appTitle:'Soon on your phone — it watches, so you can rest',
-      appSub:'Coming as a mobile app with push notifications. Even when you do nothing, fairfamily quietly keeps track and tells you what each child needs — before they ever have to ask.',
-      appSoon:'🔔 Push notifications — coming soon',
-      appCards:[
-        {title:'Gentle push reminders',desc:'A soft nudge on your phone the moment one child needs a little more — no need to open the app.'},
-        {title:'It cares while you rest',desc:'Do nothing and it still works — quietly checking all 6 fairness dimensions for you, every day.'},
-        {title:'Grows with the family',desc:'The more families join, the smarter it gets — new features roll out as our community grows.'}
-      ],
-      pushNotes:[
-        {kid:'zoe',title:'A nudge for Zoe',text:'Zoe hasn’t had a special gift in a while — maybe a little music toy today? 🎵'},
-        {kid:'liam',title:'Liam just turned 7',text:'Emma got a bike at 7. Time for something special for Liam? 🚲'}
-      ],
-      ctaTitle:'Sign up free — and raise them fair',
-      ctaWebSub:'Create your free account and give every child their fair share of time, gifts, school moments and heart — the systematic, gentle way.',
+      areasKicker:'What we track', areasTitle:'Eight areas children notice',
+      areasSub:'Each area is a line on the fairness radar. Tap one to read why it matters.',
+      areas:['Time together','Money','Gifts','School','One-on-one','Emotional care','Experiences','Health'],
+      privKicker:'Privacy', privTitle:'Your family’s records stay yours',
+      p1t:'Saved to your account only', p1d:'Every record is stored under your own login, separate from every other family.',
+      p2t:'Never shown to others', p2d:'No other user can see your children or what you log.',
+      p3t:'Delete any time', p3d:'Remove a child, all records, or your whole account from Settings.',
+      faqKicker:'FAQ', faqTitle:'Questions from parents', faqSub:'Common questions from parents raising more than one child.', faqMore:'All questions',
+      ctaTitle:'Start today. It’s free.',
+      ctaWebSub:'Add your children, write one sentence, and see the balance on your dashboard.',
       ctaBtn:'Create your free account',
-      ctaRefer:'Love fairfamily? Tell a friend — every family deserves a fair start. 💌',
-      ctaShareBtn:'Recommend to a friend',
-      shareText:'I found fairfamily — it gently helps you love every child fairly. Try it 💗',
-      shareCopied:'Link copied — share it with a friend! 💌',
-      footer:'© 2025 fairfamily · Made with 💗 for every child',
-      faqTitle:'Parenting questions, answered',
-      faqSub:'Common questions from parents raising more than one child.',
+      footAbout:'A record-keeping tool that helps parents give every child their fair share of time, gifts and attention.',
+      footProduct:'Product', footApp:'Open the app', footGuide:'User guide', footWhy:'Why it matters', footFaq:'FAQ',
+      footCompany:'Company', footPrivacy:'Privacy Policy', footTerms:'Terms of Service',
+      bizName:'FairFamily', bizContact:'Contact: hello@fairfamily.site',
       faq:[
-        {q:'How can I treat my children fairly?',a:'Fair doesn’t mean identical — it means every child gets what they need over time. fairfamily records the time, money, gifts, school support, one-on-one time, emotional care, experiences and health care each child receives, so you can see the balance at a glance.'},
-        {q:'How do I reduce sibling rivalry and jealousy?',a:'Kids notice small differences long before we do. By logging one-on-one time and gifts for each child, and comparing what siblings got at the same age, you can give every child their turn — and your AI parenting coach suggests gentle ways to rebalance.'},
-        {q:'Is fairfamily a free parenting app?',a:'Yes. fairfamily is free and runs right in your browser on phone or computer — no download needed. An Android app with push reminders is on the way.'},
-        {q:'What does fairfamily track for each child?',a:'Eight areas of parenting: time together, money, gifts, school, one-on-one time, emotional care, fun experiences and health. Snap a photo or type one sentence and AI sorts it into the right category.'},
-        {q:'How does the AI parenting coach work?',a:'It looks at your family’s records and gives warm, practical parenting tips — for example noticing that one child hasn’t had special one-on-one time lately, or that an older sibling got something at the same age.'},
-        {q:'What ages is fairfamily for?',a:'From babies and toddlers to school-age kids and teens. Its age-by-age comparison helps you see whether a younger sibling is getting the same milestones an older one did.'},
+        {q:'How can I treat my children fairly?',a:'Fair doesn’t mean identical — it means every child gets what they need over time. FairFamily records the time, money, gifts, school support, one-on-one time, emotional care, experiences and health care each child receives, so you can see the balance at a glance.'},
+        {q:'How do I reduce sibling rivalry and jealousy?',a:'Kids notice small differences long before we do. By logging one-on-one time and gifts for each child, and comparing what siblings got at the same age, you can give every child their turn — and the AI coach suggests gentle ways to rebalance.'},
+        {q:'Is FairFamily free?',a:'Yes. FairFamily is free and runs in your browser on a phone or computer — no download needed.'},
+        {q:'What does FairFamily track for each child?',a:'Eight areas: time together, money, gifts, school, one-on-one time, emotional care, experiences and health. Snap a photo or type one sentence and AI sorts it into the right category.'},
+        {q:'How does the AI coach work?',a:'It looks at your family’s records and gives warm, practical suggestions — for example noticing that one child hasn’t had one-on-one time lately, or that an older sibling got something at the same age. It does not replace professional advice.'},
+        {q:'What ages is FairFamily for?',a:'From babies to teenagers. The age-by-age comparison shows whether a younger sibling is getting the same milestones an older one did.'},
         {q:'Is my family’s data private?',a:'Your records are saved to your own account and are never shown to other users. You can delete your children’s data or your whole account at any time in Settings.'}
       ]
     },
     kr:{
-      navFeatures:'기능', navHow:'작동 방식', navGuide:'사용법 가이드', navInsights:'AI 코치', navApp:'앱', launch:'fairfamily 열기',
-      barHow:'작동 방식', barStart:'무료로 시작하기',
-      badge:'깊이 사랑하는 부모를 위해',
-      headline:'모든 아이는 똑같은 사랑과 관심을 받을 자격이 있어요',
-      sub:'fairfamily는 한 아이에게 조금 더 마음이 필요한 순간을 — 아이가 말하기 전에 — 살며시 알려드려요.',
-      cta1:'무료로 시작하기', cta2:'작동 방식 보기',
-      noInstall:'설치 없이 브라우저에서 바로 실행',
-      previewTitle:'균형 체크', previewPill:'🌿 균형 잡힘',
-      previewNote:'다혜는 한동안 선물을 못 받았어요 — 작은 음악 장난감 어때요?',
-      videoTitle:'fairfamily 미리 보기', videoSub:'매일 어떤 느낌인지 짧게 둘러보세요.', videoNote:'소개 영상이 여기에 들어갑니다',
-      demoTitle:'직접 눌러보세요 — 딱 세 번', demoSub:'있었던 일을 그냥 적으면, AI가 아이별로 나눠요.', demoAgain:'↺ 처음부터 다시 보기',
+      brand:'FairFamily', navHow:'작동 방식', navFeatures:'기능', navGuide:'사용법 가이드', navFaq:'자주 묻는 질문', launch:'무료로 시작', barStart:'무료로 시작하기',
+      badge:'아이가 둘 이상인 가족을 위한 공평 육아 기록',
+      headline:'첫째에게 해준 만큼, 둘째에게도.',
+      sub:'페어패밀리는 아이마다 받은 시간·선물·관심을 기록하고, 같은 나이 때와 나란히 비교해서, 이번 주에 누구에게 마음을 더 써야 할지 알려줘요.',
+      cta1:'무료로 시작하기', cta2:'3분 사용법 보기',
+      trust1:'무료', trust2:'설치 없이 웹에서 바로', trust3:'Google로 10초 가입',
+      floatTag:'AI 인사이트',
+      floatText:'이번 달 지호와 단둘이 보낸 시간은 30분, 안나는 4시간이에요. 이번 주엔 지호와 20분씩 세 번 어때요?',
+      quote:'언니는 내 나이 때 자전거 받았잖아.',
+      quoteSub:'아이들은 같은 나이 때 받은 걸 비교해요. 부모는 잘 기억하지 못해요. 페어패밀리가 대신 기록해서, 모든 아이에게 차례가 돌아가게 해요.',
+      howKicker:'작동 방식', howTitle:'적고, 비교하고, 다음 할 일을 받아요.',
+      s1num:'STEP 01', s1title:'한 문장만 쓰거나, 사진 한 장만',
+      s1desc:'있었던 일을 말하듯 적으면 AI가 아이별·항목별로 나눠서 저장해요. 선물이나 영수증 사진을 올리면 내용과 금액을 읽어서 채워줘요.',
+      s1b1:'한 문장에 여러 일을 적어도 자동으로 나눠요', s1b2:'사진에서 물건·금액·유형을 읽어요', s1b3:'지난 일도 그날 날짜와 나이로 기록해요',
+      s2num:'STEP 02', s2title:'같은 나이 때와 나란히 비교',
+      s2desc:'6살 때, 7살 때 각자 무엇을 받았는지 나란히 보여줘요. 공평성 레이더로 어떤 관심이 누구에게 쏠렸는지 한눈에 보여요.',
+      s2b1:'돈·생일선물·시간 등 기준별 나이 비교', s2b2:'아이마다 8가지 영역 공평성 레이더', s2b3:'대시보드의 공평 점수와 알림',
+      s3num:'STEP 03', s3title:'작고 구체적인 다음 행동',
+      s3desc:'AI 코치가 우리 집 기록을 읽고 이번 주에 할 일을 제안해요. 누구와, 무엇을, 얼마나. 궁금한 건 직접 물어볼 수도 있어요.',
+      s3b1:'우리 집 기록을 바탕으로 한 아이별 인사이트', s3b2:'“20분 × 주 3회”처럼 구체적인 제안', s3b3:'평가하지 않는 따뜻한 말투',
+      demoKicker:'여기서 바로 해보기', demoTitle:'세 번만 누르면 돼요. 가입 없이.', demoSub:'있었던 일을 적으면, AI가 아이별로 나눠요.', demoAgain:'↺ 처음부터 다시 보기',
       demo:{
         label:'한번에 적기',
         text:'안나 수학학원 데려다주고, 지호랑 30분 레고함. 어제 안나 운동화 6만원',
-        btn1:'✨ AI로 정리', btn2:'3개 모두 저장', btn3:'우리 아이들로 해보기 →',
+        btn1:'AI로 정리', btn2:'3개 모두 저장', btn3:'우리 아이들로 해보기 →',
         hint1:'1단계 · 말하듯 적어요. 아이 여럿을 한 번에 적어도 돼요.',
         hint2:'2단계 · AI가 아이별·항목별로 나눴어요. 이름이 틀리면 눌러서 바꿔요.',
-        hint3:'3단계 · 아이마다 저장됐어요. 대시보드 균형 그래프에 바로 반영돼요.',
+        hint3:'3단계 · 아이마다 저장됐어요. 대시보드에 바로 반영돼요.',
         rows:[
           {kid:'emma',name:'안나',cat:'학교',what:'수학학원 데려다줌',val:''},
           {kid:'liam',name:'지호',cat:'단둘이',what:'레고 함께함',val:'30분'},
@@ -460,93 +590,58 @@
         doneTitle:'3개 저장됐어요',
         doneSub:'안나 2개 · 지호 1개 — 대시보드에서 나란히 보여요.'
       },
-      quote:'안나에게 7살 때 자전거를 사줬나요? 이제 다혜가 7살이에요 — 똑같이 해줬나요?',
-      quoteSub:'fairfamily가 기억해요 — 당신이 애쓰지 않아도 되도록.',
-      featKicker:'fairfamily가 돕는 방법', featTitle:'매일의 육아를 위해 만들었어요',
+      featKicker:'기능', featTitle:'공평하게 키우는 데 필요한 것',
       features:[
-        {title:'인생 스토리',desc:'아이마다 나이별로 이정표와 추억을 기록해요'},
-        {title:'균형 체크',desc:'시간, 선물, 학교, 그리고 마음의 공평함을 살펴봐요'},
-        {title:'포토 로그',desc:'AI 사진 스캔으로 소중한 순간을 담아요'},
-        {title:'AI 팁',desc:'사랑이 공평하게 유지되도록 부드럽게 알려드려요'}
+        {title:'한 문장 AI 기록',desc:'문자 보내듯 적으면 AI가 아이별·항목별로 나눠요.'},
+        {title:'사진 스캔',desc:'선물·영수증·성적표 사진에서 내용과 금액을 읽어요.'},
+        {title:'나이별 비교',desc:'같은 나이 때 각자 무엇을 받았는지 나란히 봐요.'},
+        {title:'공평성 레이더',desc:'8가지 영역을 아이마다 겹쳐서 한 장으로 봐요.'},
+        {title:'라이프 그래프',desc:'기록한 순간들이 아이 나이 위에 펼쳐져요.'},
+        {title:'AI 코치',desc:'우리 집 기록을 바탕으로 조언하고 질문에 답해요.'}
       ],
-      aiTitle:'당신의 AI 육아 코치',
-      insights:[
-        {kid:'emma',name:'안나',text:'다혜의 학교 공연에는 다녀오셨는데 안나의 3학년 연극은 기록되지 않았어요. 다녀오셨나요?'},
-        {kid:'liam',name:'지호',text:'안나는 7살 때 자전거를 받았어요. 지호도 이제 막 7살이 되었네요 — 특별한 걸 준비할 때일까요? 🚲'},
-        {kid:'zoe',name:'다혜',text:'다혜는 한동안 특별한 선물을 받지 못했어요 — 작은 음악 장난감을 좋아할지도 몰라요! 🎵'}
-      ],
-      cats:['시간','돈','선물','학교','마음','재미'],
-      kidNames:{emma:'안나',liam:'지호',zoe:'다혜'},
-      appTitle:'곧 휴대폰에서 — 대신 지켜봐 드릴게요',
-      appSub:'푸시 알림이 있는 모바일 앱으로 곧 만나요. 가만히 계셔도 fairfamily가 조용히 챙기며, 각 아이에게 무엇이 부족한지 — 아이가 말하기 전에 — 알려드려요.',
-      appSoon:'🔔 푸시 알림 — 곧 출시',
-      appCards:[
-        {title:'부드러운 푸시 알림',desc:'한 아이에게 조금 더 마음이 필요한 순간, 휴대폰으로 살며시 알려드려요 — 앱을 열지 않아도.'},
-        {title:'쉬는 동안에도 챙겨요',desc:'아무것도 안 하셔도 돼요 — 6가지 공평함을 매일 조용히 대신 살펴봐 드려요.'},
-        {title:'가족과 함께 자라요',desc:'더 많은 가족이 함께할수록 똑똑해져요 — 커뮤니티가 커지며 새 기능이 열려요.'}
-      ],
-      pushNotes:[
-        {kid:'zoe',title:'다혜에게 필요한 순간',text:'다혜는 한동안 특별한 선물을 못 받았어요 — 오늘 작은 음악 장난감 어때요? 🎵'},
-        {kid:'liam',title:'지호가 막 7살이 됐어요',text:'안나는 7살 때 자전거를 받았어요. 지호에게도 특별한 걸 준비할 때일까요? 🚲'}
-      ],
-      ctaTitle:'무료로 가입하고, 공평하게 키우세요',
-      ctaWebSub:'무료 계정을 만들고 모든 아이에게 시간·선물·학교의 순간·마음을 공평하게 나눠주세요 — 체계적이고 부드럽게.',
+      areasKicker:'우리가 보는 것', areasTitle:'아이들이 민감하게 느끼는 8가지',
+      areasSub:'각 영역이 공평성 레이더의 한 축이에요. 눌러서 왜 중요한지 읽어 보세요.',
+      areas:['함께한 시간','지출','선물','학교','단둘이','마음','경험·여행','건강'],
+      privKicker:'개인정보', privTitle:'우리 가족 기록은 우리 가족만',
+      p1t:'내 계정에만 저장', p1d:'모든 기록은 내 로그인 아래에만 저장되고, 다른 가족과 완전히 분리돼요.',
+      p2t:'다른 사람에게 안 보여요', p2d:'다른 사용자는 우리 아이들과 기록을 볼 수 없어요.',
+      p3t:'언제든 삭제', p3d:'설정에서 아이, 전체 기록, 계정까지 언제든 지울 수 있어요.',
+      faqKicker:'자주 묻는 질문', faqTitle:'부모님들이 자주 묻는 질문', faqSub:'아이가 둘 이상인 부모님들이 자주 묻는 질문이에요.', faqMore:'질문 전체 보기',
+      ctaTitle:'오늘 시작하세요. 무료예요.',
+      ctaWebSub:'아이를 등록하고, 한 문장만 적어 보세요. 대시보드에서 균형이 바로 보여요.',
       ctaBtn:'무료 계정 만들기',
-      ctaRefer:'fairfamily가 좋으셨나요? 친구에게도 알려주세요 — 모든 가족이 공평하게 시작할 자격이 있어요. 💌',
-      ctaShareBtn:'친구에게 추천하기',
-      shareText:'fairfamily를 발견했어요 — 모든 아이를 공평하게 사랑하도록 부드럽게 도와줘요. 한번 써보세요 💗',
-      shareCopied:'링크를 복사했어요 — 친구에게 공유하세요! 💌',
-      footer:'© 2025 fairfamily · 모든 아이를 위해 💗 마음을 담아',
-      faqTitle:'육아 고민, 여기서 답해 드려요',
-      faqSub:'둘 이상의 아이를 키우는 부모님들이 자주 묻는 질문이에요.',
+      footAbout:'모든 아이가 시간·선물·관심을 공평하게 받도록 돕는 육아 기록 서비스예요.',
+      footProduct:'서비스', footApp:'앱 열기', footGuide:'사용법 가이드', footWhy:'우리가 보는 것', footFaq:'자주 묻는 질문',
+      footCompany:'회사', footPrivacy:'개인정보처리방침', footTerms:'이용약관',
+      bizName:'상호: FairFamily (페어패밀리)', bizContact:'문의: hello@fairfamily.site',
       faq:[
-        {q:'아이들을 공평하게 키우려면 어떻게 해야 하나요?',a:'공평함은 똑같이 주는 게 아니라, 시간이 지나도 모든 아이가 필요한 만큼 받는 거예요. 페어패밀리는 아이마다 함께한 시간, 용돈·지출, 선물, 학업 지원, 1:1 시간, 감정 케어, 경험, 건강 관리를 기록해서 균형을 한눈에 보여줘요.'},
-        {q:'형제 갈등과 질투를 줄이는 방법이 있나요?',a:'아이들은 작은 차이도 먼저 알아채요. 첫째·둘째·셋째에게 준 1:1 시간과 선물을 기록하고 같은 나이 때 받은 것을 비교하면 모든 아이에게 차례가 돌아가요. AI 육아 코치가 형제 차별 없이 균형을 맞추는 방법도 알려줘요.'},
-        {q:'페어패밀리는 무료 육아 앱인가요?',a:'네, 무료예요. 설치 없이 휴대폰이나 컴퓨터 브라우저에서 바로 쓸 수 있어요. 알림 기능이 있는 안드로이드 앱도 준비 중이에요.'},
-        {q:'아이별로 무엇을 기록하나요?',a:'육아의 8가지 영역이에요: 함께한 시간, 돈, 선물, 학교, 1:1 시간, 감정 케어, 즐거운 경험, 건강. 사진을 찍거나 한 문장만 적으면 AI가 알맞은 카테고리로 분류해요.'},
-        {q:'AI 육아 코치는 어떻게 작동하나요?',a:'우리 가족의 기록을 살펴보고 따뜻하고 실용적인 육아 조언을 줘요. 예를 들어 한 아이와 요즘 1:1 시간이 부족하다거나, 큰아이는 같은 나이에 무엇을 받았는지 알려줘요.'},
-        {q:'몇 살 아이까지 쓸 수 있나요?',a:'아기와 유아부터 초등학생, 청소년까지 쓸 수 있어요. 나이별 비교로 동생이 형·누나·언니·오빠와 같은 나이에 비슷한 경험을 했는지 확인할 수 있어요.'},
-        {q:'우리 가족 데이터는 안전한가요?',a:'기록은 내 계정에만 저장되고 다른 사용자에게 절대 보이지 않아요. 설정에서 언제든 아이 데이터나 계정 전체를 삭제할 수 있어요.'}
+        {q:'아이들을 공평하게 키우려면 어떻게 해야 하나요?',a:'공평함은 똑같이 주는 게 아니라, 시간이 지나도 모든 아이가 필요한 만큼 받는 거예요. 페어패밀리는 아이마다 함께한 시간, 지출, 선물, 학교, 단둘이 시간, 마음, 경험, 건강을 기록해서 균형을 한눈에 보여줘요.'},
+        {q:'형제 갈등과 질투를 줄이는 방법이 있나요?',a:'아이들은 작은 차이도 먼저 알아채요. 아이마다 단둘이 보낸 시간과 선물을 기록하고 같은 나이 때 받은 것을 비교하면 모든 아이에게 차례가 돌아가요. AI 코치가 균형을 맞추는 방법도 제안해요.'},
+        {q:'페어패밀리는 무료인가요?',a:'네, 무료예요. 설치 없이 휴대폰이나 컴퓨터 브라우저에서 바로 쓸 수 있어요.'},
+        {q:'아이별로 무엇을 기록하나요?',a:'8가지 영역이에요: 함께한 시간, 지출, 선물, 학교, 단둘이, 마음, 경험·여행, 건강. 사진을 올리거나 한 문장만 적으면 AI가 알맞은 유형으로 분류해요.'},
+        {q:'AI 코치는 어떻게 작동하나요?',a:'우리 가족의 기록을 살펴보고 따뜻하고 실용적인 제안을 해요. 예를 들어 한 아이와 요즘 단둘이 시간이 부족하다거나, 큰아이는 같은 나이에 무엇을 받았는지 알려줘요. 전문 상담을 대신하지는 않아요.'},
+        {q:'몇 살 아이까지 쓸 수 있나요?',a:'아기부터 청소년까지 쓸 수 있어요. 나이별 비교로 동생이 형·언니와 같은 나이에 비슷한 경험을 했는지 확인할 수 있어요.'},
+        {q:'우리 가족 데이터는 안전한가요?',a:'기록은 내 계정에만 저장되고 다른 사용자에게 보이지 않아요. 설정에서 언제든 아이 데이터나 계정 전체를 삭제할 수 있어요.'}
       ]
     }
   };
 
-  var BARVALS = [
-    {emma:70,liam:60,zoe:55},{emma:55,liam:65,zoe:60},{emma:75,liam:45,zoe:40},
-    {emma:60,liam:70,zoe:50},{emma:80,liam:70,zoe:75},{emma:65,liam:60,zoe:70}
-  ];
-
-  function renderBars(t){
-    var el=document.getElementById('bars'); el.innerHTML='';
-    t.cats.forEach(function(c,i){
-      var v=BARVALS[i], total=v.emma+v.liam+v.zoe;
-      var e=Math.round(v.emma/total*100), l=Math.round(v.liam/total*100), z=100-e-l;
-      var row=document.createElement('div'); row.className='bar-row';
-      row.innerHTML='<span>'+c+'</span><div class="track">'+
-        '<div class="seg" style="left:0;width:'+e+'%;background:'+kidBar.emma+'"></div>'+
-        '<div class="seg" style="left:'+e+'%;width:'+l+'%;background:'+kidBar.liam+'"></div>'+
-        '<div class="seg" style="left:'+(e+l)+'%;width:'+z+'%;background:'+kidBar.zoe+'"></div></div>';
-      el.appendChild(row);
-    });
-  }
+  function esc(x){ return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   function renderFeatures(t){
     var g=document.getElementById('features-grid'); g.innerHTML='';
     t.features.forEach(function(f,i){
       var c=document.createElement('div'); c.className='fcard';
-      c.innerHTML='<div class="ic" style="background:'+featTint[i]+'">'+featIcon[i]+'</div><h3>'+f.title+'</h3><p>'+f.desc+'</p>';
+      c.innerHTML='<div class="ic"><svg><use href="#'+featIcon[i]+'"/></svg></div><h3>'+esc(f.title)+'</h3><p>'+esc(f.desc)+'</p>';
       g.appendChild(c);
     });
   }
-  function renderAI(t){
-    var g=document.getElementById('ai-grid'); g.innerHTML='';
-    t.insights.forEach(function(ins){
-      var k=kid[ins.kid];
-      var c=document.createElement('div'); c.className='icard';
-      c.innerHTML='<div class="who"><div class="av" style="background:'+k.bg+';color:'+k.ac+'">'+k.emoji+'</div><b>'+ins.name+'</b></div><p>'+ins.text+'</p>';
-      g.appendChild(c);
+  function renderAreas(t){
+    var g=document.getElementById('areas'); g.innerHTML='';
+    t.areas.forEach(function(a,i){
+      var l=document.createElement('a'); l.href='/guide/'+AREA_SLUG[i]+'.html';
+      l.innerHTML='<i></i>'+esc(a); g.appendChild(l);
     });
   }
-  function esc(x){ return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   function renderFaq(t){
     var g=document.getElementById('faq-list'); g.innerHTML='';
     t.faq.forEach(function(f){
@@ -555,23 +650,10 @@
       g.appendChild(d);
     });
   }
-  function renderApp(t){
-    var g=document.getElementById('app-grid'); g.innerHTML='';
-    t.appCards.forEach(function(f,i){
-      var c=document.createElement('div'); c.className='fcard';
-      c.innerHTML='<div class="ic" style="background:'+appTint[i]+'">'+appIcon[i]+'</div><h3>'+f.title+'</h3><p>'+f.desc+'</p>';
-      g.appendChild(c);
-    });
-    var d=document.getElementById('push-demo'); d.innerHTML='';
-    t.pushNotes.forEach(function(n){
-      var k=kid[n.kid];
-      var p=document.createElement('div'); p.className='push';
-      p.innerHTML='<div class="pic">'+k.emoji+'</div><div class="pbody"><b>'+n.title+'</b><span>'+n.text+'</span></div>';
-      d.appendChild(p);
-    });
+  function setImages(l){
+    var p = l==='kr' ? 'ko' : 'en';
+    document.querySelectorAll('img[data-img]').forEach(function(im){ im.src='/img/product/'+p+'-'+im.getAttribute('data-img')+'.webp'; });
   }
-  // Language: an explicit tap on EN/KO is remembered in "lang_choice" (shared
-  // with the app at /app); otherwise follow the device language (Korean → kr).
   // Click-through demo of "write it all at once" (3 taps, no sign-in).
   var DEMO_AV = {emma:'/app/img/avatars/avatar-1.webp', liam:'/app/img/avatars/avatar-2.webp', zoe:'/app/img/avatars/avatar-3.webp'};
   var demoTimer = null, demoStep = 0;
@@ -591,31 +673,32 @@
     }
     label.textContent = d.label; label.style.display = '';
     input.style.display = ''; res.innerHTML = '';
-    btn.classList.remove('pulse'); btn.disabled = true;
+    btn.disabled = true;
     setStep(0);
-    // type the sentence in, then invite the first tap
     var i = 0; input.innerHTML = '<span class="caret"></span>';
-    demoTimer = setInterval(function(){
+    var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) { input.textContent = d.text; btn.disabled = false; }
+    else demoTimer = setInterval(function(){
       i += 1;
-      input.innerHTML = d.text.slice(0, i).replace(/&/g,'&amp;').replace(/</g,'&lt;') + '<span class="caret"></span>';
-      if (i >= d.text.length) { clearInterval(demoTimer); btn.disabled = false; btn.classList.add('pulse'); }
-    }, 38);
+      input.innerHTML = esc(d.text.slice(0, i)) + '<span class="caret"></span>';
+      if (i >= d.text.length) { clearInterval(demoTimer); btn.disabled = false; }
+    }, 34);
     btn.onclick = function(){
       if (demoStep === 0) {
         clearInterval(demoTimer); input.textContent = d.text;
         res.innerHTML = d.rows.map(function(r, k){
           var c = kid[r.kid];
-          return '<div class="demo-row" style="animation-delay:' + (k * 0.18) + 's">' +
+          return '<div class="demo-row" style="animation-delay:' + (k * 0.15) + 's">' +
             '<img src="' + DEMO_AV[r.kid] + '" alt="">' +
-            '<div><span class="who" style="background:' + c.bg + ';color:' + c.ac + '">' + r.name + '</span>' +
-            '<div class="what">' + r.what + '</div>' +
-            '<div class="meta">' + r.cat + (r.when ? ' · ' + r.when : '') + '</div></div>' +
-            (r.val ? '<div class="val">' + r.val + '</div>' : '') + '</div>';
+            '<div><span class="who" style="background:' + c.bg + ';color:' + c.ac + '">' + esc(r.name) + '</span>' +
+            '<div class="what">' + esc(r.what) + '</div>' +
+            '<div class="meta">' + esc(r.cat) + (r.when ? ' · ' + esc(r.when) : '') + '</div></div>' +
+            (r.val ? '<div class="val">' + esc(r.val) + '</div>' : '<div></div>') + '</div>';
         }).join('');
         input.style.display = 'none'; label.style.display = 'none';
         setStep(1);
       } else if (demoStep === 1) {
-        res.innerHTML = '<div class="demo-done"><div class="big">✅</div><b>' + d.doneTitle + '</b><p>' + d.doneSub + '</p></div>';
+        res.innerHTML = '<div class="demo-done"><div class="big"><svg><use href="#i-check"/></svg></div><b>' + esc(d.doneTitle) + '</b><p>' + esc(d.doneSub) + '</p></div>';
         setStep(2);
       } else {
         window.location.href = APP_URL;
@@ -624,6 +707,8 @@
     again.onclick = function(){ renderDemo(t); };
   }
 
+  // Language: an explicit tap on EN/KO is remembered in "lang_choice" (shared
+  // with the app at /app); otherwise follow the device language (Korean → kr).
   var curLang='en';
   function deviceLang(){
     var l=((navigator.languages&&navigator.languages[0])||navigator.language||'').toLowerCase();
@@ -639,26 +724,15 @@
     document.querySelectorAll('[data-t]').forEach(function(el){
       var key=el.getAttribute('data-t'); if(t[key]!=null) el.textContent=t[key];
     });
-    document.querySelector('.kid-emma').textContent=t.kidNames.emma;
-    document.querySelector('.kid-liam').textContent=t.kidNames.liam;
-    document.querySelector('.kid-zoe').textContent=t.kidNames.zoe;
-    renderBars(t); renderFeatures(t); renderAI(t); renderApp(t); renderFaq(t); renderDemo(t);
+    setImages(l); renderFeatures(t); renderAreas(t); renderFaq(t); renderDemo(t);
   }
-  document.getElementById('shareBtn').addEventListener('click',function(){
-    var t=DATA[curLang];
-    var url=location.href.split('#')[0];
-    if(navigator.share){
-      navigator.share({title:'fairfamily',text:t.shareText,url:url}).catch(function(){});
-    }else if(navigator.clipboard){
-      navigator.clipboard.writeText(t.shareText+' '+url).then(function(){ alert(t.shareCopied); });
-    }else{
-      alert(t.shareText+' '+url);
-    }
-  });
   document.querySelectorAll('.app-link').forEach(function(a){ a.setAttribute('href',APP_URL); });
-  window.addEventListener('scroll',function(){
-    document.getElementById('toTop').classList.toggle('show', window.scrollY>420);
-  });
+  var nav=document.getElementById('nav');
+  window.addEventListener('scroll',function(){ nav.classList.toggle('scrolled', window.scrollY>8); },{passive:true});
+  if ('IntersectionObserver' in window) {
+    var io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} }); },{threshold:.12});
+    document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  } else { document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); }); }
   (function(){
     var c=null; try{ c=localStorage.getItem('lang_choice'); }catch(e){}
     setLang(c==='ko'?'kr':c==='en'?'en':deviceLang(),false);

@@ -1,7 +1,7 @@
-:root{--pink:#ff5da2;--pink-deep:#ff3d92;--pink-soft:#ffe6f1;--sky:#3d9bff;--sky-deep:#1f83f5;--sky-soft:#e6f2ff;--violet:#7c6cf5;--violet-soft:#eeeaff;--navy:#12203f;--navy-2:#33415c;--mute:#5a6785;--bg:#ffffff;--line:#eef1f6;--grad:linear-gradient(135deg,#ff5da2 0%,#3d9bff 100%);--red:#e5243b}
+:root{--pink:#ff4d8d;--pink-deep:#e0306f;--pink-soft:#ffe6f1;--sky:#7c3aed;--sky-deep:#6d28d9;--sky-soft:#f1ebfe;--violet:#7c6cf5;--violet-soft:#eeeaff;--navy:#0f1222;--navy-2:#3d4359;--mute:#5a6785;--bg:#ffffff;--line:#eef1f6;--grad:linear-gradient(135deg,#ff4d8d 0%,#7c3aed 100%);--red:#e5243b}
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{font-family:'Pretendard',system-ui,-apple-system,'Apple SD Gothic Neo',sans-serif;background:var(--bg);color:var(--navy);line-height:1.7;-webkit-font-smoothing:antialiased;padding-bottom:86px;word-break:keep-all;overflow-wrap:anywhere}
+body{font-family:'Pretendard Variable','Pretendard',system-ui,-apple-system,'Apple SD Gothic Neo',sans-serif;background:var(--bg);color:var(--navy);line-height:1.7;-webkit-font-smoothing:antialiased;padding-bottom:86px;word-break:keep-all;overflow-wrap:anywhere}
 a{color:inherit;text-decoration:none}
 .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
 nav.top{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
@@ -26,7 +26,7 @@ nav.top{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.92);backdr
 .head{padding:8px 0 10px}
 .eyebrow{display:inline-block;font-size:13px;font-weight:900;letter-spacing:.06em;padding:5px 12px;border-radius:999px;background:var(--pink-soft);color:var(--pink-deep)}
 .eyebrow.sky{background:var(--sky-soft);color:var(--sky-deep)} .eyebrow.vi{background:var(--violet-soft);color:var(--violet)}
-h1{font-size:clamp(30px,5vw,46px);font-weight:900;line-height:1.18;letter-spacing:-.5px;margin-top:12px;text-wrap:balance}
+h1{font-size:clamp(30px,5vw,46px);font-weight:800;line-height:1.18;letter-spacing:-.035em;margin-top:12px;text-wrap:balance}
 .lede{font-size:clamp(17px,2.2vw,19px);color:var(--navy-2);font-weight:600;margin-top:12px;max-width:62ch}
 .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
 .meta span{font-size:13px;font-weight:700;color:var(--mute);background:#f5f7fb;border-radius:999px;padding:4px 12px}
