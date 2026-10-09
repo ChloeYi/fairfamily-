@@ -11,6 +11,15 @@ const SHOW_APPLE_LOGIN = false;
 
 const BG = "linear-gradient(160deg, #f8f0ff 0%, #eef2ff 50%, #fdf4ff 100%)";
 
+// How this person first found us (set by /ff-track.js on the website: UTM tags or referring site).
+const readFirstTouch = () => {
+  try {
+    const v = JSON.parse(localStorage.getItem("ff_first_touch") || "null");
+    if (v && typeof v === "object") return v;
+  } catch (e) { /* ignore */ }
+  return { source: Capacitor.isNativePlatform() ? "android-app" : "direct", medium: "none" };
+};
+
 const saveUserToFirestore = async (user) => {
   const ref = doc(db, "users", user.uid);
   const snap = await getDoc(ref);
@@ -21,6 +30,7 @@ const saveUserToFirestore = async (user) => {
       photoURL: user.photoURL || "",
       createdAt: serverTimestamp(),
       onboardingComplete: false,
+      acquisition: readFirstTouch(),
     });
   }
 };
