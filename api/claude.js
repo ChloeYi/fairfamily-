@@ -8,7 +8,10 @@
 
 const Anthropic = require("@anthropic-ai/sdk").default;
 
-const MODEL = "claude-sonnet-4-6";
+// Model per feature, fixed server-side so clients can't pick pricier models.
+// scan = "write it all at once" parsing + photo scan (simple extraction) → the cheapest model.
+// advice = parenting advice → a stronger model.
+const MODELS = { scan: "claude-haiku-5-5", advice: "claude-sonnet-5-5" };
 const MAX_TOKENS_CAP = 1500;
 const MAX_MESSAGES = 20;
 
@@ -20,8 +23,10 @@ const DAILY_LIMITS = { advice: 3, scan: 10 };
 // written with a service account so users can't reset them.
 // Vercel env var: FIREBASE_SERVICE_ACCOUNT = the whole service-account JSON
 // (Firebase console → Project settings → Service accounts → Generate new private key).
-// If it's not set, limits are skipped (logged) so the app keeps working.
+// If it's not set, a per-server-instance counter is used instead: less exact
+// (it resets when Vercel starts a new instance) but limits are never fully off.
 let saToken = { value: null, exp: 0 };
+const memoryUsage = new Map(); // fallback counter: key → count
 
 function serviceAccount() {
   try {
@@ -66,8 +71,12 @@ function koreaDate() {
 async function bumpUsage(projectId, uid, feature) {
   const sa = serviceAccount();
   if (!sa) {
-    console.warn("FIREBASE_SERVICE_ACCOUNT not set — AI daily limits are OFF");
-    return null;
+    console.warn("FIREBASE_SERVICE_ACCOUNT not set — using in-memory AI limits");
+    const key = `${uid}_${koreaDate()}_${feature}`;
+    const n = (memoryUsage.get(key) || 0) + 1;
+    memoryUsage.set(key, n);
+    if (memoryUsage.size > 5000) memoryUsage.clear(); // keep memory bounded
+    return n;
   }
   try {
     const token = await googleAccessToken(sa);
@@ -161,7 +170,7 @@ module.exports = async function handler(req, res) {
   client ||= new Anthropic(); // reads ANTHROPIC_API_KEY
   try {
     const message = await client.messages.create({
-      model: MODEL, // fixed server-side so clients can't pick pricier models
+      model: MODELS[feature],
       max_tokens: Math.min(Number(max_tokens) || 1024, MAX_TOKENS_CAP),
       messages,
       metadata: { user_id: uid },

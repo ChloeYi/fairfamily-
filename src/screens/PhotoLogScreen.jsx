@@ -27,7 +27,7 @@ const KidIcon = ({ emoji, size = 24, color }) => (
   <i className={`fi ${EMOJI_FLATICON[emoji] || "fi-sr-child-head"}`} style={{ fontSize: size, color }} />
 );
 
-const MODEL = "claude-sonnet-4-6";
+const MODEL = "claude-haiku-5-5"; // informational only — the server picks the model
 const BG = "linear-gradient(160deg, #f8f0ff 0%, #eef2ff 50%, #fdf4ff 100%)";
 
 const css = `

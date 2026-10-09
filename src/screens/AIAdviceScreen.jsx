@@ -6,7 +6,7 @@ import { auth, db } from "../firebase";
 import { useLanguage } from "../hooks/useLanguage";
 import { Command, UsersThree, Robot } from "@phosphor-icons/react";
 
-const MODEL = "claude-sonnet-4-6";
+const MODEL = "claude-sonnet-5-5"; // informational only — the server picks the model
 const BG = "linear-gradient(160deg, #f8f0ff 0%, #eef2ff 50%, #fdf4ff 100%)";
 
 const css = `
