@@ -8,6 +8,8 @@ import { useLanguage } from "../hooks/useLanguage";
 // security rules allow it, a copy to the top-level `feedback` collection so
 // every tester's feedback can be read in one list in the Firebase console.
 
+const KAKAO_CHAT_URL = "https://pf.kakao.com/_xinXFX/chat";
+
 const MOODS = [
   { id: "good", emoji: "😊" },
   { id: "okay", emoji: "😐" },
@@ -25,6 +27,7 @@ const TEXT = {
     thanks: "고마워요! 꼭 읽고 반영할게요.",
     error: "전송에 실패했어요. 잠시 후 다시 시도해 주세요.",
     close: "닫기",
+    kakao: "카카오톡으로 이야기하기",
   },
   en: {
     button: "Feedback",
@@ -36,6 +39,7 @@ const TEXT = {
     thanks: "Thank you! I read every message.",
     error: "Couldn't send. Please try again in a moment.",
     close: "Close",
+    kakao: "Chat with us on KakaoTalk",
   },
 };
 
@@ -164,6 +168,12 @@ export default function FeedbackButton() {
                 color: "#fff", fontSize: 15, fontWeight: 700, cursor: canSend ? "pointer" : "default",
                 fontFamily: "inherit",
               }}>{status === "sending" ? tx.sending : tx.send}</button>
+
+              <a href={KAKAO_CHAT_URL} target="_blank" rel="noopener noreferrer" style={{
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                marginTop: 10, height: 40, borderRadius: 14, textDecoration: "none",
+                background: "#FEE500", color: "#191919", fontSize: 14, fontWeight: 700,
+              }}><span aria-hidden="true">💛</span>{tx.kakao}</a>
             </>
           )}
         </div>
