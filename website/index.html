@@ -21,7 +21,8 @@
 <link rel="alternate" hreflang="en" href="https://fairfamily.site/" />
 <link rel="alternate" hreflang="ko" href="https://fairfamily.site/ko/" />
 <link rel="alternate" hreflang="x-default" href="https://fairfamily.site/" />
-<link rel="icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="icon" href="/favicon.ico" />
 <!--LD-->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
 <style>
@@ -74,7 +75,7 @@
   .nav.scrolled{border-bottom-color:var(--line)}
   .nav-in{display:flex;align-items:center;justify-content:space-between;height:68px;gap:16px}
   .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;letter-spacing:-.03em}
-  .brand svg{width:30px;height:30px;flex:0 0 auto}
+  .brand svg{width:30px;height:30px;flex:0 0 auto}.brand .brandmark{width:30px;height:30px;border-radius:9px;flex:0 0 auto;object-fit:cover}
   .nav-links{display:flex;gap:32px;font-size:15px;font-weight:500;color:var(--ink-2)}
   .nav-links a:hover{color:var(--ink)}
   .nav-r{display:flex;align-items:center;gap:10px}
@@ -82,7 +83,7 @@
   .lang button{border:0;background:transparent;font:600 12px/1 var(--font);color:var(--mute);padding:7px 9px;border-radius:7px;cursor:pointer}
   .lang button.on{background:var(--ink);color:#fff}
   @media(max-width:900px){.nav-links{display:none}}
-  @media(max-width:420px){.nav .btn-sm{padding:10px 12px;font-size:13px}.brand{font-size:17px}.brand svg{width:26px;height:26px}}
+  @media(max-width:420px){.nav .btn-sm{padding:10px 12px;font-size:13px}.brand{font-size:17px}.brand svg{width:26px;height:26px}.brand .brandmark{width:26px;height:26px}}
 
   /* hero */
   .hero{overflow:hidden;padding:72px 0 96px;background:radial-gradient(1100px 520px at 85% -10%,#f3ecff 0%,rgba(243,236,255,0) 60%),radial-gradient(700px 420px at -10% 10%,#fff0f6 0%,rgba(255,240,246,0) 60%)}
@@ -224,10 +225,11 @@
   .reveal.in{opacity:1;transform:none}
   @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.caret{animation:none}html{scroll-behavior:auto}}
 </style>
-<script defer src="/_vercel/insights/script.js"></script>
+<script>try{var q=location.search;if(/[?&]ff_internal=1/.test(q))localStorage.setItem('ff_internal','1');if(/[?&]ff_internal=0/.test(q))localStorage.removeItem('ff_internal');window.__ffInternal=localStorage.getItem('ff_internal')==='1'}catch(e){}</script>
+<script>if(!window.__ffInternal){var s=document.createElement('script');s.defer=true;s.src='/_vercel/insights/script.js';document.head.appendChild(s)}</script>
 <script src="/ff-track.js"></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-FRRVEJHNBS"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-FRRVEJHNBS');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());if(window.__ffInternal)window['ga-disable-G-FRRVEJHNBS']=true;gtag('config','G-FRRVEJHNBS');</script>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -250,7 +252,7 @@
 
 <nav class="nav" id="nav">
   <div class="wrap nav-in">
-    <a href="index.html" class="brand" aria-label="FairFamily"><svg><use href="#logo"/></svg><span data-t="brand">FairFamily</span></a>
+    <a href="index.html" class="brand" aria-label="FairFamily"><img class="brandmark" src="/logo192.png" alt="" width="30" height="30"/><span data-t="brand">FairFamily</span></a>
     <div class="nav-links">
       <a href="#how" data-t="navHow">How it works</a>
       <a href="#features" data-t="navFeatures">Features</a>
@@ -443,7 +445,7 @@
   <div class="wrap">
     <div class="foot">
       <div>
-        <a href="index.html" class="brand"><svg><use href="#logo"/></svg><span>FairFamily</span></a>
+        <a href="index.html" class="brand"><img class="brandmark" src="/logo192.png" alt="" width="30" height="30"/><span>FairFamily</span></a>
         <p class="about" data-t="footAbout">A record-keeping tool that helps parents give every child their fair share of time, gifts and attention.</p>
       </div>
       <div>
