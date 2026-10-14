@@ -42,3 +42,5 @@ dist/
 website/app.html
 website/static/
 website/asset-manifest.json
+play-store/.tmp/
+src/App 복사본.jsx

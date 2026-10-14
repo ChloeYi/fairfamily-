@@ -153,6 +153,18 @@
   .demo-done p{color:var(--ink-2);margin-top:6px}
   .demo-btn{width:100%;margin-top:16px}
   .demo-btn:disabled{opacity:.5;cursor:default;transform:none;box-shadow:none}
+  .demo-btn.ready{animation:demoPulse 1.9s ease-in-out infinite}
+  .demo-btn.ready:hover,.demo-btn.ready:focus-visible{animation:none}
+  @keyframes demoPulse{
+    0%,100%{box-shadow:0 10px 26px -10px rgba(124,58,237,.55),0 0 0 0 rgba(236,72,153,.45)}
+    50%{box-shadow:0 16px 34px -10px rgba(124,58,237,.6),0 0 0 12px rgba(236,72,153,0)}
+  }
+  .demo-cue{display:none;align-items:center;justify-content:center;gap:7px;margin-top:14px;margin-bottom:-4px;
+    font:800 14px var(--font);color:var(--violet)}
+  .demo-cue.on{display:flex}
+  .demo-cue .finger{font-size:17px;animation:demoTap 1.2s ease-in-out infinite}
+  @keyframes demoTap{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+  @media(prefers-reduced-motion:reduce){.demo-btn.ready,.demo-cue .finger{animation:none}}
   .demo-again{display:none;margin:12px auto 0;border:0;background:none;color:var(--mute);font:500 14px var(--font);cursor:pointer}
   .demo-hint{text-align:center;color:var(--ink-2);font-size:15px;margin-top:16px;min-height:24px}
   @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
@@ -273,8 +285,8 @@
   <div class="wrap hero-grid">
     <div>
       <span class="eyebrow"><span class="dot"></span><span data-t="badge">Fair parenting for families with more than one child</span></span>
-      <h1 data-t="headline">Fair to every child — and you’ll know it.</h1>
-      <p class="lead" data-t="sub">FairFamily records the time, gifts and attention each child gets, compares siblings at the same age, and tells you who needs a little more of you this week.</p>
+      <h1 data-t="headline">Don’t just feel it’s fair. Check.</h1>
+      <p class="lead" data-t="sub">FairFamily records the time, gifts and attention each child gets — and when the next one reaches that age, it shows you what the first one got.</p>
       <div class="hero-cta">
         <a class="btn btn-accent app-link"><span data-t="cta1">Start free</span><svg><use href="#i-arrow"/></svg></a>
         <a class="btn btn-ghost" href="/guide/index.html" data-t="cta2">See the 3-minute guide</a>
@@ -309,6 +321,7 @@
         <div class="demo-label" id="demoLabel"></div>
         <div class="demo-input" id="demoInput"></div>
         <div class="demo-result" id="demoResult"></div>
+        <div class="demo-cue" id="demoCue" aria-hidden="true"><span class="finger">👇</span><span id="demoCueText"></span></div>
         <button class="btn btn-accent demo-btn" id="demoBtn" type="button"></button>
         <button class="demo-again" id="demoAgain" type="button" data-t="demoAgain">↺ Watch again</button>
       </div>
@@ -491,8 +504,8 @@
     en:{
       brand:'FairFamily', navHow:'How it works', navFeatures:'Features', navGuide:'Guide', navFaq:'FAQ', launch:'Start free', barStart:'Start free',
       badge:'Fair parenting for families with more than one child',
-      headline:'Fair to every child — and you’ll know it.',
-      sub:'FairFamily records the time, gifts and attention each child gets, compares siblings at the same age, and tells you who needs a little more of you this week.',
+      headline:'Don’t just feel it’s fair. Check.',
+      sub:'FairFamily records the time, gifts and attention each child gets — and when the next one reaches that age, it shows you what the first one got.',
       cta1:'Start free', cta2:'See the 3-minute guide',
       trust1:'Free', trust2:'Works in your browser', trust3:'Sign up with Google in seconds',
       floatTag:'AI insight',
@@ -513,7 +526,7 @@
       demo:{
         label:'ALL-IN-ONE',
         text:'Drove Emma to math class, played Lego with Liam for 30 min. Yesterday bought Emma sneakers, $45',
-        btn1:'Sort with AI', btn2:'Save all 3', btn3:'Try it with your kids →',
+        tap1:'Tap to see what AI does', tap2:'Tap to save them', btn1:'Sort with AI', btn2:'Save all 3', btn3:'Try it with your kids →',
         hint1:'Step 1 · Write it the way you’d say it — several kids in one go is fine.',
         hint2:'Step 2 · AI split it by child and category. Wrong name? Tap to change it.',
         hint3:'Step 3 · Saved to each child — the dashboard updates right away.',
@@ -562,8 +575,8 @@
     kr:{
       brand:'FairFamily', navHow:'작동 방식', navFeatures:'기능', navGuide:'사용법 가이드', navFaq:'자주 묻는 질문', launch:'무료로 시작', barStart:'무료로 시작하기',
       badge:'아이가 둘 이상인 가족을 위한 공평 육아 기록',
-      headline:'첫째에게 해준 만큼, 둘째에게도.',
-      sub:'페어패밀리는 아이마다 받은 시간·선물·관심을 기록하고, 같은 나이 때와 나란히 비교해서, 이번 주에 누구에게 마음을 더 써야 할지 알려줘요.',
+      headline:'아이들에게 공평한 것 같다는 느낌 말고, 확인하세요.',
+      sub:'아이마다 받은 시간·선물·관심을 기록해두고, 다음 아이가 그 나이가 됐을 때 ‘첫째한테는 이때 이걸 해줬어요’ 하고 꺼내서 알려줘요.',
       cta1:'무료로 시작하기', cta2:'3분 사용법 보기',
       trust1:'무료', trust2:'설치 없이 웹에서 바로', trust3:'Google로 10초 가입',
       floatTag:'AI 인사이트',
@@ -584,7 +597,7 @@
       demo:{
         label:'한번에 적기',
         text:'안나 수학학원 데려다주고, 지호랑 30분 레고함. 어제 안나 운동화 6만원',
-        btn1:'AI로 정리', btn2:'3개 모두 저장', btn3:'우리 아이들로 해보기 →',
+        tap1:'눌러서 AI가 어떻게 나누는지 보세요', tap2:'눌러서 저장해 보세요', btn1:'AI로 정리', btn2:'3개 모두 저장', btn3:'우리 아이들로 해보기 →',
         hint1:'1단계 · 말하듯 적어요. 아이 여럿을 한 번에 적어도 돼요.',
         hint2:'2단계 · AI가 아이별·항목별로 나눴어요. 이름이 틀리면 눌러서 바꿔요.',
         hint3:'3단계 · 아이마다 저장됐어요. 대시보드에 바로 반영돼요.',
@@ -667,27 +680,35 @@
     var d = t.demo, input = document.getElementById('demoInput'), res = document.getElementById('demoResult'),
         btn = document.getElementById('demoBtn'), hint = document.getElementById('demoHint'),
         label = document.getElementById('demoLabel'), again = document.getElementById('demoAgain'),
+        cue = document.getElementById('demoCue'), cueText = document.getElementById('demoCueText'),
         dots = document.querySelectorAll('.demo-dots span');
     if (!input) return;
     clearInterval(demoTimer);
+    function setReady(on, step){
+      btn.classList.toggle('ready', !!on);
+      if (on && step < 2) { cueText.textContent = [d.tap1, d.tap2][step] || ''; cue.classList.add('on'); }
+      else { cue.classList.remove('on'); }
+    }
     function setStep(n){
       demoStep = n;
       dots.forEach(function(x,i){ x.classList.toggle('on', i <= n); });
       hint.textContent = [d.hint1, d.hint2, d.hint3][n];
       btn.textContent = [d.btn1, d.btn2, d.btn3][n];
       again.style.display = n === 2 ? 'block' : 'none';
+      setReady(!btn.disabled, n);
     }
     label.textContent = d.label; label.style.display = '';
     input.style.display = ''; res.innerHTML = '';
     btn.disabled = true;
     setStep(0);
+    setReady(false, 0);
     var i = 0; input.innerHTML = '<span class="caret"></span>';
     var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduce) { input.textContent = d.text; btn.disabled = false; }
+    if (reduce) { input.textContent = d.text; btn.disabled = false; setReady(true, 0); }
     else demoTimer = setInterval(function(){
       i += 1;
       input.innerHTML = esc(d.text.slice(0, i)) + '<span class="caret"></span>';
-      if (i >= d.text.length) { clearInterval(demoTimer); btn.disabled = false; }
+      if (i >= d.text.length) { clearInterval(demoTimer); btn.disabled = false; setReady(true, demoStep); }
     }, 34);
     btn.onclick = function(){
       if (demoStep === 0) {

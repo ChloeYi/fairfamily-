@@ -167,8 +167,8 @@ Return ONLY valid JSON with no markdown, no code fences, no explanation.` }],
       if (e instanceof DailyLimitError) { setLimitHit({ limit: e.limit }); setInsights(null); return; }
       console.error("AI insights error:", e);
       setInsights([{ urgent: false, child: children[0],
-        title: lang === "ko" ? "연결 문제" : "Connection issue",
-        body: lang === "ko" ? "Claude AI에 연결할 수 없어요. API 키를 확인하고 다시 시도해 주세요." : "Could not connect to Claude AI. Please check your API key and try again.",
+        title: lang === "ko" ? "잠시 연결이 안 돼요" : "Temporary connection problem",
+        body: lang === "ko" ? "인터넷 연결을 확인하고 잠시 후 다시 시도해 주세요." : "Please check your internet connection and try again in a moment.",
         action: null }]);
     } finally { setLoading(false); }
   };
@@ -192,7 +192,7 @@ ${langInstruction}` }],
     } catch (e) {
       if (e instanceof DailyLimitError) { setLimitHit({ limit: e.limit }); setSelectedPrompt(null); return; }
       console.error("Ask AI error:", e);
-      setResponse(lang === "ko" ? "지금 Claude AI에 연결할 수 없어요." : "Sorry, I couldn't connect to Claude AI right now.");
+      setResponse(lang === "ko" ? "잠시 연결이 원활하지 않아요. 몇 초 후 다시 시도해 주세요." : "The connection is briefly unavailable. Please try again in a few seconds.");
     } finally { setLoading(false); }
   };
 
