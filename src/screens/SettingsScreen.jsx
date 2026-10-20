@@ -218,6 +218,19 @@ export default function SettingsScreen() {
           )}
         </div>
 
+        {/* Legal links — privacy policy must be reachable inside the app (Google Play requirement) */}
+        <div style={{ textAlign: "center", padding: "4px 0 28px", fontSize: 14, lineHeight: 2 }}>
+          <a href="https://fairfamily.site/privacy.html" target="_blank" rel="noopener noreferrer"
+             style={{ color: "#8B5CF6", fontWeight: 600, textDecoration: "underline" }}>
+            {t.login.privacyLink}
+          </a>
+          <span style={{ color: "#9b8ac4", margin: "0 10px" }}>·</span>
+          <a href="https://fairfamily.site/terms.html" target="_blank" rel="noopener noreferrer"
+             style={{ color: "#8B5CF6", fontWeight: 600, textDecoration: "underline" }}>
+            {t.login.termsLink}
+          </a>
+        </div>
+
       </div>
     </div>
   );

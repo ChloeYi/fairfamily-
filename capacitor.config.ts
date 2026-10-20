@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.FairFamily.myapp',
-  appName: 'FairFamily',
+  appId: 'com.fairfamily.journal',
+  appName: 'FairFamily: 공정한 육아일기',
   webDir: 'build',
   plugins: {
     FirebaseAuthentication: {

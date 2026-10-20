@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">FairFamily</string>
-    <string name="title_activity_main">FairFamily</string>
-    <string name="package_name">com.fairfamily.app</string>
-    <string name="custom_url_scheme">com.fairfamily.app</string>
+    <string name="app_name">FairFamily: 공정한 육아일기</string>
+    <string name="title_activity_main">FairFamily: 공정한 육아일기</string>
+    <string name="package_name">com.fairfamily.journal</string>
+    <string name="custom_url_scheme">com.fairfamily.journal</string>
 </resources>

@@ -65,6 +65,8 @@ export default {
     submit: "Continue →",
     signing: "Signing in…",
     terms: "By continuing, you agree to our Terms of Service\nand Privacy Policy",
+    termsLink: "Terms of Service",
+    privacyLink: "Privacy Policy",
     popupBlocked: "Please allow popups for Google sign-in.",
     googleFailed: "Google sign-in failed. Please try again.",
     wrongPassword: "Incorrect password.",

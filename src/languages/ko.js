@@ -65,6 +65,8 @@ export default {
     submit: "계속하기 →",
     signing: "로그인 중…",
     terms: "계속하면 서비스 이용약관 및\n개인정보 처리방침에 동의합니다",
+    termsLink: "이용약관",
+    privacyLink: "개인정보처리방침",
     popupBlocked: "Google 로그인을 위해 팝업을 허용해 주세요.",
     googleFailed: "Google 로그인에 실패했습니다. 다시 시도해 주세요.",
     wrongPassword: "비밀번호가 올바르지 않습니다.",

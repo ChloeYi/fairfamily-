@@ -250,6 +250,17 @@ export default function LoginScreen() {
         }}>
           {t.login.terms}
         </p>
+        <p style={{ textAlign: "center", fontSize: 13, marginTop: 10, lineHeight: 1.7 }}>
+          <a href="https://fairfamily.site/terms.html" target="_blank" rel="noopener noreferrer"
+             style={{ color: "#8B5CF6", fontWeight: 600, textDecoration: "underline" }}>
+            {t.login.termsLink}
+          </a>
+          <span style={{ color: "#6b5a9e", margin: "0 8px" }}>·</span>
+          <a href="https://fairfamily.site/privacy.html" target="_blank" rel="noopener noreferrer"
+             style={{ color: "#8B5CF6", fontWeight: 600, textDecoration: "underline" }}>
+            {t.login.privacyLink}
+          </a>
+        </p>
       </div>
     </div>
   );

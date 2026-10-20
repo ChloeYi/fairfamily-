@@ -1,4 +1,4 @@
-package com.fairfamily.app;
+package com.fairfamily.journal;
 
 import com.getcapacitor.BridgeActivity;
 

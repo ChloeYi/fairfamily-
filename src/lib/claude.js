@@ -1,12 +1,18 @@
 // Client for Claude that goes through our own server (/api/claude).
 // The Anthropic API key is NOT in the app — it lives only in Vercel env vars.
 //
-// REACT_APP_API_BASE: the deployed site URL, e.g. https://fairfamily.vercel.app
+// REACT_APP_API_BASE: the deployed site URL, e.g. https://fairfamily.site
 //   - Required for the Android/iOS app (its origin is https://localhost).
-//   - Can be left empty for the web build served from the same Vercel project.
+//   - Falls back to the production domain if the env var is missing at build
+//     time, so a bad build can never ship with a broken API address again.
 import { auth } from "../firebase";
 
-const API_BASE = (process.env.REACT_APP_API_BASE || "").replace(/\/$/, "");
+const FALLBACK_API_BASE = "https://fairfamily.site";
+const API_BASE = (process.env.REACT_APP_API_BASE || FALLBACK_API_BASE).replace(/\/$/, "");
+
+// Abort requests that hang (bad network, stuck proxy) so the UI never waits
+// forever. Generous because real AI responses can take tens of seconds.
+const REQUEST_TIMEOUT_MS = 60000;
 
 // Thrown when the free daily AI limit is used up (server answers 429 daily_limit).
 export class DailyLimitError extends Error {
@@ -23,17 +29,27 @@ async function create({ messages, max_tokens, feature = "advice" }) {
   const user = auth.currentUser;
   if (!user) throw new Error("not-signed-in");
   const idToken = await user.getIdToken();
-  const res = await fetch(`${API_BASE}/api/claude`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${idToken}` },
-    body: JSON.stringify({ messages, max_tokens, feature }),
-  });
-  if (res.status === 429) {
-    const j = await res.json().catch(() => ({}));
-    if (j.error === "daily_limit") throw new DailyLimitError(j.feature || feature, j.limit);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  try {
+    const res = await fetch(`${API_BASE}/api/claude`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${idToken}` },
+      body: JSON.stringify({ messages, max_tokens, feature }),
+      signal: controller.signal,
+    });
+    if (res.status === 429) {
+      const j = await res.json().catch(() => ({}));
+      if (j.error === "daily_limit") throw new DailyLimitError(j.feature || feature, j.limit);
+    }
+    if (!res.ok) throw new Error(`claude-proxy-${res.status}`);
+    return await res.json(); // { content: [{ type: "text", text }] } — same shape as the SDK
+  } catch (e) {
+    if (e && e.name === "AbortError") throw new Error("network-timeout");
+    throw e;
+  } finally {
+    clearTimeout(timeoutId);
   }
-  if (!res.ok) throw new Error(`claude-proxy-${res.status}`);
-  return res.json(); // { content: [{ type: "text", text }] } — same shape as the SDK
 }
 
 // Minimal stand-in for the SDK's messages.stream(): delivers the full text in one

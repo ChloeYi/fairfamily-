@@ -44,3 +44,11 @@ website/static/
 website/asset-manifest.json
 play-store/.tmp/
 src/App 복사본.jsx
+
+# build artifacts / tools (do not commit)
+*.aab
+*.apk
+FairFamily-*.zip
+bundletool.jar
+*.bak
+appeal-draft.md
