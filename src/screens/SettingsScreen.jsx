@@ -41,6 +41,10 @@ async function deleteUserData(uid) {
     for (const lg of logs.docs) await deleteDoc(lg.ref);
     await deleteDoc(kid.ref);
   }
+  // Deleting users/{uid} does not remove its subcollections, so clear them here
+  // too — the account-deletion page promises nothing is left behind.
+  const meta = await getDocs(collection(db, "users", uid, "meta"));
+  for (const m of meta.docs) await deleteDoc(m.ref);
 }
 
 // Firebase only lets a user delete their account if they signed in recently.

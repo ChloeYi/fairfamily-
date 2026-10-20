@@ -8,7 +8,6 @@ import KidAvatar from "../components/KidAvatar";
 import { useLanguage } from "../hooks/useLanguage";
 import LifeLineGraph from "./LifeLineGraph";
 import Tour from "../components/Tour";
-import PremiumModal from "../components/PremiumModal";
 
 const EMOJI_FLATICON = {
   "🌸": "fi-sr-child-head",
@@ -157,7 +156,6 @@ const COMPARE_METRICS = [
 
 export default function DashboardScreen() {
   const navigate = useNavigate();
-  const [showPremium, setShowPremium] = useState(false);
   const [showTour, setShowTour] = useState(false);
   const [compareMetric, setCompareMetric] = useState("all");
   // Which "All"-mode event cells are expanded (key: `${childId}-${age}`).
@@ -306,16 +304,8 @@ export default function DashboardScreen() {
       color: "#1e0f3c", paddingBottom: 90, position: "relative", zIndex: 1,
     }}>
       <style>{css}</style>
-      <PremiumModal open={showPremium} reason="button" onClose={() => setShowPremium(false)} />
-
-      {/* Premium (coming soon) — measures interest before we build payments */}
-      <button onClick={() => setShowPremium(true)} style={{
-        position: "absolute", top: 22, left: 20, zIndex: 2,
-        fontSize: 12, fontWeight: 700, color: "#fff", cursor: "pointer",
-        background: "linear-gradient(135deg,#7C3AED,#EC4899)", border: "none",
-        padding: "5px 11px", borderRadius: 999, fontFamily: "'DM Sans', sans-serif",
-        boxShadow: "0 4px 14px rgba(236,72,153,0.3)",
-      }}>✨ {lang === "ko" ? "프리미엄" : "Premium"}</button>
+      {/* A Premium button lived here. It is out until a paid plan actually
+          exists — the app should not advertise something you cannot buy. */}
 
       {/* Header */}
       <div style={{ padding: "72px 24px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>

@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
-import { claude as client, DailyLimitError } from "../lib/claude";
-import PremiumModal from "../components/PremiumModal";
+import { claude as client, DailyLimitError, textOf } from "../lib/claude";
+import LimitModal from "../components/LimitModal";
 import { collection, onSnapshot } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { useLanguage } from "../hooks/useLanguage";
@@ -161,7 +161,7 @@ Each insight must have:
 ${langInstruction}
 Return ONLY valid JSON with no markdown, no code fences, no explanation.` }],
       });
-      const parsed = parseJSON(message.content[0].text);
+      const parsed = parseJSON(textOf(message));
       setInsights(parsed.map(ins => ({ ...ins, child: children[ins.childIndex] || children[0] })));
     } catch (e) {
       if (e instanceof DailyLimitError) { setLimitHit({ limit: e.limit }); setInsights(null); return; }
@@ -202,7 +202,7 @@ ${langInstruction}` }],
       fontFamily: "'DM Sans', sans-serif", color: "#1e0f3c",
       paddingBottom: 90, position: "relative", zIndex: 1,
     }}>
-      <PremiumModal open={!!limitHit} reason="limit" limit={limitHit?.limit} onClose={() => setLimitHit(null)} />
+      <LimitModal open={!!limitHit} limit={limitHit?.limit} onClose={() => setLimitHit(null)} />
       <style>{css}</style>
 
       {/* Header */}

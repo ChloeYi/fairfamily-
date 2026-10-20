@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { claude as client, DailyLimitError } from "../lib/claude";
+import { claude as client, DailyLimitError, textOf } from "../lib/claude";
 import KidAvatar from "../components/KidAvatar";
-import PremiumModal from "../components/PremiumModal";
+import LimitModal from "../components/LimitModal";
 import { auth, db } from "../firebase";
 import {
   collection, onSnapshot, addDoc, updateDoc, doc,
@@ -250,7 +250,7 @@ export default function PhotoLogScreen() {
           { type: "text", text: `Look at this image. Extract:\n- Item name/description\n- Amount/price if visible\n- Category, one of: time, money, gifts, school, oneOnOne, emotional, experiences, health\n(time=time spent together, money=an expense/shopping, gifts=a present, school=school activity/trip, oneOnOne=one-on-one time, emotional=affection/comfort, experiences=fun/outings/travel, health=health/exercise/doctor)\nReturn as JSON only: {"desc":"...","amount":"...","category":"gifts"}` },
         ]}],
       });
-      const clean = message.content[0].text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+      const clean = textOf(message).replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
       const parsed = JSON.parse(clean);
       setDesc(parsed.desc || "");
       setAmount(parsed.amount ? String(parsed.amount).replace(/[^0-9.]/g, "") : "");
@@ -338,7 +338,9 @@ export default function PhotoLogScreen() {
       hours: parseFloat(entry.hours) || 0,
       times: Math.max(1, parseInt(entry.times) || 1),
       age: entry.age ?? null,
-      photoUrl: entry.photoUrl || null,
+      // The photo is only used to read the entry — it is never shown again, and a
+      // full-size base64 image blows past Firestore's 1 MB document limit, so the
+      // picture stays on the device and only the text it produced is stored.
       createdAt: entry.createdAt || logCreatedAt(),
     });
     await updateDoc(doc(db, "users", userUid, "children", childId), {
@@ -373,7 +375,6 @@ export default function PhotoLogScreen() {
         hours,
         times,
         age: ageAt(selectedChild, dateMode === "other" && customDate ? new Date(customDate + "T12:00:00") : null),
-        photoUrl: photo,
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
@@ -398,7 +399,7 @@ export default function PhotoLogScreen() {
         messages: [{ role: "user", content: [{ type: "text", text:
           `The parent has these children (id: name):\n${kidList || "(none)"}\nToday is ${today.toDateString()}.\nThe parent logs things they did for or with their children, in free text (often Korean). Split it into separate entries — one entry per child per activity (if one activity involved several children, e.g. "took both kids to the park", make one entry for each child). For each entry set "childId" to the id of the child it is about, matched by name, nickname, or birth-order words (첫째/큰애/형/누나/언니/오빠 = oldest, 둘째, 막내/작은애/동생 = youngest; first = oldest). Use null if you cannot tell. Set "daysAgo" = how many days ago it happened (0 = today, 1 = 어제/yesterday, 2 = 그저께; resolve weekday names like "토요일" to the most recent past one; default 0). For each, pick a category from: time, money, gifts, school, oneOnOne, emotional, experiences, health (time=time spent together, money=an expense/shopping, gifts=a present, school=school activity/trip, oneOnOne=one-on-one time, emotional=affection/comfort/praise, experiences=fun/outings/travel, health=health/exercise/doctor). Give a short description, a numeric amount if a price is mentioned (else 0), "hours" = duration in hours for time/oneOnOne entries if mentioned (e.g. "30분" → 0.5, "2시간" → 2; else 0), and "times" = how many times it happened (e.g. "played soccer twice" → 2; default 1).\nText: """${bulkText}"""\nReturn JSON only as an array: [{"childId":"...","category":"gifts","desc":"...","amount":0,"hours":0,"times":1,"daysAgo":0}]` }]}],
       });
-      const clean = message.content[0].text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+      const clean = textOf(message).replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
       let entries = JSON.parse(clean);
       if (!Array.isArray(entries)) entries = [entries];
       const ids = new Set(children.map(c => c.id));
@@ -430,7 +431,7 @@ export default function PhotoLogScreen() {
         const when = e.daysAgo > 0 ? dateDaysAgo(e.daysAgo) : null;
         await writeLog(user.uid, e.childId, {
           category: e.category, desc: e.desc || t.categories[e.category],
-          amount: e.amount, hours: e.hours, times: e.times, age: ageAt(child, when), photoUrl: null,
+          amount: e.amount, hours: e.hours, times: e.times, age: ageAt(child, when),
           createdAt: when || serverTimestamp(),
         });
       }
@@ -462,7 +463,7 @@ export default function PhotoLogScreen() {
       paddingBottom: 90, position: "relative", zIndex: 1,
     }}>
       <style>{css}</style>
-      <PremiumModal open={!!limitHit} reason="limit" limit={limitHit?.limit} onClose={() => setLimitHit(null)} />
+      <LimitModal open={!!limitHit} limit={limitHit?.limit} onClose={() => setLimitHit(null)} />
 
       {/* Centered calendar popup */}
       {showCal && (() => {

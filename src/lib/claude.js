@@ -52,12 +52,22 @@ async function create({ messages, max_tokens, feature = "advice" }) {
   }
 }
 
+// The reply is a list of blocks and a text block is not always first — some
+// models put another block (e.g. thinking) ahead of it. Always pick the text
+// blocks out by type rather than reaching for content[0].
+export function textOf(msg) {
+  return ((msg && msg.content) || [])
+    .filter(b => b && b.type === "text")
+    .map(b => b.text)
+    .join("");
+}
+
 // Minimal stand-in for the SDK's messages.stream(): delivers the full text in one
 // "text" event once the response arrives (no token-by-token streaming).
 function stream(params) {
   const handlers = [];
   const done = create(params).then(msg => {
-    const text = (msg.content || []).filter(b => b.type === "text").map(b => b.text).join("");
+    const text = textOf(msg);
     handlers.forEach(h => h(text));
     return msg;
   });
