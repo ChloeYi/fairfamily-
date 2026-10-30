@@ -49,7 +49,7 @@
     } else if (step === 1) {
       res.innerHTML = '<div class="demo-done"><div class="big">✅</div><b>' + D.doneTitle + "</b><p>" + D.doneSub + "</p></div>";
       setStep(2);
-    } else { window.location.href = "/app"; }
+    } else { window.location.href = "https://play.google.com/store/apps/details?id=com.fairfamily.journal"; }
   };
   again.onclick = start;
   start();

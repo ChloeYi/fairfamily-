@@ -113,7 +113,7 @@
         <button id="en" class="on" onclick="setLang('en',true)">EN</button>
         <button id="kr" onclick="setLang('kr',true)">KO</button>
       </div>
-      <a class="btn btn-primary btn-sm app-link" data-t="launch">Open fairfamily</a>
+      <a class="btn btn-primary btn-sm app-link" data-t="launch">Get the app</a>
     </div>
   </div>
 </nav>
@@ -129,7 +129,7 @@
   <div style="text-align:center;margin:6px 0 10px"><a class="btn btn-sm" href="/guide/index.html" style="background:var(--sky-soft);color:var(--sky-deep)" data-t="guideLink">See the full step-by-step guide →</a></div>
   <div class="cta">
     <h2 data-t="ctaTitle">Ready to start?</h2>
-    <p data-t="ctaSub">It’s free and runs right in your browser — no download needed.</p>
+    <p data-t="ctaSub">It’s free — get it on Google Play.</p>
     <a class="btn app-link" data-t="cta1">Get Started Free</a>
   </div>
 </main>
@@ -146,7 +146,7 @@
 </div>
 
 <script>
-  var APP_URL = "/app"; // the React app is served under /app on the same site
+  var APP_URL = "https://play.google.com/store/apps/details?id=com.fairfamily.journal"; // Google Play listing
   var STEPCFG = [
     {bg:'var(--pink-soft)',ac:'var(--pink-deep)',icon:'🐣'},
     {bg:'var(--sky-soft)',ac:'var(--sky-deep)',icon:'📷'},
@@ -154,7 +154,7 @@
   ];
   var DATA = {
     en:{
-      launch:'Open fairfamily', guideLink:'See the full step-by-step guide →', back:'← Back home', barHome:'Home', barStart:'Get Started Free',
+      launch:'Get the app', guideLink:'See the full step-by-step guide →', back:'← Back home', barHome:'Home', barStart:'Get Started Free',
       title:'How fairfamily works',
       sub:'Three small steps to make sure every child feels equally seen.',
       steps:[
@@ -163,12 +163,12 @@
         {num:'Step 3',title:'Get gentle nudges',desc:'Your AI coach spots quiet imbalances and suggests fair, loving moments — before anyone feels left out.'}
       ],
       ctaTitle:'Ready to start?',
-      ctaSub:'It’s free and runs right in your browser — no download needed.',
+      ctaSub:'It’s free — get it on Google Play.',
       cta1:'Get Started Free',
       footer:'© 2026 FairFamily · Made with 💗 for every child'
     },
     kr:{
-      launch:'fairfamily 열기', guideLink:'실제 화면으로 보는 자세한 사용법 가이드 →', back:'← 홈으로', barHome:'홈', barStart:'무료로 시작하기',
+      launch:'앱 받기', guideLink:'실제 화면으로 보는 자세한 사용법 가이드 →', back:'← 홈으로', barHome:'홈', barStart:'무료로 설치하기',
       title:'fairfamily 작동 방식',
       sub:'모든 아이가 똑같이 사랑받는다고 느끼게 하는 세 가지 작은 단계.',
       steps:[
@@ -177,8 +177,8 @@
         {num:'3단계',title:'부드러운 알림을 받으세요',desc:'AI 코치가 조용한 불균형을 발견하고 — 누구도 소외되기 전에 — 공평하고 사랑스러운 순간을 제안해요.'}
       ],
       ctaTitle:'시작할 준비 되셨나요?',
-      ctaSub:'무료이고 다운로드 없이 브라우저에서 바로 실행돼요.',
-      cta1:'무료로 시작하기',
+      ctaSub:'무료이고, 구글 플레이에서 바로 설치할 수 있어요.',
+      cta1:'무료로 설치하기',
       footer:'© 2026 FairFamily · 모든 아이를 위해 💗 마음을 담아'
     }
   };
